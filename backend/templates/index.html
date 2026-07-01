@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepGuard — Multimodal Fake Content Detection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- ================= DASHBOARD ================= -->
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+
+            <div class="logo-icon">
+                ◆
+            </div>
+
+            <div class="logo-text">
+                <h2>DeepGuard</h2>
+                <span>AI Security</span>
+            </div>
+
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <a href="#home" class="nav-item active">
+                <span>🏠</span>
+                Dashboard
+            </a>
+
+            <a href="#detector" class="nav-item">
+                <span>🔍</span>
+                Analyze
+            </a>
+
+            <a href="#results" class="nav-item">
+                <span>📊</span>
+                Results
+            </a>
+
+            <a href="#modules" class="nav-item">
+                <span>🛡</span>
+                Modules
+            </a>
+
+            <a href="#about" class="nav-item">
+                <span>ℹ</span>
+                About
+            </a>
+
+        </nav>
+
+    </aside>
+
+    <!-- Main Content -->
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>AI Threat Intelligence Dashboard</h1>
+
+                <p>
+                    Detect misinformation using multimodal AI analysis.
+                </p>
+
+            </div>
+
+            <div class="status-chip">
+
+                ● System Online
+
+            </div>
+
+        </header>
+
+<!-- ================= DASHBOARD OVERVIEW ================= -->
+
+<section class="dashboard-home" id="home">
+
+    <div class="overview-grid">
+
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+
+            <div class="welcome-text">
+
+                <span class="welcome-badge">
+                    AI Powered Detection
+                </span>
+
+                <h2>
+                    Detect Fake Content with Multimodal Intelligence
+                </h2>
+
+                <p>
+                    DeepGuard analyzes both text and images together to detect
+                    misinformation, manipulated media, AI-generated images,
+                    emotional manipulation, and context mismatches.
+                </p>
+
+                <a href="#detector" class="hero-btn">
+                    Start Analysis →
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- System Status -->
+        <div class="system-card">
+
+            <h3>System Status</h3>
+
+            <div class="status-item">
+                <span>AI Engine</span>
+                <strong>Online</strong>
+            </div>
+
+            <div class="status-item">
+                <span>Detection Modules</span>
+                <strong>7 Active</strong>
+            </div>
+
+            <div class="status-item">
+                <span>Model Accuracy</span>
+                <strong>96%</strong>
+            </div>
+
+            <div class="status-item">
+                <span>Analysis Layers</span>
+                <strong>3 Layers</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= CONTENT ANALYSIS ================= -->
+
+<section class="analysis-section" id="detector">
+
+    <div class="analysis-card">
+
+        <div class="analysis-header">
+
+            <div>
+                <span class="section-tag">
+                    CONTENT ANALYSIS
+                </span>
+
+                <h2>Analyze Suspicious Content</h2>
+
+                <p>
+                    Enter text, upload an image, or use both for multimodal detection.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="analysis-form">
+
+            <!-- Text -->
+
+            <div class="input-group">
+
+                <label for="newsText">
+                    Text Content
+                </label>
+
+                <textarea
+                    id="newsText"
+                    placeholder="Paste news article, social media post, or caption..."></textarea>
+
+            </div>
+
+            <!-- Image -->
+
+            <div class="input-group">
+
+                <label>
+                    Image Upload
+                </label>
+
+                <div class="upload-box" id="uploadBox">
+
+                    <input
+                        type="file"
+                        id="imageUpload"
+                        hidden
+                        accept="image/*">
+
+                    <div class="upload-icon">
+                        ⬆
+                    </div>
+
+                    <h3>Drag & Drop Image</h3>
+
+                    <p>
+                        or click to browse
+                    </p>
+
+                    <span id="fileName"></span>
+
+                </div>
+
+            </div>
+
+            <button
+                id="analyzeBtn"
+                class="analyze-btn">
+
+                Analyze Content
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= RESULTS ================= -->
+
+<section class="results-dashboard" id="results">
+
+    <div class="results-header">
+
+        <span class="section-tag">
+            ANALYSIS RESULTS
+        </span>
+
+        <h2>Detection Summary</h2>
+
+        <p>
+            The AI engine will display its prediction and confidence below.
+        </p>
+
+    </div>
+
+    <div class="results-grid">
+
+        <!-- Verdict -->
+
+        <div class="result-box verdict-box">
+
+            <h3>Prediction</h3>
+
+            <div id="predictionResult" class="prediction-value">
+                Waiting...
+            </div>
+
+        </div>
+
+        <!-- Confidence -->
+
+        <div class="result-box">
+
+            <h3>Confidence</h3>
+
+            <div class="metric">
+
+                <span id="confidenceScore">
+                    -- %
+                </span>
+
+            </div>
+
+        </div>
+
+        <!-- Threat -->
+
+        <div class="result-box">
+
+            <h3>Threat Level</h3>
+
+            <div class="metric">
+
+                <span id="threatLevel">
+                    Unknown
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="details-card">
+
+        <h3>Analysis Details</h3>
+
+        <p id="resultDetail">
+
+            Run an analysis to view the AI explanation.
+
+        </p>
+
+    </div>
+
+</section>
+
+<!-- ================= DETECTION MODULES ================= -->
+
+<section class="modules-dashboard" id="modules">
+
+    <div class="results-header">
+
+        <span class="section-tag">
+            AI MODULES
+        </span>
+
+        <h2>Detection Engine</h2>
+
+        <p>
+            DeepGuard combines multiple AI models to verify multimodal content.
+        </p>
+
+    </div>
+
+    <div class="modules-grid">
+
+        <div class="module-card">
+            <div class="module-icon">📰</div>
+            <h3>Text Analysis</h3>
+            <p>Detects fake or misleading textual information using NLP models.</p>
+        </div>
+
+        <div class="module-card">
+            <div class="module-icon">🖼️</div>
+            <h3>Image Analysis</h3>
+            <p>Detects manipulated, edited, or AI-generated images.</p>
+        </div>
+
+        <div class="module-card">
+            <div class="module-icon">📷</div>
+            <h3>Metadata Analysis</h3>
+            <p>Reads image metadata to identify suspicious modifications.</p>
+        </div>
+
+        <div class="module-card">
+            <div class="module-icon">😊</div>
+            <h3>Sentiment Analysis</h3>
+            <p>Detects emotionally manipulative language and panic content.</p>
+        </div>
+
+        <div class="module-card">
+            <div class="module-icon">📈</div>
+            <h3>Virality Analysis</h3>
+            <p>Recognizes viral patterns and suspicious engagement signals.</p>
+        </div>
+
+        <div class="module-card">
+            <div class="module-icon">🔄</div>
+            <h3>Context Matching</h3>
+            <p>Cross-checks text against image content to detect mismatches.</p>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= ABOUT ================= -->
+
+<section class="about-dashboard" id="about">
+
+    <div class="about-card">
+
+        <span class="section-tag">
+            ABOUT DEEPGUARD
+        </span>
+
+        <h2>Multimodal Fake Content Detection System</h2>
+
+        <p>
+            DeepGuard is an AI-powered cybersecurity platform developed as a
+            Final Year Project. Unlike traditional fake news detectors that
+            analyze only text or only images, DeepGuard performs multimodal
+            analysis by combining Natural Language Processing, Computer Vision,
+            metadata inspection, sentiment analysis, virality detection, and
+            context matching to produce a more reliable prediction.
+        </p>
+
+        <div class="about-features">
+
+            <div class="feature">
+                ✓ Text Analysis
+            </div>
+
+            <div class="feature">
+                ✓ Image Verification
+            </div>
+
+            <div class="feature">
+                ✓ Metadata Analysis
+            </div>
+
+            <div class="feature">
+                ✓ Sentiment Detection
+            </div>
+
+            <div class="feature">
+                ✓ Virality Detection
+            </div>
+
+            <div class="feature">
+                ✓ Context Matching
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<footer class="dashboard-footer">
+
+    <div>
+
+        <h3>DeepGuard</h3>
+
+        <p>
+            AI-Powered Multimodal Fake Content Detection
+        </p>
+
+    </div>
+
+    <div>
+
+        <p>
+            BS Software Engineering • Final Year Project
+        </p>
+
+        <p>
+            Lahore Garrison University
+        </p>
+
+    </div>
+
+</footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

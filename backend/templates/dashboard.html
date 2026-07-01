@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepGuard Dashboard</title>
+
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+
+            <div class="logo-icon">
+                ◆
+            </div>
+
+            <div class="logo-text">
+                <h2>DeepGuard</h2>
+                <span>AI Security</span>
+            </div>
+
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <a href="/" class="nav-item active">
+                <span>🏠</span>
+                Dashboard
+            </a>
+
+            <a href="/analyze" class="nav-item">
+                <span>🔍</span>
+                Analyze
+            </a>
+
+            <a href="/modules" class="nav-item">
+                <span>🛡</span>
+                Modules
+            </a>
+
+            <a href="/about" class="nav-item">
+                <span>ℹ</span>
+                About
+            </a>
+
+        </nav>
+
+    </aside>
+
+    <!-- Main Content -->
+
+    <div class="main-content">
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>AI Threat Intelligence Dashboard</h1>
+
+                <p>
+                    Detect manipulated digital content using multimodal AI analysis.
+                </p>
+
+            </div>
+
+            <div class="status-chip">
+                ● System Online
+            </div>
+
+        </header>
+<!-- Dashboard Overview -->
+
+<section class="dashboard-home">
+
+    <div class="overview-grid">
+
+        <!-- Welcome Card -->
+
+        <div class="welcome-card">
+
+            <span class="welcome-badge">
+                AI Powered Detection
+            </span>
+
+            <h2>
+                Detect Manipulated Digital Content with AI
+            </h2>
+
+            <p>
+                DeepGuard analyzes text and images together to identify
+                misinformation, AI-generated content, manipulated media,
+                emotional manipulation, and context mismatches.
+            </p>
+
+            <a href="/analyze" class="hero-btn">
+                Start Analysis →
+            </a>
+
+        </div>
+
+        <!-- System Status -->
+
+        <div class="system-card">
+
+            <h3>System Status</h3>
+
+            <div class="status-item">
+                <span>AI Engine</span>
+                <strong>Online</strong>
+            </div>
+
+            <div class="status-item">
+                <span>Detection Modules</span>
+                <strong>7 Active</strong>
+            </div>
+
+            <div class="status-item">
+                <span>Text Detection</span>
+                <strong>Ready</strong>
+            </div>
+
+            <div class="status-item">
+                <span>Image Detection</span>
+                <strong>Coming Soon</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+    </div>
+
+</div>
+
+</body>
+
+</html>

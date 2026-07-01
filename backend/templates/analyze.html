@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepGuard — Multimodal Fake Content Detection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- ================= DASHBOARD ================= -->
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+
+            <div class="logo-icon">
+                ◆
+            </div>
+
+            <div class="logo-text">
+                <h2>DeepGuard</h2>
+                <span>AI Security</span>
+            </div>
+
+        </div>
+
+        <nav class="sidebar-nav">
+
+    <a href="/" class="nav-item">
+        <span>🏠</span>
+        Dashboard
+    </a>
+
+    <a href="/analyze" class="nav-item active">
+        <span>🔍</span>
+        Analyze
+    </a>
+
+    <a href="/modules" class="nav-item">
+        <span>🛡</span>
+        Modules
+    </a>
+
+    <a href="/about" class="nav-item">
+        <span>ℹ</span>
+        About
+    </a>
+
+</nav>
+    </aside>
+
+    <!-- Main Content -->
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>AI Threat Intelligence Dashboard</h1>
+
+                <p>
+                    Detect misinformation using multimodal AI analysis.
+                </p>
+
+            </div>
+
+            <div class="status-chip">
+
+                ● System Online
+
+            </div>
+
+        </header>
+
+<!-- ================= CONTENT ANALYSIS ================= -->
+
+<section class="analysis-section" id="detector">
+
+    <div class="analysis-card">
+
+        <div class="analysis-header">
+
+            <div>
+                <span class="section-tag">
+                    CONTENT ANALYSIS
+                </span>
+
+                <h2>Analyze Suspicious Content</h2>
+
+                <p>
+                    Enter text, upload an image, or use both for multimodal detection.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="analysis-form">
+
+            <!-- Text -->
+
+            <div class="input-group">
+
+                <label for="newsText">
+                    Text Content
+                </label>
+
+                <textarea
+                    id="newsText"
+                    placeholder="Paste news article, social media post, or caption..."></textarea>
+
+            </div>
+
+            <!-- Image -->
+
+            <div class="input-group">
+
+                <label>
+                    Image Upload
+                </label>
+
+                <div class="upload-box" id="uploadBox">
+
+                    <input
+                        type="file"
+                        id="imageUpload"
+                        hidden
+                        accept="image/*">
+
+                    <div class="upload-icon">
+                        ⬆
+                    </div>
+
+                    <h3>Drag & Drop Image</h3>
+
+                    <p>
+                        or click to browse
+                    </p>
+
+                    <span id="fileName"></span>
+
+                </div>
+
+            </div>
+
+            <button
+                id="analyzeBtn"
+                class="analyze-btn">
+
+                Analyze Content
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= RESULTS ================= -->
+
+<section class="results-dashboard" id="results">
+
+    <div class="results-header">
+
+        <span class="section-tag">
+            ANALYSIS RESULTS
+        </span>
+
+        <h2>Detection Summary</h2>
+
+        <p>
+            The AI engine will display its prediction and confidence below.
+        </p>
+
+    </div>
+
+    <div class="results-grid">
+
+        <!-- Verdict -->
+
+        <div class="result-box verdict-box">
+
+            <h3>Prediction</h3>
+
+            <div id="predictionResult" class="prediction-value">
+                Waiting...
+            </div>
+
+        </div>
+
+        <!-- Confidence -->
+
+        <div class="result-box">
+
+            <h3>Confidence</h3>
+
+            <div class="metric">
+
+                <span id="confidenceScore">
+                    -- %
+                </span>
+
+            </div>
+
+        </div>
+
+        <!-- Threat -->
+
+        <div class="result-box">
+
+            <h3>Threat Level</h3>
+
+            <div class="metric">
+
+                <span id="threatLevel">
+                    Unknown
+                </span>
+
+            </div>
+
+        </div>
+<!-- Sentiment -->
+
+<div class="result-box">
+
+    <h3>Sentiment</h3>
+
+    <div class="metric">
+
+        <span id="sentimentResult">
+            Waiting...
+        </span>
+
+    </div>
+
+</div>
+    </div>
+
+    <div class="details-card">
+
+    <h3>Analysis Details</h3>
+
+    <p id="resultDetail">
+
+        Run an analysis to view the AI explanation.
+
+    </p>
+
+</div>
+
+<div class="details-card">
+
+    <h3>Image Metadata</h3>
+
+    <p id="metadataResult">
+
+        Upload an image to view metadata.
+
+    </p>
+
+</div>
+
+</section>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
