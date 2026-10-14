@@ -1,0 +1,1 @@
+﻿from .image_detector import predict_image_authenticity, ImageDetector

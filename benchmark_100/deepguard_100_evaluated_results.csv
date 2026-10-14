@@ -1,0 +1,101 @@
+id,scenario,scenario_name,image_file,text,expected_verdict,image_score,text_score,mismatch_score,final_verdict,correct
+1,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_01.jpg,Lifes a beach,REAL,69.57,2.73,34.84,REAL,YES
+2,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_02.jpg,Break it up guys,REAL,0.09,1.54,51.27,REAL,YES
+3,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_03.jpg,Porcupine shaped bread,REAL,1.27,14.49,23.33,REAL,YES
+4,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_04.jpg,Some confused and unsure cucumbers,REAL,2.65,96.29,16.7,REAL,YES
+5,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_05.jpg,This heavily protected santa claus,REAL,86.12,98.1,43.69,FAKE,NO
+6,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_06.jpg,This toilet lid has a handle so you can lift it up,REAL,7.36,99.48,11.87,REAL,YES
+7,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_07.jpg,Guys this wasnt in the brochure,REAL,89.24,13.49,41.74,REAL,YES
+8,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_08.jpg,Here we go again,REAL,0.24,2.75,54.25,REAL,YES
+9,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_09.jpg,Cutouts,REAL,0.42,27.24,63.72,FAKE,NO
+10,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_10.jpg,I think were gonna need a bigger boat,REAL,1.12,2.07,29.97,REAL,YES
+11,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_11.jpg,I can fly,REAL,0.16,8.57,40.45,REAL,YES
+12,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_12.jpg,Cristiano ronaldo walking into santiago bernabeu,REAL,3.72,97.05,16.53,REAL,YES
+13,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_13.jpg,Success,REAL,0.67,4.76,57.02,REAL,YES
+14,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_14.jpg,Look,REAL,18.16,2.52,53.4,REAL,YES
+15,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_15.jpg,So much open space what can you think of,REAL,0.29,3,51.46,REAL,YES
+16,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_16.jpg,Harry s truman when us was flying over hiroshima circa,REAL,0.72,0.08,42.91,REAL,YES
+17,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_17.jpg,My car comes with a emergency latch to pull for someone if they are trapped in the trunk,REAL,83.78,99.81,24.05,FAKE,NO
+18,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_18.jpg,Unknown title circa,REAL,99.77,0.11,51.2,REAL,YES
+19,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_19.jpg,The strange attractors california,REAL,9.73,0.82,0,REAL,YES
+20,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_20.jpg,Indeed,REAL,0.4,2.45,59.14,REAL,YES
+21,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_21.jpg,Reddit ad and meine aboute the ad,REAL,98.87,10.75,17.69,REAL,YES
+22,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_22.jpg,Euchrysops lois synthetic organic,REAL,17.9,8.11,56.63,REAL,YES
+23,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_23.jpg,Its a reddit coffee,REAL,0.34,14.11,2.91,REAL,YES
+24,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_24.jpg,A russian grandma sitting at the table after finally being able to afford food for her family,REAL,90.92,94.35,34.11,FAKE,NO
+25,1,Scenario 1: Real Image + Real Text (Matching),E:\DEEPGUARD\benchmark_100\images\s1_25.jpg,Cute toddler,REAL,99.98,94.02,24.85,FAKE,NO
+26,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_01.jpg,BREAKING: Government declares complete national lockdown starting midnight tonight! All businesses and ATMs to remain closed for 14 days. Forward to save lives!,FAKE,7.44,99.95,58.55,FAKE,YES
+27,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_02.jpg,Miracle cure revealed: Drinking boiled ginger with lemon water cures stage-4 respiratory infections in 48 hours without any hospital care.,FAKE,64.24,74.65,70.2,FAKE,YES
+28,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_03.jpg,URGENT ALERT: Major 8.9 magnitude earthquake predicted to hit the capital city tonight at 2 AM according to satellite radar warnings.,FAKE,0.41,5.43,62.5,FAKE,YES
+29,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_04.jpg,Secret leaked memo proves international space agencies are secretly controlling weather patterns to engineer artificial droughts.,FAKE,51.58,97.18,55.36,FAKE,YES
+30,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_05.jpg,Shocking discovery: Consuming raw baking soda dissolves all viral infections within 10 minutes according to independent researchers.,FAKE,8.16,97.23,61.16,FAKE,YES
+31,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_06.jpg,"Emergency advisory: Do not answer phone calls from phone numbers starting with +9200, your bank account balance will be drained instantly upon answering.",FAKE,0.12,5.11,68.96,FAKE,YES
+32,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_07.jpg,Scientists confirm artificial sweeteners contain magnetic nanotechnology chips designed to monitor citizen movements in public spaces.,FAKE,96.58,56.84,58.64,FAKE,YES
+33,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_08.jpg,Breaking: Renowned national university cancels all final semester examinations and declares automatic 4.0 GPA for all registered students.,FAKE,0.24,99.92,69.09,FAKE,YES
+34,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_09.jpg,Warning: Commercial 5G cellular antennas emit frequency waves that disable domestic water supply filters across urban centers.,FAKE,97.41,92.91,44.71,FAKE,YES
+35,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_10.jpg,Leaked laboratory documents show major beverage brands are secretly infusing illegal addictive sedatives to increase retail consumption.,FAKE,0.71,63.53,61.77,FAKE,YES
+36,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_11.jpg,Alert from healthcare ministry: Modern dental fillings contain micro-transmitters broadcasting audio frequencies to foreign intelligence servers.,FAKE,0.69,99.04,61.85,FAKE,YES
+37,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_12.jpg,"Urgent notification: State petroleum reserves completely exhausted, all fuel stations across the province will shut down indefinitely tomorrow morning.",FAKE,0.83,18.53,69.07,FAKE,YES
+38,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_13.jpg,Shocking report: Historic bridge collapse engineered by covert international demolition teams using classified acoustic frequency resonance.,FAKE,4.88,97.69,59.16,FAKE,YES
+39,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_14.jpg,Medical whistleblower reveals routine influenza immunizations contain magnetic fluid that reacts to microwave ovens in kitchens.,FAKE,99.57,96.38,50.94,FAKE,YES
+40,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_15.jpg,"Breaking news: Central bank issues immediate recall of all 5000-rupee currency notes, unreturned notes become void by Friday evening.",FAKE,8.45,98.5,64.78,FAKE,YES
+41,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_16.jpg,Astonishing breakthrough: Ancient herbal root extract discovered in mountainous valleys restores full eyesight within three applications.,FAKE,0.25,97.61,66.86,FAKE,YES
+42,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_17.jpg,Severe alert: City municipal corporation confirms drinking tap water has been contaminated with dangerous bio-engineered sleep bacteria.,FAKE,0.36,98.13,56.68,REAL,NO
+43,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_18.jpg,Secret report confirms atmospheric cloud seeding in coastal areas caused irreversible electrical grid disruptions across the northern region.,FAKE,22.32,92.61,59,FAKE,YES
+44,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_19.jpg,Warning: Popular brand of instant cooking noodles contains chemical adhesive identical to industrial floor wax.,FAKE,0.51,99.91,69.35,FAKE,YES
+45,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_20.jpg,Breaking bulletin: National meteorological authority announces temperatures will plunge below minus twenty degrees Celsius in lowlands tonight.,FAKE,0.61,99.74,71.05,FAKE,YES
+46,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_21.jpg,Urgent alert: Avoid using smartphone camera applications after 9 PM as they activate infrared retina radiation that impairs night vision.,FAKE,12.88,2.23,55.88,REAL,NO
+47,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_22.jpg,Medical advisory: Raw garlic cloves worn in your socks overnight draw out heavy metal toxins and neutralize cardiovascular disease.,FAKE,4.72,93.93,60.94,FAKE,YES
+48,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_23.jpg,Breaking update: Inter-provincial transport halted indefinitely after unexpected radioactive mineral deposit detected on primary highway.,FAKE,99.93,98.57,53.1,FAKE,YES
+49,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_24.jpg,Confidential file: Government planning covert digital currency mandate to automatically seize 15 percent of all personal checking deposits.,FAKE,82.2,99.52,57.27,FAKE,YES
+50,2,Scenario 2: Real Image + Fake Text,E:\DEEPGUARD\benchmark_100\images\s2_25.jpg,Emergency notice: Supermarket cooking oils blended with synthetic motor lubricants to artificially boost viscosity and boiling thresholds.,FAKE,14.96,95.5,55.77,FAKE,YES
+51,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_01.jpg,Photorealistic rendering of futuristic city highway with autonomous electric transport systems.,FAKE,100,77.72,54.09,FAKE,YES
+52,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_02.jpg,Detailed synthetic photograph of an airplane landing on runway during dramatic evening sunset.,FAKE,69.05,63.59,60.77,FAKE,YES
+53,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_03.jpg,High-resolution generated portrait of domestic tabby cat resting on wooden patio chair.,FAKE,99.63,85.83,59.47,FAKE,YES
+54,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_04.jpg,Artistic rendering of modern high-speed express train traveling across scenic countryside bridge.,FAKE,94.13,94.21,61.71,FAKE,YES
+55,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_05.jpg,Synthetic photograph of classic red vintage sports car parked on coastal scenic viewpoint.,FAKE,100,59.76,64.16,FAKE,YES
+56,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_06.jpg,AI generated depiction of wild brown horse galloping across expansive mountain meadow.,FAKE,99.96,85.97,44.53,FAKE,YES
+57,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_07.jpg,Photorealistic synthetic image of small yellow propeller airplane flying above low cloud formations.,FAKE,99.99,63.94,57.88,FAKE,YES
+58,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_08.jpg,Generated image of commercial maritime cargo ship sailing through open ocean calm waters.,FAKE,100,74.5,39.69,FAKE,YES
+59,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_09.jpg,Detailed AI image of green passenger bus traveling along rural highway during midday sun.,FAKE,93.45,98.47,53.64,FAKE,YES
+60,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_10.jpg,Synthetic render of exotic white bird perched on flowering tropical tree branch in nature.,FAKE,99.98,94.02,64.92,FAKE,YES
+61,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_11.jpg,AI generated image of sleek blue convertible automobile parked outside modern residential home.,FAKE,100,92.63,35.05,FAKE,YES
+62,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_12.jpg,Generated photographic scene of deer standing at edge of pine forest during autumn morning.,FAKE,95.82,82.59,58.57,FAKE,YES
+63,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_13.jpg,Synthetic image of twin-engine private aircraft flying over snow-covered mountain peaks.,FAKE,82.37,87.17,67.15,FAKE,YES
+64,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_14.jpg,Photorealistic AI rendering of maritime passenger ferry departing busy harbor terminal.,FAKE,96.94,92.11,69.47,FAKE,YES
+65,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_15.jpg,Generated image of delivery truck navigating city intersection during light evening rain.,FAKE,99.79,95.43,58.84,FAKE,YES
+66,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_16.jpg,Synthetic digital capture of colorful rooster standing in rural farm courtyard.,FAKE,98.75,90.93,59.96,FAKE,YES
+67,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_17.jpg,AI generated render of vintage silver coupe parked on cobblestone historical street.,FAKE,0.18,95.57,66.22,FAKE,YES
+68,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_18.jpg,Synthetic photograph of domestic dog running through grassy public park catching frisbee.,FAKE,99.71,71.15,56.91,FAKE,YES
+69,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_19.jpg,High quality generated image of cargo freighter vessel unloading at industrial port dock.,FAKE,99.94,95.63,55.4,FAKE,YES
+70,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_20.jpg,Detailed AI rendering of passenger locomotive cruising through dense alpine valley.,FAKE,99.97,93.54,50.57,FAKE,YES
+71,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_21.jpg,Dramatic synthetic news photo of massive unidentified hovering spacecraft over metropolitan skyline.,FAKE,0.2,87.44,12.71,REAL,NO
+72,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_22.jpg,Photorealistic AI depiction of giant octopus emerging from asphalt street grabbing yellow taxi cab.,FAKE,0.4,94.54,0,REAL,NO
+73,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_23.jpg,Futuristic digital art depiction of neon-illuminated skyscraper headquarters in mega-city.,FAKE,99.69,95.59,54.78,FAKE,YES
+74,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_24.jpg,Synthetic photorealistic capture of deep space research station orbiting distant ringed planet.,FAKE,99.99,77.84,57.77,FAKE,YES
+75,3,Scenario 3: Fake (AI) Image + Text,E:\DEEPGUARD\benchmark_100\images\s3_25.jpg,AI generated high-detail illustration of robot assistant serving coffee in contemporary cafe.,FAKE,99.91,72.58,63.18,FAKE,YES
+76,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_01.jpg,Legless alpaca,FAKE,69.57,87.23,62.81,FAKE,YES
+77,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_02.jpg,The creation of donald,FAKE,0.09,2.51,54.61,REAL,NO
+78,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_03.jpg,Donald trump speaking at a rally,FAKE,1.27,89.66,62.45,FAKE,YES
+79,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_04.jpg,Silence in the rearguard spain,FAKE,2.65,2.16,61.69,FAKE,YES
+80,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_05.jpg,Police chase naked sex offender through west salem,FAKE,86.12,99.3,67.77,FAKE,YES
+81,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_06.jpg,Alien page,FAKE,7.36,8.47,55.35,REAL,NO
+82,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_07.jpg,The truth,FAKE,89.24,5.86,56.11,REAL,NO
+83,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_08.jpg,Man with tophat,FAKE,0.24,87,60.46,FAKE,YES
+84,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_09.jpg,Me and the boys,FAKE,0.42,5.99,61.39,FAKE,YES
+85,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_10.jpg,Moses closing the red sea on the egiptian army circa bc,FAKE,1.12,0.09,41.8,REAL,NO
+86,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_11.jpg,Us navy pays out millions to microsoft to keep running windows xp,FAKE,0.16,96.04,63.67,FAKE,YES
+87,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_12.jpg,A german soldier drags his fatally wounded friend though a gas cloud in a attempt to get him medical help taken in in,FAKE,3.72,0.14,77.98,FAKE,YES
+88,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_13.jpg,Garda bodycams to come with selective recording option,FAKE,0.67,99.08,73.72,FAKE,YES
+89,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_14.jpg,Imgur,FAKE,18.16,1.93,52.73,REAL,NO
+90,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_15.jpg,Erdogan claims victory in turkey vote giving broad new powers to the president,FAKE,0.29,93.33,70.13,FAKE,YES
+91,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_16.jpg,No to nato turkey date unknown,FAKE,0.72,0.26,73.48,FAKE,YES
+92,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_17.jpg,Theres something theyre not telling us theres a prohibition era woman on the wing riding a scooter i saw her,FAKE,83.78,2.75,53.45,REAL,NO
+93,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_18.jpg,Small silver canister looks like some kind of water leaks,FAKE,99.77,96.04,72.1,FAKE,YES
+94,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_19.jpg,Interesting tombstones,FAKE,9.73,62.21,55.67,REAL,NO
+95,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_20.jpg,Lifes a beach,FAKE,0.4,2.73,66.65,FAKE,YES
+96,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_21.jpg,Pink gorilla oversees all,FAKE,98.87,10.45,58.38,REAL,NO
+97,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_22.jpg,Lebron dunking,FAKE,17.9,90.02,76.98,FAKE,YES
+98,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_23.jpg,This old book i bought from a library sale has a pretty adorable message inside,FAKE,0.34,99.15,66,FAKE,YES
+99,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_24.jpg,Yoink,FAKE,90.92,1.93,52.19,REAL,NO
+100,4,Scenario 4: Real Image + Real Text (Context Mismatch),E:\DEEPGUARD\benchmark_100\images\s4_25.jpg,Guy trying karate while intoxicated,FAKE,99.98,96.41,63.77,FAKE,YES

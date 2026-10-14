@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — DeepGuard Multimodal Misinformation Detection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+  <style>
+    /* Guarantee no scroll on login page */
+    html, body {
+      overflow: hidden;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="split-auth-wrapper">
+
+  <!-- LEFT SIDE: Animated Hero & Context Showcase -->
+  <div class="split-auth-hero-side">
+
+    <!-- Glowing grid background dots -->
+    <div style="position:absolute; inset:0; background-image: radial-gradient(rgba(34,211,238,0.06) 1px, transparent 1px); background-size:28px 28px; pointer-events:none;"></div>
+
+    <!-- Hero Scanner Graphic -->
+    <div class="hero-image-wrapper">
+      <div class="hero-scanner-line"></div>
+      <img src="{{ url_for('static', filename='images/deepguard_hero.jpg') }}" alt="DeepGuard AI Media Security Shield Scanner">
+    </div>
+
+    <!-- Context & Catchy Slogans -->
+    <div class="hero-showcase-text">
+      <div class="hero-badge-tag">
+        <span style="display:inline-block; width:6px; height:6px; background:var(--primary); border-radius:50%; box-shadow:0 0 8px var(--primary); animation: pulse 2s infinite;"></span>
+        <span>FYP &mdash; BS Software Engineering</span>
+      </div>
+
+      <!-- Full FYP Title -->
+      <h3 class="hero-showcase-title" style="font-size:17px; line-height:1.45;">
+        DeepGuard: Context-Aware Multimodal<br>
+        Misinformation Detection<br>
+        <span style="color:var(--primary);">with Explainable AI</span>
+      </h3>
+
+      <p class="hero-showcase-subtitle">
+        Detecting fake news, manipulated images, WhatsApp viral rumors &amp; cross-modal context mismatches using a 7-module neural AI pipeline.
+      </p>
+
+      <!-- Feature Badges Grid -->
+      <div class="hero-features-grid">
+        <div class="hero-feature-item">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+          <div class="title">Text AI</div>
+          <div class="desc">DistilBERT</div>
+        </div>
+
+        <div class="hero-feature-item">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle></svg>
+          <div class="title">Vision AI</div>
+          <div class="desc">EfficientNetV2-S</div>
+        </div>
+
+        <div class="hero-feature-item">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path></svg>
+          <div class="title">XAI</div>
+          <div class="desc">SHAP Attribution</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- RIGHT SIDE: Login Form Panel -->
+  <div class="split-auth-form-side">
+
+    <div class="split-form-container">
+      <!-- Brand Logo -->
+      <div class="split-auth-brand">
+        <div class="brand-logo-icon">D</div>
+        <div class="brand-text" style="font-size:20px;">Deep<span>Guard</span></div>
+      </div>
+
+      <h2 class="split-auth-title">Welcome Back</h2>
+      <p class="split-auth-subtitle">Sign in to access your content verification workspace</p>
+
+      <!-- Flash Alerts -->
+      {% if error %}
+        <div class="alert alert-danger">
+          <span>{{ error }}</span>
+        </div>
+      {% endif %}
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'error' else (category if category in ['success','warning','info'] else 'info') }}">
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <!-- Login Form -->
+      <form action="{{ url_for('login') }}" method="POST" id="loginForm">
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <input type="email" name="email" id="email" class="input-control"
+                 placeholder="name@example.com"
+                 value="{{ entered_email if entered_email else '' }}"
+                 required autofocus>
+        </div>
+
+        <div class="form-group">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-2);">
+            <label class="form-label" for="password" style="margin-bottom:0;">Password</label>
+            <a href="{{ url_for('forgot_password') }}" class="btn-link-action" style="font-size:12px;">Forgot password?</a>
+          </div>
+          <div style="position:relative;">
+            <input type="password" name="password" id="password" class="input-control"
+                   placeholder="••••••••" required style="padding-right:44px;">
+            <button type="button" onclick="togglePassword('password', this)"
+                    style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; padding:4px; color:var(--text-muted);">
+              <svg id="eyeIcon" viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%; margin-top:var(--space-3);">
+          <span>Sign In to Dashboard</span>
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </form>
+
+      <div style="text-align:center; margin-top:var(--space-4); font-size:13px; color:var(--text-muted);">
+        Don't have an account? <a href="{{ url_for('register') }}" style="font-weight:700;">Create free account →</a>
+      </div>
+    </div>
+
+    <div class="split-auth-footer">
+      DeepGuard FYP &bull; BS Software Engineering &bull; Lahore Garrison University
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+function togglePassword(fieldId, btn) {
+  const input = document.getElementById(fieldId);
+  const isText = input.type === 'text';
+  input.type = isText ? 'password' : 'text';
+  btn.querySelector('svg').innerHTML = isText
+    ? '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>'
+    : '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+}
+</script>
+
+</body>
+</html>

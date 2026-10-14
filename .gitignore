@@ -1,7 +1,52 @@
+# Virtual Environments
+venv/
 deepguard_env/
+env/
+ENV/
+
+# Python Cache & Bytecode
 __pycache__/
-*.pyc
-.env
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Temporary Uploads & Staging
+backend/temp_uploads/*
+!backend/temp_uploads/.gitkeep
+
+# Local Database Files
+backend/instance/*.db
+*.sqlite
+*.sqlite3
+
+# Large Binary Weights (>100MB) & Model Checkpoints
 *.zip
-datasets/
-deepguard_distilbert/
+*.tar.gz
+*.pt
+*.safetensors
+*.bin
+modules/image_detection/models/*.pt
+backend/archive_legacy_svm/*.zip
+models/final_distilbert_2026/
+backend/deepguard_distilbert/*.safetensors
+backend/deepguard_distilbert/*.bin
+
+# Large Datasets (>100MB)
+*all_train.tsv
+datasets/text/zips_archive/
+datasets/text/WELFake_Dataset.csv
+datasets/text/FakeEdit/
+docs/SRS/FakeEdit/
+
+# IDE and Editor Cache
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS Generated
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/

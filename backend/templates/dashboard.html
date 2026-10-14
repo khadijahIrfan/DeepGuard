@@ -1,148 +1,154 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepGuard Dashboard</title>
+{% block title %}Dashboard — DeepGuard{% endblock %}
+{% block page_title %}Dashboard Overview{% endblock %}
 
-    <link rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}">
-</head>
+{% block content %}
+<div>
 
-<body>
+  <!-- Welcome Header Banner -->
+  <div class="card" style="background: linear-gradient(135deg, var(--surface-2) 0%, var(--surface) 100%); border: 1px solid var(--border); margin-bottom: var(--space-4);">
+    <div class="card-body" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--space-4);">
+      <div>
+        <h2 style="font-size:24px; font-weight:800; color:var(--text); margin-bottom:4px;">
+          Welcome back, {{ session.get('user_name', 'User') }} 👋
+        </h2>
+        <p style="color:var(--text-muted); font-size:14px;">
+          Multimodal AI-Powered Misinformation & DeepFake Verification Workspace
+        </p>
+      </div>
 
-<div class="dashboard">
+      <div>
+        <a href="{{ url_for('analyze') }}" class="btn btn-primary btn-lg">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span>+ Start New Analysis</span>
+        </a>
+      </div>
+    </div>
+  </div>
 
-    <!-- Sidebar -->
-
-    <aside class="sidebar">
-
-        <div class="sidebar-logo">
-
-            <div class="logo-icon">
-                ◆
-            </div>
-
-            <div class="logo-text">
-                <h2>DeepGuard</h2>
-                <span>AI Security</span>
-            </div>
-
-        </div>
-
-        <nav class="sidebar-nav">
-
-            <a href="/" class="nav-item active">
-                <span>🏠</span>
-                Dashboard
-            </a>
-
-            <a href="/analyze" class="nav-item">
-                <span>🔍</span>
-                Analyze
-            </a>
-
-            <a href="/modules" class="nav-item">
-                <span>🛡</span>
-                Modules
-            </a>
-
-            <a href="/about" class="nav-item">
-                <span>ℹ</span>
-                About
-            </a>
-
-        </nav>
-
-    </aside>
-
-    <!-- Main Content -->
-
-    <div class="main-content">
-
-        <header class="topbar">
-
-            <div>
-
-                <h1>AI Threat Intelligence Dashboard</h1>
-
-                <p>
-                    Detect manipulated digital content using multimodal AI analysis.
-                </p>
-
-            </div>
-
-            <div class="status-chip">
-                ● System Online
-            </div>
-
-        </header>
-<!-- Dashboard Overview -->
-
-<section class="dashboard-home">
-
-    <div class="overview-grid">
-
-        <!-- Welcome Card -->
-
-        <div class="welcome-card">
-
-            <span class="welcome-badge">
-                AI Powered Detection
-            </span>
-
-            <h2>
-                Detect Manipulated Digital Content with AI
-            </h2>
-
-            <p>
-                DeepGuard analyzes text and images together to identify
-                misinformation, AI-generated content, manipulated media,
-                emotional manipulation, and context mismatches.
-            </p>
-
-            <a href="/analyze" class="hero-btn">
-                Start Analysis →
-            </a>
-
-        </div>
-
-        <!-- System Status -->
-
-        <div class="system-card">
-
-            <h3>System Status</h3>
-
-            <div class="status-item">
-                <span>AI Engine</span>
-                <strong>Online</strong>
-            </div>
-
-            <div class="status-item">
-                <span>Detection Modules</span>
-                <strong>7 Active</strong>
-            </div>
-
-            <div class="status-item">
-                <span>Text Detection</span>
-                <strong>Ready</strong>
-            </div>
-
-            <div class="status-item">
-                <span>Image Detection</span>
-                <strong>Coming Soon</strong>
-            </div>
-
-        </div>
-
+  <!-- 4 Stat Cards -->
+  <div class="grid-4" style="margin-bottom: var(--space-5);">
+    
+    <div class="stat-card">
+      <div class="stat-icon" style="background: var(--info-bg); color: var(--info);">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{ total_count | default(0) }}</div>
+        <div class="stat-label">Total Analyses</div>
+      </div>
     </div>
 
-</section>
+    <div class="stat-card">
+      <div class="stat-icon" style="background: var(--danger-bg); color: var(--danger);">
+        <svg viewBox="0 0 24 24"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value" style="color:var(--danger);">{{ fake_count | default(0) }}</div>
+        <div class="stat-label">Fake Detected</div>
+      </div>
     </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background: var(--success-bg); color: var(--success);">
+        <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value" style="color:var(--success);">{{ real_count | default(0) }}</div>
+        <div class="stat-label">Real Verified</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background: var(--warning-bg); color: var(--warning);">
+        <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value" style="color:var(--warning);">{{ limited_count | default(0) }}</div>
+        <div class="stat-label">Limited (Single Input)</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 5 Most Recent Analyses Table -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">
+        <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--primary);fill:none;stroke-width:2;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        Recent Verification Activity (Latest 5)
+      </h3>
+      <a href="{{ url_for('history') }}" class="btn-link-action">View All History →</a>
+    </div>
+
+    <div class="card-body" style="padding:0;">
+      {% if recent_predictions and recent_predictions|length > 0 %}
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Date & Time</th>
+              <th>Input Type</th>
+              <th>Content Sample</th>
+              <th>Verdict</th>
+              <th>Confidence</th>
+              <th style="text-align:right;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in recent_predictions %}
+            <tr>
+              <td style="white-space:nowrap; color:var(--text-muted); font-size:13px;">
+                {{ item.created_at.strftime('%b %d, %Y %I:%M %p') if item.created_at else 'N/A' }}
+              </td>
+
+              <td>
+                <span class="chip {% if item.input_type == 'Multimodal' %}chip-info{% else %}chip-muted{% endif %}">
+                  {{ item.input_type }}
+                </span>
+              </td>
+
+              <td style="max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:13px;">
+                {{ item.input_text | default('Image Upload', true) }}
+              </td>
+
+              <td>
+                {% if 'FAKE' in item.prediction %}
+                  <span class="chip chip-fake">Fake</span>
+                {% elif 'REAL' in item.prediction %}
+                  <span class="chip chip-real">Real</span>
+                {% else %}
+                  <span class="chip chip-uncertain">Uncertain</span>
+                {% endif %}
+              </td>
+
+              <td style="font-weight:700;">
+                {{ item.confidence }}%
+              </td>
+
+              <td style="text-align:right;">
+                <a href="{{ url_for('view_report', id=item.id) }}" class="btn btn-secondary btn-sm">
+                  View Report
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </div>
+        <div class="empty-title">No Analyses Executed Yet</div>
+        <p class="empty-desc">Run your first text claim or image verification to populate your dashboard.</p>
+        <a href="{{ url_for('analyze') }}" class="btn btn-primary">Start First Analysis</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
 
 </div>
-
-</body>
-
-</html>
+{% endblock %}

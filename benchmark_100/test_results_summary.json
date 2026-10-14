@@ -1,0 +1,243 @@
+{
+  "results": {
+    "smoke": [
+      {
+        "test": "Home / Landing Page",
+        "status": "PASS",
+        "detail": "HTTP 200 in 42ms"
+      },
+      {
+        "test": "Login Page",
+        "status": "PASS",
+        "detail": "HTTP 200 in 8ms"
+      },
+      {
+        "test": "Register Page",
+        "status": "PASS",
+        "detail": "HTTP 200 in 25ms"
+      },
+      {
+        "test": "Analyze Page (auth guard)",
+        "status": "PASS",
+        "detail": "HTTP 200 in 30ms"
+      },
+      {
+        "test": "History Page (auth guard)",
+        "status": "PASS",
+        "detail": "HTTP 200 in 32ms"
+      },
+      {
+        "test": "Dashboard (auth guard)",
+        "status": "PASS",
+        "detail": "HTTP 200 in 17ms"
+      },
+      {
+        "test": "Modules Architecture Page",
+        "status": "PASS",
+        "detail": "HTTP 200 in 44ms"
+      },
+      {
+        "test": "About Page",
+        "status": "PASS",
+        "detail": "HTTP 200 in 84ms"
+      },
+      {
+        "test": "Notifications API",
+        "status": "PASS",
+        "detail": "HTTP 200 in 20ms"
+      }
+    ],
+    "functional": [
+      {
+        "test": "Real camera photo --> Predict REAL",
+        "status": "PASS",
+        "detail": "Prediction: REAL, Conf: 97.42%, Engine: onnx, 3670ms"
+      },
+      {
+        "test": "AI-generated image --> Predict FAKE",
+        "status": "PASS",
+        "detail": "Prediction: FAKE, Conf: 100.0%, 337ms"
+      },
+      {
+        "test": "EXIF metadata_forensics key in image output",
+        "status": "PASS",
+        "detail": "Keys: ['prediction', 'is_fake', 'manipulation_score', 'confidence', 'fake_probability', 'real_probability', 'metadata_forensics', 'model_architecture', 'engine', 'status']"
+      },
+      {
+        "test": "Real phone photo has EXIF metadata",
+        "status": "PASS",
+        "detail": "has_metadata: True"
+      },
+      {
+        "test": "Viral fake text --> DistilBERT flags as FAKE",
+        "status": "PASS",
+        "detail": "fake_prob: 100.0% (>50 = FAKE), 5686ms"
+      },
+      {
+        "test": "Factual neutral text --> DistilBERT flags as REAL",
+        "status": "PASS",
+        "detail": "fake_prob: 37.3% (<50 = REAL), 75ms"
+      },
+      {
+        "test": "Context Mismatch module -- valid response returned",
+        "status": "PASS",
+        "detail": "similarity: 0.1682, mismatch_score: 63.43, 18029ms"
+      },
+      {
+        "test": "Clearly mismatched image+text --> High mismatch score",
+        "status": "PASS",
+        "detail": "mismatch_score: 62.53, is_mismatch: True, 647ms"
+      },
+      {
+        "test": "High-score inputs --> Fusion verdict FAKE + HIGH/CRITICAL",
+        "status": "PASS",
+        "detail": "verdict: FAKE, risk: CRITICAL, score: 81.11"
+      },
+      {
+        "test": "Low-score inputs --> Fusion verdict REAL",
+        "status": "PASS",
+        "detail": "verdict: REAL, score: 4.89"
+      },
+      {
+        "test": "Severe context mismatch (>=60) --> Cross-modal override to FAKE",
+        "status": "PASS",
+        "detail": "verdict: FAKE, score: 52.0"
+      }
+    ],
+    "boundary": [
+      {
+        "test": "Empty string text input handled gracefully",
+        "status": "PASS",
+        "detail": "Response: prediction=UNKNOWN, status=empty_input"
+      },
+      {
+        "test": "Very long text (7400+ chars) handled without crash",
+        "status": "PASS",
+        "detail": "fake_prob: 99.72, 788ms"
+      },
+      {
+        "test": "Urdu text input handled gracefully (no crash)",
+        "status": "PASS",
+        "detail": "fake_prob: 83.99"
+      },
+      {
+        "test": "Non-existent image path returns UNKNOWN gracefully",
+        "status": "PASS",
+        "detail": "prediction: UNKNOWN"
+      },
+      {
+        "test": "All-zero fusion scores --> REAL verdict, score=0.0",
+        "status": "PASS",
+        "detail": "verdict: REAL, score: 0.0"
+      },
+      {
+        "test": "Image > 10 MB rejected by system",
+        "status": "PASS",
+        "detail": "Module: status=file_too_large, HTTP: 302"
+      }
+    ],
+    "security": [
+      {
+        "test": "XSS payload in text -- not reflected in output",
+        "status": "PASS",
+        "detail": "No raw <script> tags in module output"
+      },
+      {
+        "test": "SQL injection string handled without crash",
+        "status": "PASS",
+        "detail": "fake_prob: 91.63"
+      },
+      {
+        "test": "Unauthenticated POST /predict -- access blocked",
+        "status": "PASS",
+        "detail": "HTTP Status: 302"
+      },
+      {
+        "test": "Unauthenticated GET /history -- redirect enforced",
+        "status": "PASS",
+        "detail": "HTTP Status: 302"
+      },
+      {
+        "test": "Path traversal filename (../../etc/passwd.jpg) -- not executed",
+        "status": "PASS",
+        "detail": "HTTP Status: 302"
+      }
+    ],
+    "performance": [
+      {
+        "test": "Image inference (ONNX) avg latency over 3 runs",
+        "status": "PASS",
+        "detail": "Avg: 685ms | Runs: [1289, 406, 362] | Target: <2500ms"
+      },
+      {
+        "test": "Text inference (DistilBERT) avg latency over 3 runs",
+        "status": "PASS",
+        "detail": "Avg: 50ms | Runs: [69, 44, 37] | Target: <1500ms"
+      },
+      {
+        "test": "Fusion engine computation over 10 runs",
+        "status": "PASS",
+        "detail": "Avg: 0.1ms (near-instantaneous, target: <50ms)"
+      },
+      {
+        "test": "20 concurrent HTTP requests to /modules",
+        "status": "PASS",
+        "detail": "20/20 succeeded in 128ms (avg 6ms/req)"
+      },
+      {
+        "test": "Page load: Login page",
+        "status": "PASS",
+        "detail": "Avg: 15ms | Target: <1000ms"
+      },
+      {
+        "test": "Page load: Modules page",
+        "status": "PASS",
+        "detail": "Avg: 8ms | Target: <1500ms"
+      },
+      {
+        "test": "Page load: About page",
+        "status": "PASS",
+        "detail": "Avg: 12ms | Target: <1500ms"
+      }
+    ],
+    "regression": [
+      {
+        "test": "EfficientNetV2-S ONNX engine active (not old MobileNetV2)",
+        "status": "PASS",
+        "detail": "engine: onnx, model: EfficientNetV2-S (Fine-Tuned)"
+      },
+      {
+        "test": "Old EXIF calibration multiplier (0.10) removed from code",
+        "status": "PASS",
+        "detail": "No fake_prob *= 0.10 found in source"
+      },
+      {
+        "test": "Context mismatch weight >= 0.20 in fusion engine",
+        "status": "PASS",
+        "detail": "context_mismatch_score weight: 0.25"
+      },
+      {
+        "test": "metadata_forensics key integrated in image output dict",
+        "status": "PASS",
+        "detail": "Keys present: ['prediction', 'is_fake', 'manipulation_score', 'confidence', 'fake_probability', 'real_probability', 'metadata_forensics', 'model_architecture', 'engine', 'status']"
+      },
+      {
+        "test": "Pipeline output contains all 7 required keys",
+        "status": "PASS",
+        "detail": "Missing keys: None"
+      },
+      {
+        "test": "Cross-modal elevation rule (mismatch>=60 -> score>=52) active",
+        "status": "PASS",
+        "detail": "verdict: FAKE, score: 52.0"
+      }
+    ]
+  },
+  "summary": {
+    "total": 44,
+    "pass": 44,
+    "fail": 0,
+    "warn": 0,
+    "pass_rate": 100.0
+  }
+}

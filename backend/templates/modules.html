@@ -1,143 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepGuard Modules</title>
+{% block title %}AI Modules Architecture — DeepGuard{% endblock %}
+{% block page_title %}AI Modules & System Architecture{% endblock %}
 
-    <link rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-
-<body>
-
-<div class="dashboard">
-
-    <!-- Sidebar -->
-
-    <aside class="sidebar">
-
-        <div class="sidebar-logo">
-
-            <div class="logo-icon">
-                ◆
-            </div>
-
-            <div class="logo-text">
-                <h2>DeepGuard</h2>
-                <span>AI Security</span>
-            </div>
-
-        </div>
-
-        <nav class="sidebar-nav">
-
-            <a href="/" class="nav-item">
-                <span>🏠</span>
-                Dashboard
-            </a>
-
-            <a href="/analyze" class="nav-item">
-                <span>🔍</span>
-                Analyze
-            </a>
-
-            <a href="/modules" class="nav-item active">
-                <span>🛡</span>
-                Modules
-            </a>
-
-            <a href="/about" class="nav-item">
-                <span>ℹ</span>
-                About
-            </a>
-
-        </nav>
-
-    </aside>
-
-    <!-- Main Content -->
-
-    <div class="main-content">
-
-        <header class="topbar">
-
-            <div>
-
-                <h1>Detection Modules</h1>
-
-                <p>
-                    AI modules used by DeepGuard to detect manipulated digital content.
-                </p>
-
-            </div>
-
-            <div class="status-chip">
-                ● 7 Modules Active
-            </div>
-
-        </header>
-<section class="modules-dashboard">
-
-    <div class="results-header">
-
-        <span class="section-tag">
-            AI MODULES
-        </span>
-
-        <h2>DeepGuard Detection Engine</h2>
-
-        <p>
-            Multiple AI modules work together to analyze manipulated digital content.
-        </p>
-
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto;">
+  <div class="card" style="margin-bottom: var(--space-4);">
+    <div class="card-header">
+      <h3 class="card-title">DeepGuard Multi-Modal Architecture (7 AI Engine Modules)</h3>
     </div>
+    <div class="card-body">
+      <p style="color:var(--text-muted); font-size:14px; margin-bottom:var(--space-4);">
+        DeepGuard orchestrates 7 defense-grade artificial intelligence and heuristic modules to detect fake news, manipulated media, and viral misinformation campaigns.
+      </p>
 
-    <div class="modules-grid">
-
-        <div class="module-card">
-            <div class="module-icon">📰</div>
-            <h3>Text Detection</h3>
-            <p>Detects misleading, fake, or manipulated textual content using machine learning.</p>
+      <div class="grid-7-modules">
+        <div class="card">
+          <div class="card-header"><h4 class="card-title">1. Text Analysis (DistilBERT)</h4></div>
+          <div class="card-body"><p style="font-size:13px; color:var(--text-muted);">Fine-tuned DistilBERT Sequence Classifier trained on benchmark misinformation datasets.</p></div>
         </div>
 
-        <div class="module-card">
-            <div class="module-icon">😊</div>
-            <h3>Sentiment Analysis</h3>
-            <p>Identifies emotional manipulation, panic-inducing language, and sentiment patterns.</p>
+        <div class="card">
+          <div class="card-header"><h4 class="card-title">2. Image Detection (EfficientNetV2-S)</h4></div>
+          <div class="card-body"><p style="font-size:13px; color:var(--text-muted);">Fine-tuned EfficientNetV2-S Deep Neural Network with dual-engine ONNX runtime for detecting synthetic and edited news images.</p></div>
         </div>
 
-        <div class="module-card">
-            <div class="module-icon">📷</div>
-            <h3>Metadata Analysis</h3>
-            <p>Extracts image metadata such as camera details, timestamps, and editing traces.</p>
+        <div class="card">
+          <div class="card-header"><h4 class="card-title">3. Metadata Analysis (EXIF)</h4></div>
+          <div class="card-body"><p style="font-size:13px; color:var(--text-muted);">EXIF metadata parser extracting camera make, software modification flags, timestamp & GPS coordinates.</p></div>
         </div>
 
-        <div class="module-card">
-            <div class="module-icon">🖼️</div>
-            <h3>Image Analysis</h3>
-            <p>Detects manipulated or AI-generated images using computer vision techniques.</p>
+        <div class="card">
+          <div class="card-header"><h4 class="card-title">4. Sentiment Intensity (VADER)</h4></div>
+          <div class="card-body"><p style="font-size:13px; color:var(--text-muted);">VADER lexicon-based sentiment analysis for detecting emotional exaggeration and outrage baiting.</p></div>
         </div>
 
-        <div class="module-card">
-            <div class="module-icon">🔄</div>
-            <h3>Context Matching</h3>
-            <p>Compares image content with accompanying text to identify inconsistencies.</p>
+        <div class="card">
+          <div class="card-header"><h4 class="card-title">5. Viral Threat Pattern</h4></div>
+          <div class="card-body"><p style="font-size:13px; color:var(--text-muted);">Custom regex heuristic rules targeting chain messages, WhatsApp forward threats & false urgency.</p></div>
         </div>
 
-        <div class="module-card">
-            <div class="module-icon">📈</div>
-            <h3>Virality Analysis</h3>
-            <p>Analyzes engagement and spread patterns commonly associated with misinformation.</p>
+        <div class="card">
+          <div class="card-header"><h4 class="card-title">6. Context Mismatch (CLIP)</h4></div>
+          <div class="card-body"><p style="font-size:13px; color:var(--text-muted);">OpenAI CLIP ViT-B/32 vision-language model evaluating semantic correlation between text and image.</p></div>
         </div>
 
+        <div class="card">
+          <div class="card-header"><h4 class="card-title">7. Explainable AI (SHAP)</h4></div>
+          <div class="card-body"><p style="font-size:13px; color:var(--text-muted);">SHAP feature attribution generator providing word importance and plain-language explanations.</p></div>
+        </div>
+      </div>
     </div>
-
-</section>
-    </div>
-
+  </div>
 </div>
-
-</body>
-</html>
+{% endblock %}

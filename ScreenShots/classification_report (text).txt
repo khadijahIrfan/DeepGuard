@@ -1,0 +1,17 @@
+DEEPGUARD - FINAL DISTILBERT MODEL
+Classification Report
+============================================================
+
+Test Set: 16,904 samples
+Dataset Total: 169,035 samples
+Model: DistilBERT
+Labels: 0 = REAL, 1 = FAKE
+
+              precision    recall  f1-score   support
+
+        REAL     0.9012    0.9001    0.9007      8562
+        FAKE     0.8976    0.8987    0.8982      8342
+
+    accuracy                         0.8994     16904
+   macro avg     0.8994    0.8994    0.8994     16904
+weighted avg     0.8994    0.8994    0.8994     16904

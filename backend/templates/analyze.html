@@ -1,276 +1,100 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepGuard — Multimodal Fake Content Detection</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
 
-<!-- ================= DASHBOARD ================= -->
+{% block title %}Analyze Content — DeepGuard{% endblock %}
+{% block page_title %}Analyze Content{% endblock %}
 
-<div class="dashboard">
-
-    <!-- Sidebar -->
-
-    <aside class="sidebar">
-
-        <div class="sidebar-logo">
-
-            <div class="logo-icon">
-                ◆
-            </div>
-
-            <div class="logo-text">
-                <h2>DeepGuard</h2>
-                <span>AI Security</span>
-            </div>
-
-        </div>
-
-        <nav class="sidebar-nav">
-
-    <a href="/" class="nav-item">
-        <span>🏠</span>
-        Dashboard
-    </a>
-
-    <a href="/analyze" class="nav-item active">
-        <span>🔍</span>
-        Analyze
-    </a>
-
-    <a href="/modules" class="nav-item">
-        <span>🛡</span>
-        Modules
-    </a>
-
-    <a href="/about" class="nav-item">
-        <span>ℹ</span>
-        About
-    </a>
-
-</nav>
-    </aside>
-
-    <!-- Main Content -->
-
-    <main class="main-content">
-
-        <header class="topbar">
-
-            <div>
-
-                <h1>AI Threat Intelligence Dashboard</h1>
-
-                <p>
-                    Detect misinformation using multimodal AI analysis.
-                </p>
-
-            </div>
-
-            <div class="status-chip">
-
-                ● System Online
-
-            </div>
-
-        </header>
-
-<!-- ================= CONTENT ANALYSIS ================= -->
-
-<section class="analysis-section" id="detector">
-
-    <div class="analysis-card">
-
-        <div class="analysis-header">
-
-            <div>
-                <span class="section-tag">
-                    CONTENT ANALYSIS
-                </span>
-
-                <h2>Analyze Suspicious Content</h2>
-
-                <p>
-                    Enter text, upload an image, or use both for multimodal detection.
-                </p>
-            </div>
-
-        </div>
-
-        <div class="analysis-form">
-
-            <!-- Text -->
-
-            <div class="input-group">
-
-                <label for="newsText">
-                    Text Content
-                </label>
-
-                <textarea
-                    id="newsText"
-                    placeholder="Paste news article, social media post, or caption..."></textarea>
-
-            </div>
-
-            <!-- Image -->
-
-            <div class="input-group">
-
-                <label>
-                    Image Upload
-                </label>
-
-                <div class="upload-box" id="uploadBox">
-
-                    <input
-                        type="file"
-                        id="imageUpload"
-                        hidden
-                        accept="image/*">
-
-                    <div class="upload-icon">
-                        ⬆
-                    </div>
-
-                    <h3>Drag & Drop Image</h3>
-
-                    <p>
-                        or click to browse
-                    </p>
-
-                    <span id="fileName"></span>
-
-                </div>
-
-            </div>
-
-            <button
-                id="analyzeBtn"
-                class="analyze-btn">
-
-                Analyze Content
-
-            </button>
-
-        </div>
-
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+  
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">
+        <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--primary);fill:none;stroke-width:2;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        Multimodal Misinformation Verification
+      </h3>
+      <span class="chip chip-info">DistilBERT + EfficientNetV2-S + CLIP</span>
     </div>
 
-</section>
+    <div class="card-body">
+      <!-- Inline Error Message -->
+      <div class="alert alert-danger" id="inlineError" style="display:none;"></div>
 
-<!-- ================= RESULTS ================= -->
+      <form id="analyzeForm" enctype="multipart/form-data">
+        
+        <!-- Text Analysis Input -->
+        <div class="form-group">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-2);">
+            <label class="form-label" for="newsText" style="margin-bottom:0;">Text Content / Claim</label>
+            <span class="input-hint" id="charCounter">0 / 1200 characters</span>
+          </div>
+          <textarea class="input-control" id="newsText" placeholder="Paste news article, claim, social media post, or WhatsApp message to verify..." rows="5" maxlength="1200"></textarea>
+          <div class="input-hint"><span style="color:var(--warning, #f59e0b); font-weight:600;">Minimum 20 characters required.</span> Maximum 1200 characters &bull; Analyzed via DistilBERT &amp; viral heuristics.</div>
+        </div>
 
-<section class="results-dashboard" id="results">
+        <!-- Image Upload Drag and Drop Zone -->
+        <div class="form-group">
+          <label class="form-label">Image Upload (Optional for Multimodal Analysis)</label>
+          <div class="dropzone" id="dropzone">
+            <svg viewBox="0 0 24 24" style="width:40px;height:40px;stroke:var(--primary);fill:none;stroke-width:2;margin-bottom:10px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            <div style="font-weight:600; font-size:15px; margin-bottom:4px;">Drag & Drop image here or click to browse</div>
+            <div style="font-size:12px; color:var(--text-muted);">Supports JPG, JPEG, PNG, WEBP files &bull; <strong>Max file size: 10 MB</strong></div>
+            
+            <input type="file" id="imageInput" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none;">
+            
+            <!-- File Preview Box -->
+            <div class="preview-box" id="previewBox" style="display:none;">
+              <img id="previewImg" src="" alt="Selected image preview" class="preview-img">
+              <button type="button" class="remove-img-btn" id="removeImgBtn" title="Remove image">✕</button>
+              <div style="font-size:12px; color:var(--primary); font-weight:600; margin-top:6px;" id="fileNameDisplay"></div>
+            </div>
+          </div>
+        </div>
 
-    <div class="results-header">
+        <!-- Action Button -->
+        <div style="display:flex; justify-height:flex-end; gap:var(--space-3); margin-top:var(--space-4);">
+          <button type="submit" class="btn btn-primary btn-lg" id="analyzeBtn" style="width:100%;">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <span>Run DeepGuard Multi-Modal Verification</span>
+          </button>
+        </div>
 
-        <span class="section-tag">
-            ANALYSIS RESULTS
-        </span>
+      </form>
 
-        <h2>Detection Summary</h2>
+      <!-- Analysis Progress Steps Indicator -->
+      <div class="progress-steps-box" id="progressBox" style="display:none;">
+        <div style="font-weight:700; font-size:15px; margin-bottom:var(--space-3); color:var(--primary); display:flex; align-items:center; gap:8px;">
+          <div class="step-icon-spin"></div>
+          <span>DeepGuard Pipeline Active</span>
+        </div>
 
-        <p>
-            The AI engine will display its prediction and confidence below.
-        </p>
+        <div class="progress-step-item" id="step1">
+          <div class="step-icon-spin"></div>
+          <div style="flex:1;">1. Text Analysis (DistilBERT & Viral Heuristics)</div>
+          <span class="step-status">Waiting</span>
+        </div>
+
+        <div class="progress-step-item" id="step2">
+          <div class="step-icon-spin"></div>
+          <div style="flex:1;">2. Image DeepFake Detection & EXIF Metadata</div>
+          <span class="step-status">Waiting</span>
+        </div>
+
+        <div class="progress-step-item" id="step3">
+          <div class="step-icon-spin"></div>
+          <div style="flex:1;">3. CLIP Cross-Modal Context Mismatch Check</div>
+          <span class="step-status">Waiting</span>
+        </div>
+
+        <div class="progress-step-item" id="step4">
+          <div class="step-icon-spin"></div>
+          <div style="flex:1;">4. Fusion Engine Score Weighting & XAI Report</div>
+          <span class="step-status">Waiting</span>
+        </div>
+      </div>
 
     </div>
-
-    <div class="results-grid">
-
-        <!-- Verdict -->
-
-        <div class="result-box verdict-box">
-
-            <h3>Prediction</h3>
-
-            <div id="predictionResult" class="prediction-value">
-                Waiting...
-            </div>
-
-        </div>
-
-        <!-- Confidence -->
-
-        <div class="result-box">
-
-            <h3>Confidence</h3>
-
-            <div class="metric">
-
-                <span id="confidenceScore">
-                    -- %
-                </span>
-
-            </div>
-
-        </div>
-
-        <!-- Threat -->
-
-        <div class="result-box">
-
-            <h3>Threat Level</h3>
-
-            <div class="metric">
-
-                <span id="threatLevel">
-                    Unknown
-                </span>
-
-            </div>
-
-        </div>
-<!-- Sentiment -->
-
-<div class="result-box">
-
-    <h3>Sentiment</h3>
-
-    <div class="metric">
-
-        <span id="sentimentResult">
-            Waiting...
-        </span>
-
-    </div>
+  </div>
 
 </div>
-    </div>
+{% endblock %}
 
-    <div class="details-card">
-
-    <h3>Analysis Details</h3>
-
-    <p id="resultDetail">
-
-        Run an analysis to view the AI explanation.
-
-    </p>
-
-</div>
-
-<div class="details-card">
-
-    <h3>Image Metadata</h3>
-
-    <p id="metadataResult">
-
-        Upload an image to view metadata.
-
-    </p>
-
-</div>
-
-</section>
-
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</body>
-</html>

@@ -1,49 +1,581 @@
-console.log("SCRIPT LOADED");
+/* ================================================================
+   DEEPGUARD — SHARED APPLICATION JAVASCRIPT (script.js)
+   ================================================================ */
 
-const analyzeBtn = document.getElementById("analyzeBtn");
+document.addEventListener('DOMContentLoaded', () => {
+  initSidebarToggle();
+  initHeaderPhrases();
+  initNotificationSystem();
+  initAnalyzeForm();
+  initRegisterFormValidation();
+  initHistoryFilters();
+});
 
-analyzeBtn.addEventListener("click", async () => {
+/* ================================================================
+   DYNAMIC HEADER PHRASES ROTATION TICKER
+   ================================================================ */
+function initHeaderPhrases() {
+  const elem = document.getElementById('headerDynamicPhrase');
+  if (!elem) return;
 
-    alert("Clicked");
+  const phrases = [
+    "🛡️ Shielding Truth with AI • Multimodal Intelligence",
+    "🔍 DistilBERT Transformer + MobileNetV2 Vision Engine",
+    "⚡ Real-Time Cross-Modal Context & EXIF Forensic Scanner",
+    "💡 Explainable AI (XAI) for Digital Media Authenticity",
+    "🌐 Defense Against Fake News, DeepFakes & WhatsApp Rumors"
+  ];
 
-    const text = document.getElementById("newsText").value;
+  let idx = 0;
+  setInterval(() => {
+    idx = (idx + 1) % phrases.length;
+    elem.style.transition = 'opacity 0.25s ease';
+    elem.style.opacity = '0';
+    setTimeout(() => {
+      elem.textContent = phrases[idx];
+      elem.style.opacity = '1';
+    }, 250);
+  }, 5500);
+}
 
-    console.log(text);
+/* ================================================================
+   1. SIDEBAR TOGGLE & HOVER SLIDE-OUT CONTROLLER
+   ================================================================ */
+function initSidebarToggle() {
+  const toggleBtn = document.getElementById('sidebarToggleBtn');
+  const pinBtn = document.getElementById('sidebarPinBtn');
+  const mobileToggleBtn = document.getElementById('mobileToggleBtn');
+  const sidebar = document.getElementById('sidebar');
+
+  // Check stored preference in localStorage
+  const savedState = localStorage.getItem('deepguard_sidebar_mode');
+
+  // Default mode is collapsed (hover slide-out mode), unless user explicitly pinned it
+  if (savedState === 'pinned') {
+    document.body.classList.remove('sidebar-collapsed');
+  } else {
+    document.body.classList.add('sidebar-collapsed');
+  }
+
+  function toggleSidebarMode(e) {
+    if (e) e.stopPropagation();
+    document.body.classList.toggle('sidebar-collapsed');
+    const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+    localStorage.setItem('deepguard_sidebar_mode', isCollapsed ? 'collapsed' : 'pinned');
+  }
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', toggleSidebarMode);
+  }
+
+  if (pinBtn) {
+    pinBtn.addEventListener('click', toggleSidebarMode);
+  }
+
+  // Hover slide-out controller: push main content synchronously so it never overlaps
+  if (sidebar) {
+    sidebar.addEventListener('mouseenter', () => {
+      if (document.body.classList.contains('sidebar-collapsed')) {
+        document.body.classList.add('sidebar-hovered');
+      }
+    });
+
+    sidebar.addEventListener('mouseleave', () => {
+      document.body.classList.remove('sidebar-hovered');
+    });
+  }
+
+  // Mobile drawer slide-out toggle
+
+  if (mobileToggleBtn && sidebar) {
+    mobileToggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sidebar.classList.toggle('show');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (sidebar.classList.contains('show') && !sidebar.contains(e.target) && !mobileToggleBtn.contains(e.target)) {
+        sidebar.classList.remove('show');
+      }
+    });
+  }
+}
+
+
+/* ================================================================
+   2. NOTIFICATION SYSTEM (Task 5)
+   ================================================================ */
+function initNotificationSystem() {
+  const bellBtn = document.getElementById('notifBellBtn');
+  const dropdown = document.getElementById('notifDropdown');
+  const badgeCount = document.getElementById('notifBadgeCount');
+  const notifList = document.getElementById('notifList');
+  const markAllBtn = document.getElementById('markAllReadBtn');
+
+  if (!bellBtn || !dropdown) return;
+
+  // Fetch unread count on page load
+  fetchNotifications();
+
+  // Toggle Dropdown
+  bellBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle('show');
+    if (dropdown.classList.contains('show')) {
+      fetchNotifications();
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (dropdown.classList.contains('show') && !dropdown.contains(e.target) && !bellBtn.contains(e.target)) {
+      dropdown.classList.remove('show');
+    }
+  });
+
+  // Mark all as read
+  if (markAllBtn) {
+    markAllBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        const res = await fetch('/notifications/read-all', { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          fetchNotifications();
+        }
+      } catch (err) {
+        console.error('Error marking notifications as read:', err);
+      }
+    });
+  }
+
+  async function fetchNotifications() {
+    try {
+      const res = await fetch('/notifications');
+      if (!res.ok) return;
+      const data = await res.json();
+      
+      // Update badge
+      if (badgeCount) {
+        if (data.unread_count > 0) {
+          badgeCount.textContent = data.unread_count > 99 ? '99+' : data.unread_count;
+          badgeCount.style.display = 'flex';
+        } else {
+          badgeCount.style.display = 'none';
+        }
+      }
+
+      // Populate list
+      if (notifList) {
+        if (!data.notifications || data.notifications.length === 0) {
+          notifList.innerHTML = '<div class="notif-empty">No notifications yet</div>';
+          return;
+        }
+
+        notifList.innerHTML = data.notifications.map(item => `
+          <div class="notif-item ${!item.is_read ? 'unread' : ''}" onclick="markNotifRead(${item.id}, '${item.link || ''}')">
+            <div class="notif-item-dot"></div>
+            <div class="notif-item-content">
+              <div class="notif-item-title">${escapeHtml(item.title)}</div>
+              <div class="notif-item-msg">${escapeHtml(item.message)}</div>
+              <div class="notif-item-time">${escapeHtml(item.created_at)}</div>
+            </div>
+          </div>
+        `).join('');
+      }
+    } catch (err) {
+      console.error('Failed to load notifications:', err);
+    }
+  }
+}
+
+async function markNotifRead(id, targetLink) {
+  try {
+    await fetch(`/notifications/${id}/read`, { method: 'POST' });
+  } catch (e) {}
+  if (targetLink) {
+    window.location.href = targetLink;
+  } else {
+    location.reload();
+  }
+}
+
+/* ================================================================
+   3. ANALYZE PAGE HANDLING (Task 2)
+   =============================================================== */
+function initAnalyzeForm() {
+  const form = document.getElementById('analyzeForm');
+  const newsText = document.getElementById('newsText');
+  const charCounter = document.getElementById('charCounter');
+  const dropzone = document.getElementById('dropzone');
+  const imageInput = document.getElementById('imageInput');
+  const previewBox = document.getElementById('previewBox');
+  const previewImg = document.getElementById('previewImg');
+  const fileNameDisplay = document.getElementById('fileNameDisplay');
+  const removeImgBtn = document.getElementById('removeImgBtn');
+  const analyzeBtn = document.getElementById('analyzeBtn');
+  const inlineError = document.getElementById('inlineError');
+  const progressBox = document.getElementById('progressBox');
+
+  if (!form) return;
+
+  // Character Counter (live)
+  const MAX_CHARS = 1200;
+  const MIN_CHARS = 20;
+  if (newsText && charCounter) {
+    newsText.addEventListener('input', () => {
+      const len = newsText.value.length;
+      charCounter.textContent = `${len} / ${MAX_CHARS} characters`;
+
+      // Colour warning when close to limit or under minimum
+      if (len >= MAX_CHARS) {
+        charCounter.style.color = 'var(--danger, #ef4444)';
+      } else if (len > 0 && len < MIN_CHARS) {
+        charCounter.style.color = 'var(--warning, #f59e0b)';
+      } else {
+        charCounter.style.color = '';
+      }
+    });
+  }
+
+  // Image Drag & Drop & File Select
+  if (dropzone && imageInput) {
+    dropzone.addEventListener('click', (e) => {
+      if (e.target !== removeImgBtn && !removeImgBtn.contains(e.target)) {
+        imageInput.click();
+      }
+    });
+
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('dragover');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        imageInput.files = e.dataTransfer.files;
+        handleFileSelect(e.dataTransfer.files[0]);
+      }
+    });
+
+    imageInput.addEventListener('change', () => {
+      if (imageInput.files && imageInput.files[0]) {
+        handleFileSelect(imageInput.files[0]);
+      }
+    });
+
+    if (removeImgBtn) {
+      removeImgBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        imageInput.value = '';
+        if (previewBox) previewBox.style.display = 'none';
+        if (previewImg) previewImg.src = '';
+        if (fileNameDisplay) fileNameDisplay.textContent = '';
+      });
+    }
+  }
+
+  function handleFileSelect(file) {
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      showError('Invalid file format. Please upload JPG, PNG, or WEBP images.');
+      imageInput.value = '';
+      return;
+    }
+
+    const MAX_SIZE_MB = 10;
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      const actualSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      showError(`File size (${actualSizeMB} MB) exceeds maximum allowed limit of ${MAX_SIZE_MB} MB. Please upload an image smaller than 10 MB.`);
+      imageInput.value = '';
+      if (previewBox) previewBox.style.display = 'none';
+      if (fileNameDisplay) fileNameDisplay.textContent = '';
+      return;
+    }
+
+    const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+    if (fileNameDisplay) {
+      fileNameDisplay.textContent = `${file.name} (${sizeMB} MB)`;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (previewImg) previewImg.src = e.target.result;
+      if (previewBox) previewBox.style.display = 'inline-block';
+    };
+    reader.readAsDataURL(file);
+    hideError();
+  }
+
+  // Form Submit Handler & Progress Indicator
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    hideError();
+
+    const text = newsText ? newsText.value.trim() : '';
+    const file = imageInput && imageInput.files ? imageInput.files[0] : null;
+
+    if (!text && !file) {
+      showError('Please provide text content, an image, or both for analysis.');
+      return;
+    }
+
+    // Enforce minimum 20 characters when text is provided
+    if (text) {
+      if (text.length < 20) {
+        showError(`Text is too short (${text.length} character${text.length === 1 ? '' : 's'} entered). Please enter at least 20 characters for accurate analysis.`);
+        if (analyzeBtn) analyzeBtn.disabled = false;
+        return;
+      }
+      // Also guard against going over 1200 characters (belt-and-suspenders)
+      if (text.length > 1200) {
+        showError('Text exceeds the maximum limit of 1200 characters. Please shorten your input.');
+        if (analyzeBtn) analyzeBtn.disabled = false;
+        return;
+      }
+    }
+
+    // Enforce maximum 10 MB image size when an image is selected
+    if (file && file.size > 10 * 1024 * 1024) {
+      const actualSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      showError(`File size (${actualSizeMB} MB) exceeds maximum allowed limit of 10 MB. Please upload an image smaller than 10 MB.`);
+      if (analyzeBtn) analyzeBtn.disabled = false;
+      return;
+    }
+
+    // Disable button & Show Progress
+    if (analyzeBtn) analyzeBtn.disabled = true;
+    if (progressBox) progressBox.style.display = 'block';
+
+    const steps = [
+      document.getElementById('step1'),
+      document.getElementById('step2'),
+      document.getElementById('step3'),
+      document.getElementById('step4')
+    ];
+
+    function setStep(idx) {
+      steps.forEach((st, i) => {
+        if (!st) return;
+        if (i < idx) {
+          st.className = 'progress-step-item done';
+          st.querySelector('.step-status').textContent = '✓ Done';
+        } else if (i === idx) {
+          st.className = 'progress-step-item active';
+          st.querySelector('.step-status').textContent = 'In progress...';
+        } else {
+          st.className = 'progress-step-item';
+          st.querySelector('.step-status').textContent = 'Waiting';
+        }
+      });
+    }
+
+    setStep(0);
+    setTimeout(() => setStep(1), 600);
+    setTimeout(() => setStep(2), 1400);
+
+    const formData = new FormData();
+    if (text) formData.append('text', text);
+    if (file) formData.append('image', file);
 
     try {
+      const res = await fetch('/predict', {
+        method: 'POST',
+        body: formData
+      });
 
-        const response = await fetch("/predict", {
+      const data = await res.json();
 
-            method: "POST",
+      if (!res.ok || data.error) {
+        showError(data.error || 'Analysis failed. Please try again.');
+        if (analyzeBtn) analyzeBtn.disabled = false;
+        if (progressBox) progressBox.style.display = 'none';
+        return;
+      }
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+      setStep(3);
 
-            body: JSON.stringify({
-                text: text
-            })
+      // Redirect to full report page
+      if (data.prediction_id) {
+        window.location.href = `/report/${data.prediction_id}`;
+      } else {
+        location.reload();
+      }
 
-        });
-
-        console.log("Response Received");
-
-        const data = await response.json();
-
-        console.log(data);
-
-        document.getElementById("predictionResult").innerText =
-            data.prediction;
-        document.getElementById("sentimentResult").innerText =
-            data.sentiment;
-        document.getElementById("metadataResult").innerText =
-            "Metadata Module Connected ✅";    
+    } catch (err) {
+      showError('Network error during analysis. Please check server connection.');
+      if (analyzeBtn) analyzeBtn.disabled = false;
+      if (progressBox) progressBox.style.display = 'none';
     }
-    catch(error)
-    {
-        console.log(error);
+  });
 
-        alert("ERROR OCCURRED");
+  function showError(msg) {
+    if (inlineError) {
+      inlineError.textContent = msg;
+      inlineError.style.display = 'block';
     }
+  }
 
-});
+  function hideError() {
+    if (inlineError) {
+      inlineError.textContent = '';
+      inlineError.style.display = 'none';
+    }
+  }
+}
+
+/* ================================================================
+   4. REGISTER FORM INLINE VALIDATION & STRENGTH METER (Task 7)
+   ================================================================ */
+function initRegisterFormValidation() {
+  const regForm = document.getElementById('registerForm');
+  const emailInput = document.getElementById('regEmail');
+  const passInput = document.getElementById('regPassword');
+  const confirmInput = document.getElementById('regConfirmPassword');
+  const strengthFill = document.getElementById('strengthFill');
+  const strengthText = document.getElementById('strengthText');
+  const passError = document.getElementById('passMatchError');
+  const emailError = document.getElementById('emailError');
+  const togglePassBtn = document.getElementById('togglePassBtn');
+
+  if (!regForm) return;
+
+  // Toggle password visibility
+  if (togglePassBtn && passInput) {
+    togglePassBtn.addEventListener('click', () => {
+      const type = passInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passInput.setAttribute('type', type);
+      if (confirmInput) confirmInput.setAttribute('type', type);
+      togglePassBtn.textContent = type === 'password' ? '👁' : '🙈';
+    });
+  }
+
+  // Email format check
+  if (emailInput && emailError) {
+    emailInput.addEventListener('input', () => {
+      const val = emailInput.value.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (val && !emailRegex.test(val)) {
+        emailError.textContent = 'Please enter a valid email address (e.g. user@example.com)';
+      } else {
+        emailError.textContent = '';
+      }
+    });
+  }
+
+  // Password strength meter
+  if (passInput && strengthFill && strengthText) {
+    passInput.addEventListener('input', () => {
+      const val = passInput.value;
+      const strength = calcPasswordStrength(val);
+      
+      strengthFill.style.width = `${strength.score}%`;
+      strengthFill.style.backgroundColor = strength.color;
+      strengthText.textContent = strength.label;
+      strengthText.style.color = strength.color;
+
+      checkPasswordMatch();
+    });
+  }
+
+  // Confirm password match check
+  if (confirmInput) {
+    confirmInput.addEventListener('input', checkPasswordMatch);
+  }
+
+  function checkPasswordMatch() {
+    if (!passInput || !confirmInput || !passError) return;
+    if (confirmInput.value && passInput.value !== confirmInput.value) {
+      passError.textContent = 'Passwords do not match';
+    } else {
+      passError.textContent = '';
+    }
+  }
+
+  function calcPasswordStrength(pass) {
+    if (!pass) return { score: 0, label: '', color: 'transparent' };
+    let score = 0;
+    if (pass.length >= 8) score += 35;
+    if (/[A-Z]/.test(pass)) score += 20;
+    if (/[0-9]/.test(pass)) score += 20;
+    if (/[^A-Za-z0-9]/.test(pass)) score += 25;
+
+    if (score < 40) {
+      return { score: Math.max(score, 15), label: 'Weak', color: 'var(--danger)' };
+    } else if (score < 75) {
+      return { score, label: 'Medium', color: 'var(--warning)' };
+    } else {
+      return { score: 100, label: 'Strong', color: 'var(--success)' };
+    }
+  }
+}
+
+/* ================================================================
+   5. HISTORY PAGE FILTERS & MODAL (Task 4)
+   ================================================================ */
+function initHistoryFilters() {
+  const searchInput = document.getElementById('historySearch');
+  const verdictFilter = document.getElementById('verdictFilter');
+  const historyTable = document.getElementById('historyTable');
+
+  if (!historyTable) return;
+
+  const rows = Array.from(historyTable.querySelectorAll('tbody tr'));
+  const emptyRow = document.getElementById('historyEmptyRow');
+
+  function filterHistory() {
+    const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    const v = verdictFilter ? verdictFilter.value.toUpperCase() : 'ALL';
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+      if (row.id === 'historyEmptyRow') return;
+      const text = row.textContent.toLowerCase();
+      const verdict = row.getAttribute('data-verdict') || '';
+
+      const matchesQ = !q || text.includes(q);
+      const matchesV = v === 'ALL' || verdict.includes(v);
+
+      if (matchesQ && matchesV) {
+        row.style.display = '';
+        visibleCount++;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    if (emptyRow) {
+      emptyRow.style.display = visibleCount === 0 ? '' : 'none';
+    }
+  }
+
+  if (searchInput) searchInput.addEventListener('input', filterHistory);
+  if (verdictFilter) verdictFilter.addEventListener('change', filterHistory);
+}
+
+// Global modal delete trigger
+function confirmDeletePrediction(id) {
+  const modal = document.getElementById('deleteModal');
+  const form = document.getElementById('deleteForm');
+  if (modal && form) {
+    form.action = `/history/delete/${id}`;
+    modal.classList.add('show');
+  }
+}
+
+function closeDeleteModal() {
+  const modal = document.getElementById('deleteModal');
+  if (modal) modal.classList.remove('show');
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/[&<>"']/g, function(m) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+  });
+}

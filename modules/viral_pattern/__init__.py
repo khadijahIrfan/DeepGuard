@@ -1,0 +1,1 @@
+from .viral_detector import detect_viral_patterns, ViralPatternDetector
