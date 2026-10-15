@@ -480,6 +480,83 @@
 
   </div>
 
+  <!-- 8. Grounded Result Assistant Chat Panel (Task 9) -->
+  <div class="card" style="margin-top:var(--space-5); margin-bottom:var(--space-4);" id="assistantCard">
+    <div class="card-header" style="flex-wrap:wrap; gap:var(--space-2);">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--primary);fill:none;stroke-width:2;">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          <path d="M8 10h.01M12 10h.01M16 10h.01"></path>
+        </svg>
+        <h4 class="card-title" style="margin:0;">Explain My Result Assistant</h4>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span class="chip chip-info" id="assistantCounterBadge">{{ assistant_count|default(0) }}/10 questions used</span>
+        <span style="font-size:11px; color:var(--text-muted); font-style:italic;">AI-generated explanation, may contain errors</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <!-- Grounded notice banner -->
+      <div style="background:var(--surface-2); border-left:3px solid var(--primary); padding:10px 14px; border-radius:4px; font-size:12.5px; color:var(--text-muted); margin-bottom:var(--space-3);">
+        💡 <strong>Grounded in this report:</strong> Answers are based solely on this claim's stored scores. DeepGuard gives a risk estimate, not proof. Confirm important claims with trusted fact-checking sources.
+      </div>
+
+      <!-- Suggested Question Quick Buttons -->
+      <div class="no-print" style="margin-bottom:var(--space-3);" id="suggestedButtonsWrapper">
+        <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Suggested Questions:</div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <button type="button" class="btn btn-secondary btn-sm assistant-suggest-btn" onclick="askAssistant('Why was this marked fake?')">Why was this marked fake?</button>
+          <button type="button" class="btn btn-secondary btn-sm assistant-suggest-btn" onclick="askAssistant('What does the mismatch score mean?')">What does the mismatch score mean?</button>
+          <button type="button" class="btn btn-secondary btn-sm assistant-suggest-btn" onclick="askAssistant('What should I do next?')">What should I do next?</button>
+        </div>
+      </div>
+
+      <!-- Chat History Stream -->
+      <div id="assistantChatLog" style="max-height:360px; min-height:80px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; padding:14px; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-card); margin-bottom:var(--space-3);">
+        {% if assistant_messages %}
+          {% for m in assistant_messages %}
+            <div style="align-self:flex-end; max-width:80%; background:var(--primary); color:var(--primary-text); padding:9px 14px; border-radius:14px 14px 2px 14px; font-size:13.5px; line-height:1.4;">
+              {{ m.question }}
+            </div>
+            <div style="align-self:flex-start; max-width:85%; background:var(--surface); border:1px solid var(--border); color:var(--text); padding:12px 16px; border-radius:14px 14px 14px 2px; font-size:13.5px; line-height:1.5;">
+              <div style="font-size:10px; font-weight:700; color:var(--primary); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">DeepGuard Assistant</div>
+              <div>{{ m.answer }}</div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div id="assistantEmptyState" style="text-align:center; padding:20px; color:var(--text-muted); font-size:13px;">
+            No questions asked yet. Click a suggested question above or type your question below.
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Question Input Form -->
+      <form id="assistantForm" onsubmit="handleAssistantSubmit(event)" class="no-print" style="display:flex; gap:8px; align-items:center;">
+        <input
+          type="text"
+          id="assistantInput"
+          class="form-control"
+          placeholder="Ask a question about this report (max 300 chars, English/Urdu)..."
+          maxlength="300"
+          {% if assistant_count|default(0) >= 10 %}disabled{% endif %}
+          required
+          style="flex:1;"
+        />
+        <button
+          type="submit"
+          id="assistantSendBtn"
+          class="btn btn-primary"
+          {% if assistant_count|default(0) >= 10 %}disabled{% endif %}
+          style="display:inline-flex; align-items:center; gap:6px; min-width:85px; justify-content:center;"
+        >
+          <span id="assistantBtnLabel">Ask</span>
+          <svg id="assistantBtnIcon" viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </form>
+      <div id="assistantStatusMsg" style="font-size:12px; color:var(--danger); margin-top:6px; display:none;"></div>
+    </div>
+  </div>
+
   <!-- Bottom Buttons (Hide on Print) -->
   <div class="no-print" style="display:flex; justify-content:center; gap:var(--space-3); margin-top:var(--space-5); margin-bottom:var(--space-5);">
     <a href="{{ url_for('analyze') }}" class="btn btn-primary btn-lg">
@@ -526,6 +603,107 @@ function toggleResultBookmark(analysisId) {
     }
   })
   .catch(err => console.error('Bookmark error:', err));
+}
+
+// Task 9: Grounded Result Assistant
+function askAssistant(questionText) {
+  const input = document.getElementById('assistantInput');
+  if (input) {
+    input.value = questionText;
+    document.getElementById('assistantForm').dispatchEvent(new Event('submit', { cancelable: true }));
+  }
+}
+
+function handleAssistantSubmit(e) {
+  e.preventDefault();
+  const input = document.getElementById('assistantInput');
+  const sendBtn = document.getElementById('assistantSendBtn');
+  const btnLabel = document.getElementById('assistantBtnLabel');
+  const chatLog = document.getElementById('assistantChatLog');
+  const emptyState = document.getElementById('assistantEmptyState');
+  const counterBadge = document.getElementById('assistantCounterBadge');
+  const statusMsg = document.getElementById('assistantStatusMsg');
+
+  if (!input) return;
+  const question = input.value.trim();
+  if (!question) return;
+
+  if (statusMsg) statusMsg.style.display = 'none';
+  if (emptyState) emptyState.remove();
+
+  // Render User Bubble immediately
+  const userBubble = document.createElement('div');
+  userBubble.style.cssText = 'align-self:flex-end; max-width:80%; background:var(--primary); color:var(--primary-text); padding:9px 14px; border-radius:14px 14px 2px 14px; font-size:13.5px; line-height:1.4;';
+  userBubble.textContent = question;
+  chatLog.appendChild(userBubble);
+
+  // Render Assistant Typing Placeholder
+  const aiBubble = document.createElement('div');
+  aiBubble.style.cssText = 'align-self:flex-start; max-width:85%; background:var(--surface); border:1px solid var(--border); color:var(--text); padding:12px 16px; border-radius:14px 14px 14px 2px; font-size:13.5px; line-height:1.5;';
+  aiBubble.innerHTML = '<div style="font-size:10px; font-weight:700; color:var(--primary); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">DeepGuard Assistant</div><div class="assistant-content" style="opacity:0.7;">Thinking...</div>';
+  chatLog.appendChild(aiBubble);
+  chatLog.scrollTop = chatLog.scrollHeight;
+
+  // Disable UI during request
+  input.disabled = true;
+  sendBtn.disabled = true;
+  btnLabel.textContent = '...';
+
+  fetch('/assistant', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      analysis_id: {{ prediction.id }},
+      question: question
+    })
+  })
+  .then(r => r.json().then(data => ({ status: r.status, data: data })))
+  .then(res => {
+    const contentDiv = aiBubble.querySelector('.assistant-content');
+    if (res.status === 200 && res.data.status === 'success') {
+      if (contentDiv) {
+        contentDiv.style.opacity = '1';
+        contentDiv.textContent = res.data.answer;
+      }
+      if (counterBadge) {
+        counterBadge.textContent = res.data.count + '/10 questions used';
+      }
+      input.value = '';
+      if (res.data.count >= 10) {
+        input.disabled = true;
+        sendBtn.disabled = true;
+        input.placeholder = 'Question limit reached (10/10 questions used for this report).';
+        const suggestWrapper = document.getElementById('suggestedButtonsWrapper');
+        if (suggestWrapper) suggestWrapper.style.display = 'none';
+      } else {
+        input.disabled = false;
+        sendBtn.disabled = false;
+        input.focus();
+      }
+    } else {
+      if (contentDiv) {
+        contentDiv.style.opacity = '1';
+        contentDiv.style.color = 'var(--danger)';
+        contentDiv.textContent = res.data.error || 'Assistant unavailable right now.';
+      }
+      input.disabled = false;
+      sendBtn.disabled = false;
+    }
+    btnLabel.textContent = 'Ask';
+    chatLog.scrollTop = chatLog.scrollHeight;
+  })
+  .catch(err => {
+    console.error('Assistant error:', err);
+    const contentDiv = aiBubble.querySelector('.assistant-content');
+    if (contentDiv) {
+      contentDiv.style.opacity = '1';
+      contentDiv.textContent = 'Assistant unavailable right now.';
+    }
+    input.disabled = false;
+    sendBtn.disabled = false;
+    btnLabel.textContent = 'Ask';
+    chatLog.scrollTop = chatLog.scrollHeight;
+  });
 }
 </script>
 {% endblock %}

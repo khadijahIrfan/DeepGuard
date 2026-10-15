@@ -22,6 +22,7 @@ class User(db.Model):
     password_resets = db.relationship("PasswordReset", backref="user", lazy=True, cascade="all, delete-orphan")
     feedback_messages = db.relationship("FeedbackMessage", backref="user", lazy=True, cascade="all, delete-orphan")
     saved_reports = db.relationship("SavedReport", backref="user", lazy=True, cascade="all, delete-orphan")
+    assistant_messages = db.relationship("AssistantMessage", backref="user", lazy=True, cascade="all, delete-orphan")
 
 
 # =====================================
@@ -107,4 +108,23 @@ class SavedReport(db.Model):
 
     __table_args__ = (
         db.UniqueConstraint("user_id", "analysis_id", name="uq_user_analysis_saved"),
-    )
+    )
+
+
+# =====================================
+# Assistant Message Model
+# =====================================
+
+class AssistantMessage(db.Model):
+    __tablename__ = "assistant_messages"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    analysis_id = db.Column(db.Integer, db.ForeignKey("predictions.id"), nullable=False)
+    question = db.Column(db.String(300), nullable=False)
+    answer = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationships
+    prediction = db.relationship("Prediction", backref=db.backref("assistant_records", cascade="all, delete-orphan"))
+
