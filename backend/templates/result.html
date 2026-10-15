@@ -577,6 +577,8 @@
 </div>
 
 <script>
+window.DEEPGUARD_REPORT_ID = {{ prediction.id }};
+
 function toggleResultBookmark(analysisId) {
   const btn = document.getElementById('resultBookmarkBtn');
   const label = document.getElementById('resultBookmarkLabel');

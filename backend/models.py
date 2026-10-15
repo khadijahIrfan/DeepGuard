@@ -120,7 +120,7 @@ class AssistantMessage(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    analysis_id = db.Column(db.Integer, db.ForeignKey("predictions.id"), nullable=False)
+    analysis_id = db.Column(db.Integer, db.ForeignKey("predictions.id"), nullable=True)
     question = db.Column(db.String(300), nullable=False)
     answer = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

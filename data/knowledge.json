@@ -1,0 +1,72 @@
+[
+  {
+    "id": "mod_1_text",
+    "source": "Help Hub: Module 1 — Text Analysis",
+    "text": "The Text Analysis module processes submitted captions and news text using a fine-tuned DistilBERT transformer model. It identifies subtle linguistic markers of deceit, including exaggerated emotional language, inflammatory sensationalism, and syntactic manipulation patterns commonly observed in fabricated news stories. The model outputs a continuous fake probability score between 0% and 100%."
+  },
+  {
+    "id": "mod_2_image",
+    "source": "Help Hub: Module 2 — Image Manipulation Detection",
+    "text": "The Image Manipulation Detection module evaluates visual authenticity using an EfficientNetV2-S convolutional neural network running on dual-engine ONNX runtime. It detects digital tampering, splicing artifacts, synthetic AI-generated generation textures, and re-compression traces that are invisible to the naked human eye. The module returns a manipulation risk score quantifying visual anomaly probability."
+  },
+  {
+    "id": "mod_3_exif",
+    "source": "Help Hub: Module 3 — EXIF Metadata Forensics",
+    "text": "The EXIF Metadata Forensics module inspects underlying image headers for authentic camera hardware details, timestamps, GPS geolocation tags, and camera settings. It actively flags indicators of photo editing software like Adobe Photoshop or Canva, and notes when metadata has been wiped. Purely AI-generated images typically contain no physical camera hardware EXIF data."
+  },
+  {
+    "id": "mod_4_sentiment",
+    "source": "Help Hub: Module 4 — Sentiment Tone Analysis",
+    "text": "The Sentiment Tone Analysis module uses the VADER Sentiment Intensity Analyzer to detect extreme emotional polarity and hyper-sensational phrasing. Misinformation campaigns frequently exploit high emotional valence such as extreme outrage, fear, or false euphoria to stimulate rapid uncritical sharing. The tone is classified as Positive, Negative, or Neutral."
+  },
+  {
+    "id": "mod_5_viral",
+    "source": "Help Hub: Module 5 — Viral Pattern Analysis",
+    "text": "The Viral Pattern Analysis module scans content for engagement manipulation strategies typical of WhatsApp chain forwards and clickbait headlines. It flags artificial urgency phrases like 'Breaking News Forward Immediately', excessive capitalization, repetitive punctuation marks, and coercive calls-to-action. Posts exhibiting high viral markers present increased propagation risk."
+  },
+  {
+    "id": "mod_6_mismatch",
+    "source": "Help Hub: Module 6 — Context Mismatch",
+    "text": "The Context Mismatch module employs OpenAI's CLIP neural network to compute joint visual-textual semantic alignment between the image and its caption. It determines whether a photo genuinely depicts what the accompanying text claims, or if an authentic photo has been deceptively recycled into an unrelated scenario. The module produces an alignment percentage and an inverse mismatch risk score."
+  },
+  {
+    "id": "mod_7_xai",
+    "source": "Help Hub: Module 7 — Explainable AI (XAI)",
+    "text": "DeepGuard incorporates Explainable AI through SHAP-based word attribution and human-readable reasoning summaries. Rather than functioning as a black-box model, it highlights the top influential words that drove the classification and lists plain-language observations explaining why signals were flagged. This transparency helps users understand the logic behind their result."
+  },
+  {
+    "id": "scores_verdicts",
+    "source": "Help Hub: How to Read Your Result",
+    "text": "DeepGuard outputs three possible verdicts: Likely Real, Fake, or Uncertain, accompanied by a confidence percentage score. A Likely Real verdict indicates consistent multimodal signals with low manipulation indicators, while a Fake verdict flags strong evidence of visual tampering, deceptive language, or semantic contradictions. Uncertain indicates conflicting or insufficient evidence."
+  },
+  {
+    "id": "scores_confidence",
+    "source": "Help Hub: Understanding Confidence Scores",
+    "text": "The confidence score reflects the mathematical agreement between DeepGuard's weighted fusion classification layers. Higher confidence scores (e.g., above 75%) indicate that multiple independent modules reached corroborating conclusions regarding content authenticity. Low or moderate confidence signals that modules detected contradictory or boundary-case indicators."
+  },
+  {
+    "id": "limitations_notice",
+    "source": "Help Hub: Limitations Notice",
+    "text": "DeepGuard provides an automated risk estimate and semantic consistency assessment, not definitive legal or journalistic proof. The system detects semantic mismatch between media and caption, not factual mismatch against real-time global news events. Users must confirm critical, sensitive, or high-stakes claims with verified fact-checking organizations and official sources."
+  },
+  {
+    "id": "tips_reverse_search",
+    "source": "Help Hub: Tips for Spotting Misinformation",
+    "text": "To verify questionable imagery, always perform a reverse image search using Google Images, TinEye, or Yandex. Reverse searching uncovers the original publication date and first known context of a photo, instantly revealing whether older footage has been recycled to misrepresent a recent event."
+  },
+  {
+    "id": "tips_source_urgency",
+    "source": "Help Hub: Evaluating Sources and Urgency",
+    "text": "Always inspect the original publishing domain, author credentials, and published date before accepting dramatic headlines. Beware of urgent emotional commands demanding that you share immediately before content is deleted. Coercive urgency is an engineered psychological hook characteristic of chain hoaxes and clickbait campaigns."
+  },
+  {
+    "id": "faq_single_input",
+    "source": "Help Hub: FAQ — Single Input Analysis",
+    "text": "DeepGuard is optimized as a multimodal detection architecture, but it supports text-only or image-only submissions when both assets are not available. When a single modality is submitted, modules requiring paired input (such as CLIP context mismatch) are bypassed, and the overall verdict is derived from the available active sub-models."
+  },
+  {
+    "id": "faq_ai_detection",
+    "source": "Help Hub: FAQ — AI-Generated Images",
+    "text": "DeepGuard detects AI-generated imagery by analyzing high-frequency compression patterns, frequency domain artifacts, and unnatural visual textures with EfficientNetV2-S. Additionally, synthetic AI images generated by Midjourney, DALL-E, or Stable Diffusion lack authentic hardware camera sensor EXIF tags, which the forensics module cross-references."
+  }
+]
