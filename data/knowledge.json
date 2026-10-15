@@ -1,5 +1,10 @@
 [
   {
+    "id": "overview_how_it_works",
+    "source": "Help Hub: How DeepGuard Works",
+    "text": "DeepGuard works through an end-to-end multimodal verification pipeline combining 7 specialized AI modules. How it works: it evaluates text linguistic deceit with DistilBERT, inspects images for manipulation with EfficientNetV2-S, assesses image-caption context mismatch with CLIP, inspects camera EXIF metadata, evaluates emotional tone with VADER, detects viral propagation patterns, and provides explainable reasoning with SHAP. The final verdict combines these confidence scores into a single weighted risk estimate."
+  },
+  {
     "id": "mod_1_text",
     "source": "Help Hub: Module 1 — Text Analysis",
     "text": "The Text Analysis module processes submitted captions and news text using a fine-tuned DistilBERT transformer model. It identifies subtle linguistic markers of deceit, including exaggerated emotional language, inflammatory sensationalism, and syntactic manipulation patterns commonly observed in fabricated news stories. The model outputs a continuous fake probability score between 0% and 100%."

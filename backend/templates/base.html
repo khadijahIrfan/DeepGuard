@@ -314,11 +314,21 @@
     if (modeLabel) modeLabel.textContent = 'Report #' + reportId + ' Mode';
     if (greeting) greeting.textContent = 'Viewing Report #' + reportId + '. Ask me why it was flagged, what module scores mean, or recommended next steps.';
     if (chipsContainer) {
-      chipsContainer.innerHTML = `
-        <button type="button" class="btn btn-secondary btn-sm" style="font-size:11px;padding:3px 8px;" onclick="sendGlobalChatMessage('Why was this marked fake?')">Why marked fake?</button>
-        <button type="button" class="btn btn-secondary btn-sm" style="font-size:11px;padding:3px 8px;" onclick="sendGlobalChatMessage('What does the mismatch score mean?')">Mismatch score?</button>
-        <button type="button" class="btn btn-secondary btn-sm" style="font-size:11px;padding:3px 8px;" onclick="sendGlobalChatMessage('What should I do next?')">Next steps?</button>
-      `;
+      const pageButtons = document.querySelectorAll('#suggestedButtonsWrapper button');
+      if (pageButtons && pageButtons.length > 0) {
+        let btnsHtml = '';
+        pageButtons.forEach(btn => {
+          const txt = btn.textContent.trim();
+          btnsHtml += `<button type="button" class="btn btn-secondary btn-sm" style="font-size:11px;padding:3px 8px;" onclick="sendGlobalChatMessage('${txt.replace(/'/g, "\\'")}')">${txt}</button> `;
+        });
+        chipsContainer.innerHTML = btnsHtml;
+      } else {
+        chipsContainer.innerHTML = `
+          <button type="button" class="btn btn-secondary btn-sm" style="font-size:11px;padding:3px 8px;" onclick="sendGlobalChatMessage('Why was this marked fake?')">Why marked fake?</button>
+          <button type="button" class="btn btn-secondary btn-sm" style="font-size:11px;padding:3px 8px;" onclick="sendGlobalChatMessage('What does the mismatch score mean?')">Mismatch score?</button>
+          <button type="button" class="btn btn-secondary btn-sm" style="font-size:11px;padding:3px 8px;" onclick="sendGlobalChatMessage('What should I do next?')">Next steps?</button>
+        `;
+      }
     }
   } else {
     if (modeLabel) modeLabel.textContent = 'Knowledge Base RAG';

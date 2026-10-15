@@ -74,18 +74,36 @@ class LightweightRAG:
 
         # Fit TF-IDF vectorizer if passages are present
         if self.passages:
-            corpus = [p["text"] for p in self.passages]
+            corpus = [f"{p['source']} {p['text']}" for p in self.passages]
             self.vectorizer = TfidfVectorizer(
-                stop_words="english",
                 ngram_range=(1, 2),
-                max_features=2500
+                sublinear_tf=True,
+                max_features=4000
             )
             self.tfidf_matrix = self.vectorizer.fit_transform(corpus)
             print(f"[+] LightweightRAG initialized: indexed {len(self.passages)} passages into TF-IDF index.")
         else:
             print("[!] LightweightRAG warning: No passages found to index.")
 
-    def retrieve(self, query: str, top_k: int = 3, min_similarity: float = 0.08):
+    def _expand_query(self, query: str) -> str:
+        """Expands short common user questions into effective search keywords."""
+        q_norm = query.lower().strip().rstrip("?.! ")
+        expansions = {
+            "how it works": "how deepguard works multimodal pipeline 7 modules text image mismatch",
+            "how does it work": "how deepguard works multimodal pipeline 7 modules text image mismatch",
+            "how deepguard works": "how deepguard works multimodal pipeline 7 modules",
+            "what is deepguard": "what is deepguard context-aware multimodal misinformation detection",
+            "recycled images": "recycled image reverse image search spot misinformation",
+            "how to spot recycled images": "recycled image reverse image search spot misinformation",
+            "limitations": "limitations notice risk estimate semantic mismatch not factual proof",
+            "what are the limitations": "limitations notice risk estimate semantic mismatch not factual proof",
+            "what are the system limitations": "limitations notice risk estimate semantic mismatch not factual proof",
+            "7 modules": "7 ai modules distilbert efficientnet exif vader viral clip shap",
+            "modules": "7 ai modules distilbert efficientnet exif vader viral clip shap",
+        }
+        return expansions.get(q_norm, query)
+
+    def retrieve(self, query: str, top_k: int = 3, min_similarity: float = 0.04):
         """
         Retrieves top_k passages with cosine similarity >= min_similarity.
         Returns list of dicts: [{'source': ..., 'text': ..., 'score': ...}]
@@ -94,7 +112,8 @@ class LightweightRAG:
             return []
 
         try:
-            q_vec = self.vectorizer.transform([query.strip()])
+            expanded_query = self._expand_query(query)
+            q_vec = self.vectorizer.transform([expanded_query.strip()])
             scores = cosine_similarity(q_vec, self.tfidf_matrix)[0]
 
             ranked_indices = scores.argsort()[::-1]

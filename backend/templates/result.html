@@ -501,13 +501,38 @@
         💡 <strong>Grounded in this report:</strong> Answers are based solely on this claim's stored scores. DeepGuard gives a risk estimate, not proof. Confirm important claims with trusted fact-checking sources.
       </div>
 
-      <!-- Suggested Question Quick Buttons -->
+      <!-- Suggested Question Quick Buttons (Dynamic per Report) -->
       <div class="no-print" style="margin-bottom:var(--space-3);" id="suggestedButtonsWrapper">
-        <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Suggested Questions:</div>
+        <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Suggested Questions for this Report:</div>
         <div style="display:flex; flex-wrap:wrap; gap:8px;">
-          <button type="button" class="btn btn-secondary btn-sm assistant-suggest-btn" onclick="askAssistant('Why was this marked fake?')">Why was this marked fake?</button>
-          <button type="button" class="btn btn-secondary btn-sm assistant-suggest-btn" onclick="askAssistant('What does the mismatch score mean?')">What does the mismatch score mean?</button>
-          <button type="button" class="btn btn-secondary btn-sm assistant-suggest-btn" onclick="askAssistant('What should I do next?')">What should I do next?</button>
+          <!-- 1. Verdict-specific question -->
+          {% if 'FAKE' in prediction.prediction %}
+            <button type="button" class="btn btn-secondary btn-sm assistant-suggest-btn" onclick="askAssistant('Why was this marked fake?')">Why was this marked fake?</button>
+          {% elif 'REAL' in prediction.prediction %}
+            <button type="button" class="btn btn-secondary btn-sm assistant-suggest-btn" onclick="askAssistant('Why was this marked likely real?')">Why was this marked likely real?</button>
+          {% else %}
+            <button type="button" class="btn btn-secondary btn-sm assistant-suggest-btn" onclick="askAssistant('Why is this verdict uncertain?')">Why is this verdict uncertain?</button>
+          {% endif %}
+
+          <!-- 2. Modality / Module Finding -->
+          {% if prediction.input_type == 'Multimodal' %}
+            <button type="button" class="btn btn-secondary btn-sm assistant-suggest-btn" onclick="askAssistant('What does the mismatch score mean?')">What does the mismatch score mean?</button>
+          {% elif prediction.input_type == 'Text' %}
+            <button type="button" class="btn btn-secondary btn-sm assistant-suggest-btn" onclick="askAssistant('What did the text module detect?')">What did the text module detect?</button>
+          {% elif prediction.input_type == 'Image' %}
+            <button type="button" class="btn btn-secondary btn-sm assistant-suggest-btn" onclick="askAssistant('What image manipulation cues were found?')">What image cues were found?</button>
+          {% else %}
+            <button type="button" class="btn btn-secondary btn-sm assistant-suggest-btn" onclick="askAssistant('What did the text module detect?')">What did the text module detect?</button>
+          {% endif %}
+
+          <!-- 3. Evidence / Next Steps -->
+          {% if viral_patterns and (viral_patterns.urgency and viral_patterns.urgency.detected or viral_patterns.emotional_language and viral_patterns.emotional_language.detected) %}
+            <button type="button" class="btn btn-secondary btn-sm assistant-suggest-btn" onclick="askAssistant('Why were viral patterns flagged?')">Why were viral patterns flagged?</button>
+          {% elif metadata_info and metadata_info.authenticity_flags %}
+            <button type="button" class="btn btn-secondary btn-sm assistant-suggest-btn" onclick="askAssistant('What did the EXIF metadata show?')">What did EXIF metadata show?</button>
+          {% else %}
+            <button type="button" class="btn btn-secondary btn-sm assistant-suggest-btn" onclick="askAssistant('What should I do next?')">What should I do next?</button>
+          {% endif %}
         </div>
       </div>
 
