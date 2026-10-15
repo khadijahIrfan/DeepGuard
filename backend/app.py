@@ -1058,6 +1058,40 @@ def _generate_template_answer(question, context):
             "DeepGuard gives a risk estimate, not proof. Confirm important claims with trusted sources."
         )
 
+    # Question: Text module
+    if any(phrase in q_lower for phrase in ["text", "linguistic", "distilbert", "words"]):
+        tp = f"{context['text_fake_prob']}%" if context['text_fake_prob'] is not None else "N/A"
+        words_str = f" Influential flagged terms: {', '.join(context['xai_words'][:5])}." if context.get("xai_words") else ""
+        return (
+            f"The Text Analysis module evaluated linguistic style and deceit markers using fine-tuned DistilBERT. "
+            f"It assigned a fake probability of {tp}.{words_str} "
+            "DeepGuard gives a risk estimate, not proof. Confirm important claims with trusted sources."
+        )
+
+    # Question: Image module
+    if any(phrase in q_lower for phrase in ["image", "photo", "manipulat", "deepfake", "efficientnet"]):
+        ip = f"{context['image_manip_score']}%" if context['image_manip_score'] is not None else "N/A"
+        return (
+            f"The Image Detection module analyzed visual authenticity and compression artifacts using EfficientNetV2-S. "
+            f"It found a manipulation risk score of {ip}. "
+            "DeepGuard gives a risk estimate, not proof. Confirm important claims with trusted sources."
+        )
+
+    # Question: Metadata / EXIF
+    if any(phrase in q_lower for phrase in ["metadata", "exif", "camera", "software"]):
+        return (
+            f"The EXIF Forensics module evaluated hardware and editing metadata: {context['exif_summary']}. "
+            "DeepGuard gives a risk estimate, not proof. Confirm important claims with trusted sources."
+        )
+
+    # Question: Viral patterns
+    if any(phrase in q_lower for phrase in ["viral", "urgency", "sensational", "clickbait"]):
+        return (
+            f"The Viral Pattern module detected: {context['viral_patterns']}. "
+            f"Sentiment tone was classified as {context['sentiment']}. "
+            "DeepGuard gives a risk estimate, not proof. Confirm important claims with trusted sources."
+        )
+
     return "Assistant unavailable right now. (DeepGuard gives a risk estimate, not proof. Confirm important claims with trusted sources.)"
 
 
