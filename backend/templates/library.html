@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Misinformation Library — DeepGuard{% endblock %}
+{% block page_title %}Misinformation Library{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: var(--space-4); max-width: 1200px; margin: 0 auto;">
+
+  <!-- Header Banner -->
+  <div class="card" style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.08) 0%, rgba(59, 130, 246, 0.05) 100%); border-left: 4px solid var(--primary);">
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap;">
+      <div>
+        <h2 style="font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 6px;">
+          Common Misinformation Patterns &amp; Case Library
+        </h2>
+        <p style="color: var(--text-muted); font-size: 14px; max-width: 820px; line-height: 1.6;">
+          Explore real-world patterns of digital deception, recycled media, and viral hoaxes. Use the category chips or search bar to discover how deceptive posts are constructed and learn how to identify them before sharing.
+        </p>
+      </div>
+      <span class="badge badge-info" style="align-self: flex-start; font-size: 12px; padding: 6px 12px;">
+        📚 {{ library_items|length }} Case Patterns
+      </span>
+    </div>
+  </div>
+
+  <!-- Search & Filter Controls Card -->
+  <div class="card" style="padding: var(--space-3) var(--space-4);">
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+      
+      <!-- Search Input -->
+      <div style="position: relative;">
+        <input 
+          type="text" 
+          id="librarySearchInput" 
+          placeholder="Search by keyword, topic, or manipulation pattern (e.g. 'recycled', 'garlic', 'screenshot')..."
+          style="width: 100%; padding: 12px 16px 12px 42px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-btn); color: var(--text); font-size: 14px;"
+        >
+        <svg viewBox="0 0 24 24" style="position: absolute; left: 14px; top: 12px; width: 18px; height: 18px; stroke: var(--text-muted); fill: none; stroke-width: 2;">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+
+      <!-- Category Filter Chips -->
+      <div class="filter-chips-container" id="categoryChips">
+        <button class="filter-chip active" data-category="all">All Categories</button>
+        <button class="filter-chip" data-category="Recycled image">Recycled Image</button>
+        <button class="filter-chip" data-category="Fake health claim">Fake Health Claim</button>
+        <button class="filter-chip" data-category="Chain message">Chain Message</button>
+        <button class="filter-chip" data-category="AI-generated image">AI-Generated Image</button>
+        <button class="filter-chip" data-category="Fake screenshot">Fake Screenshot</button>
+        <button class="filter-chip" data-category="Clickbait">Clickbait</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Cards Grid -->
+  <div id="libraryGrid" class="grid-2" style="gap: var(--space-4);">
+    {% for item in library_items %}
+    <div 
+      class="card library-card" 
+      data-category="{{ item.category }}" 
+      data-title="{{ item.title | lower }}" 
+      data-summary="{{ item.summary | lower }}"
+      style="display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s ease;"
+    >
+      <div>
+        <!-- Top Category Badge & ID -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+          <span class="chip 
+            {% if item.category == 'Recycled image' %}chip-info
+            {% elif item.category == 'Fake health claim' %}chip-fake
+            {% elif item.category == 'Chain message' %}chip-warning
+            {% elif item.category == 'AI-generated image' %}chip-real
+            {% elif item.category == 'Fake screenshot' %}chip-fake
+            {% else %}chip-muted{% endif %}">
+            {{ item.category }}
+          </span>
+          <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">Case #{{ item.id }}</span>
+        </div>
+
+        <!-- Title -->
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 10px; line-height: 1.4;">
+          {{ item.title }}
+        </h3>
+
+        <!-- Original Summary (2-3 sentences) -->
+        <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.55; margin-bottom: 16px;">
+          {{ item.summary }}
+        </p>
+
+        <!-- How to Spot It Section -->
+        <div style="background: var(--surface-2); border-radius: var(--radius-btn); padding: 12px 14px; margin-bottom: 16px; border-left: 3px solid var(--primary);">
+          <strong style="display: block; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--primary); margin-bottom: 6px;">
+            🔍 How to Spot It:
+          </strong>
+          <ul style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5; padding-left: 18px; margin: 0;">
+            {% for tip in item.how_to_spot %}
+            <li style="margin-bottom: 4px;">{{ tip }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <!-- Card Footer / External Link -->
+      <div style="border-top: 1px solid var(--border); padding-top: 12px; display: flex; align-items: center; justify-content: space-between;">
+        <span style="font-size: 12px; color: var(--text-muted);">
+          Ref: {{ item.source_name }}
+        </span>
+        {% if item.fact_check_link %}
+        <a 
+          href="{{ item.fact_check_link }}" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="btn btn-secondary btn-sm" 
+          style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 6px 12px;"
+        >
+          <span>Fact Check Portal</span>
+          <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2;">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Empty State (Hidden by default, shown by JS when 0 matches) -->
+  <div id="libraryEmptyState" class="card" style="display: none; text-align: center; padding: var(--space-5);">
+    <div style="width: 56px; height: 56px; margin: 0 auto var(--space-3); border-radius: 50%; background: var(--surface-2); display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+      <svg viewBox="0 0 24 24" style="width: 28px; height: 28px; stroke: currentColor; fill: none; stroke-width: 2;">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+    </div>
+    <h3 style="font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 6px;">No Matching Case Studies</h3>
+    <p style="font-size: 14px; color: var(--text-muted); max-width: 480px; margin: 0 auto var(--space-3);">
+      No misinformation patterns match your current search query or category filter. Try clearing filters or using different keywords.
+    </p>
+    <button class="btn btn-secondary btn-sm" id="clearLibraryFiltersBtn">Reset Filters</button>
+  </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const searchInput = document.getElementById('librarySearchInput');
+  const chipButtons = document.querySelectorAll('#categoryChips .filter-chip');
+  const cards = document.querySelectorAll('.library-card');
+  const emptyState = document.getElementById('libraryEmptyState');
+  const clearBtn = document.getElementById('clearLibraryFiltersBtn');
+
+  let activeCategory = 'all';
+
+  function filterCards() {
+    const query = (searchInput.value || '').trim().toLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      const cardCategory = card.getAttribute('data-category');
+      const cardTitle = card.getAttribute('data-title');
+      const cardSummary = card.getAttribute('data-summary');
+
+      const matchesCat = (activeCategory === 'all') || (cardCategory === activeCategory);
+      const matchesSearch = !query || 
+                            cardTitle.includes(query) || 
+                            cardSummary.includes(query) || 
+                            cardCategory.toLowerCase().includes(query);
+
+      if (matchesCat && matchesSearch) {
+        card.style.display = 'flex';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    if (visibleCount === 0) {
+      emptyState.style.display = 'block';
+    } else {
+      emptyState.style.display = 'none';
+    }
+  }
+
+  // Category chip clicks
+  chipButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      chipButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeCategory = btn.getAttribute('data-category');
+      filterCards();
+    });
+  });
+
+  // Search input typing
+  if (searchInput) {
+    searchInput.addEventListener('input', filterCards);
+  }
+
+  // Clear button
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      activeCategory = 'all';
+      chipButtons.forEach(b => {
+        if (b.getAttribute('data-category') === 'all') {
+          b.classList.add('active');
+        } else {
+          b.classList.remove('active');
+        }
+      });
+      filterCards();
+    });
+  }
+});
+</script>
+{% endblock %}

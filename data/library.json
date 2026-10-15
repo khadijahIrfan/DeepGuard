@@ -1,0 +1,132 @@
+[
+  {
+    "id": 1,
+    "title": "Recycled Disaster Footage Shared as Fresh Breaking News",
+    "category": "Recycled image",
+    "summary": "Viral posts often repurpose real photos and videos from historic natural disasters or warehouse explosions, falsely asserting that they represent a new breaking crisis in another city. Because the visual material is genuine, readers intuitively trust the imagery without realizing the timestamp and location have been swapped.",
+    "how_to_spot": [
+      "Perform a reverse image search on prominent frames to find the earliest publication date.",
+      "Scrutinize regional details such as vehicle plates, foliage, street signs, and uniforms.",
+      "Check official disaster management feeds before reposting claims of immediate mass casualties."
+    ],
+    "fact_check_link": "https://factcheck.afp.com/",
+    "source_name": "AFP Fact Check"
+  },
+  {
+    "id": 2,
+    "title": "Miracle Kitchen Remedy Claimed to Cure Chronic Illnesses",
+    "category": "Fake health claim",
+    "summary": "Unverified wellness claims circulate on social channels asserting that everyday household ingredients, such as boiled garlic or lemon juice, eradicate cancer and viral infections overnight. These posts mimic medical authority and discourage patients from seeking scientifically validated healthcare treatments.",
+    "how_to_spot": [
+      "Check whether reputable medical bodies (e.g., WHO, NIH, DRAP) have issued clinical trials.",
+      "Be wary of sweeping promises claiming a single food cures complex degenerative conditions.",
+      "Notice missing doctor credentials and the absence of peer-reviewed journal citations."
+    ],
+    "fact_check_link": "https://www.sochfactcheck.com/",
+    "source_name": "Soch Fact Check"
+  },
+  {
+    "id": 3,
+    "title": "Coercive WhatsApp Forward Warning of Account Deletion",
+    "category": "Chain message",
+    "summary": "Chain broadcasts instruct users to forward a terrifying warning to 10 or 20 groups within minutes to prevent their messaging account from turning paid or being permanently deleted. These engineered chain hoaxes weaponize urgency to track viral reach or build spam distribution networks.",
+    "how_to_spot": [
+      "Look for coercive prompts such as 'Forward to all contacts immediately to keep your account free'.",
+      "Official platforms communicate policy updates through in-app banners and official blogs, never chain messages.",
+      "Notice multiple spelling errors, erratic capitalization, and non-existent corporate spokespeople."
+    ],
+    "fact_check_link": "https://factcheck.afp.com/",
+    "source_name": "AFP Fact Check"
+  },
+  {
+    "id": 4,
+    "title": "Hyper-Realistic Synthetic Image of World Leaders in Unusual Situations",
+    "category": "AI-generated image",
+    "summary": "Generative diffusion models can produce photorealistic depictions of public figures in staged, compromising, or scandalous scenarios that never occurred. These visuals spread rapidly because the subjects appear physically recognizable, deceiving casual observers browsing on mobile devices.",
+    "how_to_spot": [
+      "Zoom in on fine anatomical details: examine fingernails, ear lobes, pupil reflections, and skin pores.",
+      "Inspect background text, building facades, and repetitive patterns for unnatural blur or distortion.",
+      "Verify whether major press photographers (Reuters, AP) were present at the purported event."
+    ],
+    "fact_check_link": "https://factcheck.afp.com/",
+    "source_name": "AFP Fact Check"
+  },
+  {
+    "id": 5,
+    "title": "Fabricated Breaking News Tweet Attributed to Mainstream Channels",
+    "category": "Fake screenshot",
+    "summary": "Manipulators use browser element inspection tools or template generators to craft convincing screenshots of tweets from established news channels. Because screenshots cannot be clicked or authenticated like live URLs, false claims evade casual scrutiny and spread as static images.",
+    "how_to_spot": [
+      "Visit the purported publisher's official live social profile or search their archive for the exact wording.",
+      "Inspect font rendering and spacing between timestamps, handles, and verification badges.",
+      "Remember that viral screenshots without direct links are among the easiest hoaxes to fabricate."
+    ],
+    "fact_check_link": "https://www.sochfactcheck.com/",
+    "source_name": "Soch Fact Check"
+  },
+  {
+    "id": 6,
+    "title": "Sensational Outrage Headline Masking a Mundane Event",
+    "category": "Clickbait",
+    "summary": "Headlines are deliberately structured with hyperbole, missing context, and emotionally polarizing verbs to provoke immediate outrage and clicks. When readers open the full story, the actual underlying event is often routine, minor, or completely at odds with the alarmist title.",
+    "how_to_spot": [
+      "Read past the headline before reacting or forwarding to family and colleague groups.",
+      "Watch for dramatic phrasing like 'You won't believe what happened next' or 'Total catastrophe'.",
+      "Notice whether the headline poses an unsubstantiated question rather than stating established facts."
+    ],
+    "fact_check_link": "https://www.sochfactcheck.com/",
+    "source_name": "Soch Fact Check"
+  },
+  {
+    "id": 7,
+    "title": "Staged Protest Photo Attributed to Contemporary Political Rallies",
+    "category": "Recycled image",
+    "summary": "Photographs of massive sports parades, religious gatherings, or foreign strikes from years prior are shared during election seasons as proof of overwhelming turnout at recent rallies. Deceptive captions exploit confirmation bias to exaggerate public sentiment for or against political factions.",
+    "how_to_spot": [
+      "Search the image on Google Lens to pinpoint the original photographer and event context.",
+      "Check background advertising, seasonal clothing (e.g., heavy winter coats during summer), and flags.",
+      "Cross-reference drone footage with verified independent municipal estimates."
+    ],
+    "fact_check_link": "https://factcheck.afp.com/",
+    "source_name": "AFP Fact Check"
+  },
+  {
+    "id": 8,
+    "title": "Bogus Subsidy Scheme Requiring Personal Bank Credentials",
+    "category": "Fake screenshot",
+    "summary": "Phishing campaigns fabricate official-looking notices and government gazette screenshots offering financial relief grants, fuel stipends, or student cash schemes. Victims are directed to fake registration portals that steal national identification numbers and banking passwords.",
+    "how_to_spot": [
+      "Examine the website domain closely—official government entities use specific top-level domains like .gov.pk.",
+      "Legitimate government relief programs never demand bank OTPs or account PINs for enrollment.",
+      "Verify announcements directly on official ministry portals rather than through forwarded images."
+    ],
+    "fact_check_link": "https://www.sochfactcheck.com/",
+    "source_name": "Soch Fact Check"
+  },
+  {
+    "id": 9,
+    "title": "Engineered Weather Alarmism Predicting Imminent Extreme Catastrophes",
+    "category": "Chain message",
+    "summary": "Audio voice notes and alarmist forwards frequently claim that a severe cyclone, lethal heatwave, or unprecedented earthquake is scheduled to strike within the hour. The messages falsely cite foreign satellite warnings to incite widespread panic and rush-buying in local markets.",
+    "how_to_spot": [
+      "Consult the official national meteorological department (e.g., PMD) website or mobile alert system.",
+      "Notice that anonymous voice clips never provide the speaker's name, designation, or institution.",
+      "Remember that earthquakes cannot be predicted for specific future hours by any modern technology."
+    ],
+    "fact_check_link": "https://www.sochfactcheck.com/",
+    "source_name": "Soch Fact Check"
+  },
+  {
+    "id": 10,
+    "title": "AI Deepfake Portrait of Historical Artefact Claimed as Modern Archaeological Find",
+    "category": "AI-generated image",
+    "summary": "Digitally generated 3D renderings of mythological artifacts or ancient underwater cities are circulated as shocking new archaeological discoveries concealed by authorities. Conspiracy captions accompany the visuals to foster distrust in scientific and educational consensus.",
+    "how_to_spot": [
+      "Check whether renowned peer-reviewed academic journals or museum curators have verified the artifact.",
+      "Notice the synthetic sheen, unnatural lighting angles, and lack of real-world excavation documentation.",
+      "Investigate the original poster's portfolio to see if they specialize in AI digital art generation."
+    ],
+    "fact_check_link": "https://factcheck.afp.com/",
+    "source_name": "AFP Fact Check"
+  }
+]

@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard — DeepGuard{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+  .admin-stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:var(--space-4); margin-bottom:var(--space-5); }
+  .admin-stat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-card); padding:var(--space-4); display:flex; flex-direction:column; gap:4px; }
+  .admin-stat-value { font-size:36px; font-weight:800; color:var(--text); line-height:1; }
+  .admin-stat-label { font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.6px; color:var(--text-muted); }
+  .admin-stat-card.danger .admin-stat-value { color:var(--danger); }
+  .admin-stat-card.success .admin-stat-value { color:var(--success); }
+  .admin-stat-card.warning .admin-stat-value { color:var(--warning); }
+  .admin-stat-card.primary .admin-stat-value { color:var(--primary); }
+  .admin-badge { display:inline-block; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:4px; margin-left:6px; }
+  .admin-badge.new { background:var(--danger); color:#fff; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width:1200px;margin:0 auto;">
+
+  <!-- Admin Notice -->
+  <div class="alert alert-warning" style="margin-bottom:var(--space-4);">
+    <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    <span><strong>Admin Panel.</strong> You have elevated privileges. All actions are logged. Do not share your admin credentials.</span>
+  </div>
+
+  <!-- 6 Summary Cards -->
+  <div class="admin-stat-grid">
+    <div class="admin-stat-card">
+      <div class="admin-stat-label">Total Users</div>
+      <div class="admin-stat-value">{{ total_users }}</div>
+    </div>
+    <div class="admin-stat-card primary">
+      <div class="admin-stat-label">Total Analyses</div>
+      <div class="admin-stat-value">{{ total_analyses }}</div>
+    </div>
+    <div class="admin-stat-card danger">
+      <div class="admin-stat-label">Fake Verdicts</div>
+      <div class="admin-stat-value">{{ fake_count }}</div>
+    </div>
+    <div class="admin-stat-card success">
+      <div class="admin-stat-label">Real Verdicts</div>
+      <div class="admin-stat-value">{{ real_count }}</div>
+    </div>
+    <div class="admin-stat-card warning">
+      <div class="admin-stat-label">Analyses Today</div>
+      <div class="admin-stat-value">{{ analyses_today }}</div>
+    </div>
+    <div class="admin-stat-card danger">
+      <div class="admin-stat-label">New Feedback</div>
+      <div class="admin-stat-value">{{ new_feedback }}</div>
+    </div>
+  </div>
+
+  <!-- Analyses Per Day Chart -->
+  <div class="card" style="margin-bottom:var(--space-5);">
+    <div class="card-header">
+      <h4 class="card-title">Analyses Per Day — Last 30 Days</h4>
+    </div>
+    <div class="card-body" style="height:260px;position:relative;">
+      <canvas id="dailyChart"></canvas>
+    </div>
+  </div>
+
+  <!-- 5 Most Recent Analyses -->
+  <div class="card">
+    <div class="card-header">
+      <h4 class="card-title">5 Most Recent Analyses</h4>
+      <a href="{{ url_for('admin_reports') }}" class="btn btn-secondary btn-sm">View All Reports</a>
+    </div>
+    <div class="card-body" style="padding:0;">
+      {% if recent %}
+      <div style="overflow-x:auto;">
+        <table class="table" style="margin:0;">
+          <thead>
+            <tr>
+              <th>#ID</th>
+              <th>User</th>
+              <th>Date</th>
+              <th>Input Type</th>
+              <th>Verdict</th>
+              <th>Confidence</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in recent %}
+            <tr>
+              <td style="color:var(--text-muted);font-size:12px;">#{{ p.id }}</td>
+              <td>{{ p.user.email if p.user else '—' }}</td>
+              <td style="font-size:12px;white-space:nowrap;">{{ p.created_at.strftime('%b %d, %Y %H:%M') if p.created_at else '—' }}</td>
+              <td><span class="chip chip-info">{{ p.input_type }}</span></td>
+              <td>
+                {% if 'FAKE' in p.prediction %}
+                  <span class="chip chip-fake">Fake</span>
+                {% elif 'REAL' in p.prediction %}
+                  <span class="chip chip-real">Real</span>
+                {% else %}
+                  <span class="chip chip-uncertain">Uncertain</span>
+                {% endif %}
+              </td>
+              <td>{{ p.confidence }}%</td>
+              <td>
+                <a href="{{ url_for('admin_view_report', report_id=p.id) }}" class="btn btn-secondary btn-sm">View</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div style="padding:var(--space-5);text-align:center;color:var(--text-muted);">No analyses yet.</div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+  const labels = {{ chart_labels | safe }};
+  const data   = {{ chart_data   | safe }};
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+  const textColor = isDark ? '#8892a4' : '#555e6d';
+  const primary = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#00E5FF';
+
+  new Chart(document.getElementById('dailyChart'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Analyses',
+        data,
+        borderColor: primary,
+        backgroundColor: 'rgba(0,229,255,0.08)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 3,
+        pointHoverRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: textColor, maxTicksLimit: 10 }, grid: { color: gridColor } },
+        y: { ticks: { color: textColor, precision: 0 }, grid: { color: gridColor }, beginAtZero: true }
+      }
+    }
+  });
+})();
+</script>
+{% endblock %}

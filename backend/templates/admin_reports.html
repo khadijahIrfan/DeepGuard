@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Admin — Analysis Reports — DeepGuard{% endblock %}
+{% block page_title %}Analysis Reports{% endblock %}
+
+{% block content %}
+<div style="max-width:1200px;margin:0 auto;">
+
+  <!-- Confidentiality Notice -->
+  <div class="alert alert-warning" style="margin-bottom:var(--space-4);">
+    <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    <span><strong>Reports contain user submissions. Handle them confidentially.</strong> Do not share or export this data without authorization.</span>
+  </div>
+
+  <!-- Filters -->
+  <div class="card" style="margin-bottom:var(--space-4);">
+    <div class="card-header"><h4 class="card-title">Filter Reports</h4></div>
+    <div class="card-body">
+      <form method="GET" action="{{ url_for('admin_reports') }}" style="display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:flex-end;">
+        <div style="flex:1;min-width:160px;">
+          <label class="form-label">Verdict</label>
+          <select name="verdict" class="form-control">
+            <option value="">All Verdicts</option>
+            <option value="FAKE" {% if verdict_f == 'FAKE' %}selected{% endif %}>Fake</option>
+            <option value="REAL" {% if verdict_f == 'REAL' %}selected{% endif %}>Real</option>
+            <option value="UNCERTAIN" {% if verdict_f == 'UNCERTAIN' %}selected{% endif %}>Uncertain</option>
+          </select>
+        </div>
+        <div style="flex:1;min-width:160px;">
+          <label class="form-label">Date</label>
+          <input type="date" name="date" class="form-control" value="{{ date_f }}">
+        </div>
+        <div style="display:flex;gap:var(--space-2);">
+          <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+          <a href="{{ url_for('admin_reports') }}" class="btn btn-secondary btn-sm">Clear</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="card">
+    <div class="card-header">
+      <h4 class="card-title">
+        All Analyses
+        <span style="font-size:12px;font-weight:400;color:var(--text-muted);margin-left:8px;">
+          ({{ pagination.total }} total{% if verdict_f %}, filtered by "{{ verdict_f }}"{% endif %}{% if date_f %}, on {{ date_f }}{% endif %})
+        </span>
+      </h4>
+    </div>
+    <div class="card-body" style="padding:0;overflow-x:auto;">
+      {% if pagination.items %}
+      <table class="table" style="margin:0;">
+        <thead>
+          <tr>
+            <th>#ID</th>
+            <th>User Email</th>
+            <th>Date</th>
+            <th>Input Type</th>
+            <th>Verdict</th>
+            <th>Confidence</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in pagination.items %}
+          <tr>
+            <td style="color:var(--text-muted);font-size:12px;">#{{ p.id }}</td>
+            <td style="font-size:13px;">{{ p.user.email if p.user else '—' }}</td>
+            <td style="font-size:12px;white-space:nowrap;">{{ p.created_at.strftime('%b %d, %Y %H:%M') if p.created_at else '—' }}</td>
+            <td><span class="chip chip-info">{{ p.input_type }}</span></td>
+            <td>
+              {% if 'FAKE' in p.prediction %}
+                <span class="chip chip-fake">Fake</span>
+              {% elif 'REAL' in p.prediction %}
+                <span class="chip chip-real">Real</span>
+              {% else %}
+                <span class="chip chip-uncertain">Uncertain</span>
+              {% endif %}
+            </td>
+            <td>{{ p.confidence }}%</td>
+            <td>
+              <a href="{{ url_for('admin_view_report', report_id=p.id) }}" class="btn btn-secondary btn-sm">View</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div style="padding:var(--space-5);text-align:center;color:var(--text-muted);">
+        No reports match the selected filters.
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Pagination -->
+    {% if pagination.pages > 1 %}
+    <div style="padding:var(--space-3) var(--space-4);border-top:1px solid var(--border);display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap;">
+      {% if pagination.has_prev %}
+        <a href="{{ url_for('admin_reports', page=pagination.prev_num, verdict=verdict_f, date=date_f) }}" class="btn btn-secondary btn-sm">← Prev</a>
+      {% endif %}
+      {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+        {% if p %}
+          <a href="{{ url_for('admin_reports', page=p, verdict=verdict_f, date=date_f) }}"
+             class="btn btn-sm {{ 'btn-primary' if p == pagination.page else 'btn-secondary' }}">{{ p }}</a>
+        {% else %}
+          <span style="color:var(--text-muted);padding:0 4px;">…</span>
+        {% endif %}
+      {% endfor %}
+      {% if pagination.has_next %}
+        <a href="{{ url_for('admin_reports', page=pagination.next_num, verdict=verdict_f, date=date_f) }}" class="btn btn-secondary btn-sm">Next →</a>
+      {% endif %}
+      <span style="margin-left:auto;font-size:12px;color:var(--text-muted);">
+        Page {{ pagination.page }} of {{ pagination.pages }}
+      </span>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

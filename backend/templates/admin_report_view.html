@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block title %}Admin — Report #{{ prediction.id }} — DeepGuard{% endblock %}
+{% block page_title %}Admin: Report #{{ prediction.id }}{% endblock %}
+
+{% block content %}
+<div style="max-width:1100px;margin:0 auto;">
+
+  <!-- Confidentiality Banner -->
+  <div class="alert alert-warning" style="margin-bottom:var(--space-4);">
+    <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    <div>
+      <strong>Confidential — Admin View Only.</strong>
+      Reports contain user submissions. Handle them confidentially. Admins cannot edit or delete analyses.
+    </div>
+  </div>
+
+  <!-- Back / Navigation -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-4);">
+    <a href="{{ url_for('admin_reports') }}" class="btn btn-secondary btn-sm">
+      <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <span>Back to Reports</span>
+    </a>
+    <div style="font-size:13px;color:var(--text-muted);">
+      Submitted by: <strong>{{ owner.email if owner else '—' }}</strong>
+      &nbsp;|&nbsp;
+      User ID: {{ prediction.user_id }}
+    </div>
+  </div>
+
+  <!-- Verdict Banner -->
+  <div class="card" style="background:var(--surface);border:2px solid {% if 'FAKE' in prediction.prediction %}var(--danger){% elif 'REAL' in prediction.prediction %}var(--success){% else %}var(--warning){% endif %};margin-bottom:var(--space-4);">
+    <div class="card-body" style="padding:var(--space-5);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:var(--space-4);">
+        <div>
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:4px;">
+            VERDICT OVERVIEW • {{ prediction.created_at.strftime('%B %d, %Y at %I:%M %p') if prediction.created_at else '—' }}
+          </div>
+          <h2 style="font-size:28px;font-weight:800;display:flex;align-items:center;gap:12px;color:{% if 'FAKE' in prediction.prediction %}var(--danger){% elif 'REAL' in prediction.prediction %}var(--success){% else %}var(--warning){% endif %};">
+            {% if 'FAKE' in prediction.prediction %}
+              <span class="chip chip-fake" style="font-size:16px;padding:5px 14px;">🚨 FAKE / MISINFORMATION</span>
+            {% elif 'REAL' in prediction.prediction %}
+              <span class="chip chip-real" style="font-size:16px;padding:5px 14px;">✅ LIKELY REAL / AUTHENTIC</span>
+            {% else %}
+              <span class="chip chip-uncertain" style="font-size:16px;padding:5px 14px;">⚠️ UNCERTAIN / UNVERIFIED</span>
+            {% endif %}
+          </h2>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:12px;color:var(--text-muted);font-weight:600;">CONFIDENCE SCORE</div>
+          <div style="font-size:36px;font-weight:800;color:var(--text);">{{ prediction.confidence }}%</div>
+        </div>
+      </div>
+      <div style="margin-top:var(--space-3);">
+        <div style="height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden;">
+          <div style="height:100%;width:{{ prediction.confidence }}%;background:{% if 'FAKE' in prediction.prediction %}var(--danger){% elif 'REAL' in prediction.prediction %}var(--success){% else %}var(--warning){% endif %};"></div>
+        </div>
+      </div>
+      {% if human_exp and human_exp.summary_sentence %}
+      <div style="margin-top:var(--space-3);padding:var(--space-3);background:var(--surface-2);border-radius:var(--radius-btn);font-size:14px;color:var(--text);">
+        <strong>Executive Summary:</strong> {{ human_exp.summary_sentence }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Input payload -->
+  <div class="card" style="margin-bottom:var(--space-4);">
+    <div class="card-header">
+      <h4 class="card-title">Analyzed Input Payload</h4>
+      <span class="chip chip-info">{{ prediction.input_type }} Input</span>
+    </div>
+    <div class="card-body">
+      {% if prediction.input_text and prediction.input_text != 'Image Upload' %}
+      <label class="form-label" style="color:var(--text-muted);">Submitted Text:</label>
+      <blockquote style="padding:12px 16px;background:var(--surface-2);border-left:4px solid var(--primary);border-radius:4px;font-size:14px;color:var(--text);">
+        "{{ prediction.input_text }}"
+      </blockquote>
+      {% else %}
+      <p style="color:var(--text-muted);font-style:italic;">Image-only submission — no text provided.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- 7 Module Cards -->
+  <h3 style="font-size:18px;font-weight:700;margin-bottom:var(--space-4);">Detailed Module Analysis Breakdown</h3>
+  <div class="grid-7-modules">
+
+    <!-- 1. Text Analysis -->
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title">1. Text Analysis</h4>
+        {% if pipeline_result and pipeline_result.module_details and pipeline_result.module_details.text_analysis %}
+          {% set tm = pipeline_result.module_details.text_analysis %}
+          <span class="chip {{ 'chip-fake' if tm.prediction == 'FAKE' else 'chip-real' }}">{{ tm.prediction }}</span>
+        {% else %}<span class="chip chip-muted">Not Analyzed</span>{% endif %}
+      </div>
+      <div class="card-body">
+        {% if pipeline_result and pipeline_result.module_details and pipeline_result.module_details.text_analysis %}
+          {% set tm = pipeline_result.module_details.text_analysis %}
+          <div style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px;">{{ "%.1f"|format(tm.fake_probability|default(0.0)) }}% Fake Probability</div>
+          <p style="font-size:13px;color:var(--text-muted);">Fine-tuned DistilBERT transformer — linguistic pattern classification.</p>
+        {% else %}<p style="font-size:13px;color:var(--text-muted);font-style:italic;">Not analyzed (no text provided).</p>{% endif %}
+      </div>
+    </div>
+
+    <!-- 2. Image Detection -->
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title">2. Image Detection</h4>
+        {% if pipeline_result and pipeline_result.module_details and pipeline_result.module_details.image_detection %}
+          {% set im = pipeline_result.module_details.image_detection %}
+          <span class="chip {{ 'chip-fake' if im.is_fake else 'chip-real' }}">{{ 'Fake/Manipulated' if im.is_fake else 'Real/Authentic' }}</span>
+        {% else %}<span class="chip chip-muted">Not Analyzed</span>{% endif %}
+      </div>
+      <div class="card-body">
+        {% if pipeline_result and pipeline_result.module_details and pipeline_result.module_details.image_detection %}
+          {% set im = pipeline_result.module_details.image_detection %}
+          <div style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px;">{{ "%.1f"|format(im.manipulation_score|default(0.0)) }}% Manipulation Score</div>
+          <p style="font-size:13px;color:var(--text-muted);">EfficientNetV2-S dual-engine ONNX runtime.</p>
+        {% else %}<p style="font-size:13px;color:var(--text-muted);font-style:italic;">Not analyzed (no image provided).</p>{% endif %}
+      </div>
+    </div>
+
+    <!-- 3. Metadata -->
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title">3. EXIF Metadata</h4>
+        {% if metadata_info and metadata_info.has_metadata %}
+          <span class="chip chip-real">EXIF Present</span>
+        {% elif metadata_info and metadata_info.has_metadata == false %}
+          <span class="chip chip-warning">No EXIF</span>
+        {% else %}
+          <span class="chip chip-muted">No Image</span>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        {% if metadata_info and metadata_info.has_metadata %}
+          {% if metadata_info.authenticity_flags %}
+            <div class="alert alert-warning" style="margin-bottom:var(--space-2);">
+              {% for f in metadata_info.authenticity_flags %}<div>{{ f }}</div>{% endfor %}
+            </div>
+          {% else %}
+            <div class="alert alert-success" style="margin-bottom:var(--space-2);">✅ No editing software detected.</div>
+          {% endif %}
+          {% if metadata_info.camera %}<p style="font-size:13px;color:var(--text);">Camera: {{ metadata_info.camera }}</p>{% endif %}
+        {% elif metadata_info and metadata_info.has_metadata == false %}
+          <p style="font-size:13px;color:var(--text-muted);">No EXIF metadata found in image.</p>
+        {% else %}
+          <p style="font-size:13px;color:var(--text-muted);font-style:italic;">Not analyzed — no image provided.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- 4. Sentiment -->
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title">4. Sentiment Tone</h4>
+        {% if prediction.sentiment %}<span class="chip chip-info">{{ prediction.sentiment }}</span>
+        {% else %}<span class="chip chip-muted">Not Analyzed</span>{% endif %}
+      </div>
+      <div class="card-body">
+        {% if prediction.sentiment %}
+          <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px;">Tone: {{ prediction.sentiment }}</div>
+          <p style="font-size:13px;color:var(--text-muted);">VADER Sentiment Intensity Analyzer.</p>
+        {% else %}
+          <p style="font-size:13px;color:var(--text-muted);font-style:italic;">Not analyzed (no text).</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- 5. Viral Patterns -->
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title">5. Viral Pattern Analysis</h4>
+        {% set has_viral = false %}
+        {% if viral_patterns and viral_patterns.patterns_detected is defined %}
+          {% if viral_patterns.patterns_detected > 0 %}{% set has_viral = true %}{% endif %}
+        {% endif %}
+        <span class="chip {{ 'chip-fake' if has_viral else 'chip-real' }}">{{ 'Patterns Flagged' if has_viral else 'Low Threat' }}</span>
+      </div>
+      <div class="card-body">
+        {% if viral_patterns %}
+          {% if viral_patterns.overall %}<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">{{ viral_patterns.overall }}</div>{% endif %}
+          <ul style="font-size:12px;color:var(--text);padding-left:16px;line-height:1.6;margin:0;">
+            {% if viral_patterns.urgency and viral_patterns.urgency.detected %}<li><strong style="color:var(--danger);">Urgency:</strong> {{ viral_patterns.urgency.matches|join(', ') }}</li>{% endif %}
+            {% if viral_patterns.emotional_language and viral_patterns.emotional_language.detected %}<li><strong style="color:var(--warning);">Emotional:</strong> {{ viral_patterns.emotional_language.matches|join(', ') }}</li>{% endif %}
+            {% if viral_patterns.call_to_action and viral_patterns.call_to_action.detected %}<li><strong style="color:var(--danger);">Call to Action:</strong> detected</li>{% endif %}
+            {% if viral_patterns.all_caps and viral_patterns.all_caps.detected %}<li><strong>ALL-CAPS:</strong> {{ viral_patterns.all_caps.uppercase_ratio }}%</li>{% endif %}
+          </ul>
+        {% else %}
+          <p style="font-size:13px;color:var(--text-muted);font-style:italic;">Not analyzed (no text).</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- 6. Context Mismatch -->
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title">6. Context Mismatch</h4>
+        {% if pipeline_result and pipeline_result.module_details and pipeline_result.module_details.context_mismatch %}
+          {% set cm = pipeline_result.module_details.context_mismatch %}
+          <span class="chip {{ 'chip-fake' if cm.is_mismatch else 'chip-real' }}">{{ 'Mismatch' if cm.is_mismatch else 'Matched' }}</span>
+        {% else %}<span class="chip chip-muted">Not Analyzed</span>{% endif %}
+      </div>
+      <div class="card-body">
+        {% if pipeline_result and pipeline_result.module_details and pipeline_result.module_details.context_mismatch %}
+          {% set cm = pipeline_result.module_details.context_mismatch %}
+          <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;">
+            Alignment: {{ "%.1f"|format((cm.similarity|default(0.0))*100) }}% | Mismatch: {{ "%.1f"|format(cm.mismatch_score|default(0.0)) }}%
+          </div>
+          <p style="font-size:13px;color:var(--text-muted);">{{ cm.explanation|default('CLIP cross-modal semantic alignment.') }}</p>
+        {% else %}
+          <p style="font-size:13px;color:var(--text-muted);font-style:italic;">Not analyzed (requires text + image).</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- 7. XAI -->
+    <div class="card" style="grid-column:1 / -1;">
+      <div class="card-header">
+        <h4 class="card-title">7. Explainable AI (SHAP + Word Attribution)</h4>
+        <span class="chip chip-info">SHAP + Word Attribution</span>
+      </div>
+      <div class="card-body">
+        {% if xai_words and xai_words|length > 0 %}
+        <div style="margin-bottom:var(--space-3);">
+          <div style="font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:8px;">Top Influential Words:</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            {% for word in xai_words %}
+              <span class="chip chip-fake" style="font-size:13px;padding:5px 12px;">{{ word }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+        {% if human_exp and human_exp.reasons %}
+        <div style="margin-top:var(--space-3);">
+          <div style="font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:6px;">Key Observations:</div>
+          <ul style="padding-left:18px;font-size:14px;color:var(--text);line-height:1.6;">
+            {% for reason in human_exp.reasons %}<li>{{ reason }}</li>{% endfor %}
+          </ul>
+        </div>
+        {% else %}
+          <p style="font-size:13px;color:var(--text-muted);">DeepGuard model explanation based on feature weights and multimodal cross-attention.</p>
+        {% endif %}
+      </div>
+    </div>
+
+  </div><!-- /grid-7-modules -->
+
+  <div style="margin-top:var(--space-5);margin-bottom:var(--space-4);">
+    <a href="{{ url_for('admin_reports') }}" class="btn btn-secondary btn-lg">← Back to Reports</a>
+  </div>
+
+</div>
+{% endblock %}

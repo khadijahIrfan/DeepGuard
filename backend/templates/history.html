@@ -20,6 +20,7 @@
             <option value="FAKE">Fake Only</option>
             <option value="REAL">Real Only</option>
             <option value="UNCERTAIN">Uncertain Only</option>
+            <option value="SAVED">Saved Only</option>
           </select>
         </div>
 
@@ -50,13 +51,14 @@
               <th>Content Sample</th>
               <th>Verdict</th>
               <th>Confidence</th>
+              <th style="text-align:center;">Save</th>
               <th style="text-align:right;">Actions</th>
             </tr>
           </thead>
           <tbody>
             {% if predictions and predictions|length > 0 %}
               {% for item in predictions %}
-              <tr data-verdict="{{ item.prediction }}">
+              <tr data-verdict="{{ item.prediction }}" data-saved="{{ 'true' if item.id in saved_dict else 'false' }}">
                 <td style="white-space:nowrap; color:var(--text-muted); font-size:13px;">
                   {{ item.created_at.strftime('%Y-%m-%d %H:%M') if item.created_at else 'N/A' }}
                 </td>
@@ -85,6 +87,21 @@
                   {{ item.confidence }}%
                 </td>
 
+                <td style="text-align:center;">
+                  <button
+                    type="button"
+                    class="btn-bookmark {% if item.id in saved_dict %}active{% endif %}"
+                    data-analysis-id="{{ item.id }}"
+                    title="{% if item.id in saved_dict %}Unsave{% else %}Save{% endif %}"
+                    onclick="toggleBookmark(this, {{ item.id }})"
+                  >
+                    <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                  </button>
+                  {% if item.id in saved_dict %}
+                  <span class="saved-tag-label">{{ saved_dict[item.id] }}</span>
+                  {% endif %}
+                </td>
+
                 <td style="text-align:right; white-space:nowrap;">
                   <a href="{{ url_for('view_report', id=item.id) }}" class="btn btn-secondary btn-sm" style="margin-right:4px;">
                     View
@@ -99,7 +116,7 @@
 
             <!-- Dynamic empty row when search has no matches or DB has 0 items -->
             <tr id="historyEmptyRow" style="{% if predictions and predictions|length > 0 %}display:none;{% endif %}">
-              <td colspan="6" style="padding:0;">
+              <td colspan="7" style="padding:0;">
                 <div class="empty-state">
                   <div class="empty-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -135,4 +152,39 @@
     </div>
   </div>
 </div>
+
+<script>
+function toggleBookmark(btn, analysisId) {
+  const isSaved = btn.classList.contains('active');
+  fetch('/api/reports/' + analysisId + '/save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: isSaved ? 'remove' : 'save' })
+  })
+  .then(r => r.json())
+  .then(data => {
+    const row = btn.closest('tr');
+    if (data.saved) {
+      btn.classList.add('active');
+      btn.title = 'Unsave';
+      if (row) row.setAttribute('data-saved', 'true');
+      // Add tag label if not present
+      let tagEl = btn.parentElement.querySelector('.saved-tag-label');
+      if (!tagEl) {
+        tagEl = document.createElement('span');
+        tagEl.className = 'saved-tag-label';
+        btn.parentElement.appendChild(tagEl);
+      }
+      tagEl.textContent = data.tag || 'To verify later';
+    } else {
+      btn.classList.remove('active');
+      btn.title = 'Save';
+      if (row) row.setAttribute('data-saved', 'false');
+      const tagEl = btn.parentElement.querySelector('.saved-tag-label');
+      if (tagEl) tagEl.remove();
+    }
+  })
+  .catch(err => console.error('Bookmark error:', err));
+}
+</script>
 {% endblock %}

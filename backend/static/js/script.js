@@ -3,6 +3,7 @@
    ================================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
+  initThemeToggle();
   initSidebarToggle();
   initHeaderPhrases();
   initNotificationSystem();
@@ -36,6 +37,34 @@ function initHeaderPhrases() {
       elem.style.opacity = '1';
     }, 250);
   }, 5500);
+}
+
+/* ================================================================
+   0. THEME TOGGLE CONTROLLER (Light / Dark)
+   ================================================================ */
+function initThemeToggle() {
+  const toggleBtn = document.getElementById('themeToggleBtn');
+  if (!toggleBtn) return;
+
+  // Read current theme from attribute or localStorage
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 
+                       localStorage.getItem('deepguard_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', currentTheme);
+
+  toggleBtn.addEventListener('click', () => {
+    const active = document.documentElement.getAttribute('data-theme') || 'dark';
+    const nextTheme = active === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', nextTheme);
+    localStorage.setItem('deepguard_theme', nextTheme);
+
+    // Sync to user profile in database
+    fetch('/api/user/theme', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ theme: nextTheme })
+    }).catch(err => console.log('Theme sync notice:', err));
+  });
 }
 
 /* ================================================================
@@ -537,9 +566,10 @@ function initHistoryFilters() {
       if (row.id === 'historyEmptyRow') return;
       const text = row.textContent.toLowerCase();
       const verdict = row.getAttribute('data-verdict') || '';
+      const isSaved = row.getAttribute('data-saved') === 'true';
 
       const matchesQ = !q || text.includes(q);
-      const matchesV = v === 'ALL' || verdict.includes(v);
+      const matchesV = v === 'ALL' || (v === 'SAVED' ? isSaved : verdict.includes(v));
 
       if (matchesQ && matchesV) {
         row.style.display = '';

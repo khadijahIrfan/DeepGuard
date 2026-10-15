@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block title %}Help &amp; Media Literacy Hub — DeepGuard{% endblock %}
+{% block page_title %}Help &amp; Media Literacy Hub{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: var(--space-4); max-width: 1100px; margin: 0 auto;">
+
+  <!-- Hero / Header Banner -->
+  <div class="card" style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.08) 0%, rgba(59, 130, 246, 0.05) 100%); border-left: 4px solid var(--primary);">
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap;">
+      <div>
+        <h2 style="font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 6px;">
+          Media Literacy &amp; AI Verification Guide
+        </h2>
+        <p style="color: var(--text-muted); font-size: 14px; max-width: 800px; line-height: 1.6;">
+          Understand how DeepGuard analyzes multimodal content, learn to interpret authenticity verdicts, and discover actionable strategies to spot misinformation, deceptive images, and out-of-context claims before sharing.
+        </p>
+      </div>
+      <span class="badge badge-info" style="align-self: flex-start; font-size: 12px; padding: 6px 12px;">
+        🛡️ Media Literacy Hub
+      </span>
+    </div>
+  </div>
+
+  <!-- Limitations Notice (Required Prominent Alert) -->
+  <div class="alert alert-warning" style="align-items: center; border-radius: var(--radius-card); padding: var(--space-4);">
+    <svg viewBox="0 0 24 24" style="width: 28px; height: 28px; min-width: 28px; stroke: currentColor; fill: none; stroke-width: 2;">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+      <line x1="12" y1="9" x2="12" y2="13"></line>
+      <line x1="12" y1="17" x2="12.01" y2="17"></line>
+    </svg>
+    <div style="font-size: 14px; line-height: 1.5;">
+      <strong style="display: block; font-size: 15px; margin-bottom: 2px;">Important System Notice:</strong>
+      DeepGuard gives a risk estimate, not proof. It detects semantic mismatch, not factual mismatch. Confirm important claims with trusted sources.
+    </div>
+  </div>
+
+  <!-- Section 1: How DeepGuard Works (The 7 Modules in Plain Language) -->
+  <div class="card">
+    <div class="card-header" style="display: flex; align-items: center; justify-content: space-between;">
+      <h3 style="font-size: 16px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px;">
+        <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: var(--primary); fill: none; stroke-width: 2;"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+        How DeepGuard Works: The 7 Analysis Modules
+      </h3>
+      <span style="font-size: 12px; color: var(--text-muted);">Context-Aware Neural Pipeline</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+      
+      <!-- Module 1 -->
+      <div style="background: var(--surface-2); border-radius: var(--radius-btn); padding: 14px 16px; border-left: 3px solid var(--primary);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <strong style="color: var(--text); font-size: 14px;">1. Linguistic Claim Analysis (DistilBERT Transformer)</strong>
+          <span class="badge badge-info" style="font-size: 11px;">Text AI</span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 13.5px; line-height: 1.5; margin: 0;">
+          Reads the phrasing, style, and structure of written statements. It identifies deceptive writing patterns commonly found in fabricated headlines, hoaxes, and clickbait.
+        </p>
+      </div>
+
+      <!-- Module 2 -->
+      <div style="background: var(--surface-2); border-radius: var(--radius-btn); padding: 14px 16px; border-left: 3px solid var(--info);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <strong style="color: var(--text); font-size: 14px;">2. Visual Artifact &amp; Manipulation Detector (MobileNetV2 Vision Engine)</strong>
+          <span class="badge badge-info" style="font-size: 11px;">Vision AI</span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 13.5px; line-height: 1.5; margin: 0;">
+          Inspects uploaded imagery at pixel and feature levels to spot visual tampering, cloned regions, digital splicing, compression artifacts, and generative AI visual cues.
+        </p>
+      </div>
+
+      <!-- Module 3 -->
+      <div style="background: var(--surface-2); border-radius: var(--radius-btn); padding: 14px 16px; border-left: 3px solid var(--warning);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <strong style="color: var(--text); font-size: 14px;">3. Cross-Modal Semantic Consistency (CLIP Multi-Modal Alignment)</strong>
+          <span class="badge badge-warning" style="font-size: 11px;">Cross-Modal AI</span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 13.5px; line-height: 1.5; margin: 0;">
+          Compares the text claim directly against the visual image to answer: <em>"Does this photo actually depict what the caption claims?"</em> It detects recycled photos paired with fabricated breaking news stories.
+        </p>
+      </div>
+
+      <!-- Module 4 -->
+      <div style="background: var(--surface-2); border-radius: var(--radius-btn); padding: 14px 16px; border-left: 3px solid #8B5CF6;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <strong style="color: var(--text); font-size: 14px;">4. Sentiment &amp; Emotional Charge Analyzer (VADER Polarity)</strong>
+          <span class="badge badge-info" style="font-size: 11px;">Sentiment</span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 13.5px; line-height: 1.5; margin: 0;">
+          Measures extreme polarity, rage-inducing vocabulary, and emotional bias. Disinformation campaigns frequently use inflammatory language to bypass rational judgment and provoke rapid sharing.
+        </p>
+      </div>
+
+      <!-- Module 5 -->
+      <div style="background: var(--surface-2); border-radius: var(--radius-btn); padding: 14px 16px; border-left: 3px solid var(--danger);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <strong style="color: var(--text); font-size: 14px;">5. Viral &amp; Psychological Sensationalism Profiler</strong>
+          <span class="badge badge-danger" style="font-size: 11px;">Viral Heuristics</span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 13.5px; line-height: 1.5; margin: 0;">
+          Detects manipulative viral hooks such as artificial countdowns, excessive capitalization (ALL CAPS), repeated exclamation points, and coercive calls to action like <em>"Forward to 10 groups immediately!"</em>
+        </p>
+      </div>
+
+      <!-- Module 6 -->
+      <div style="background: var(--surface-2); border-radius: var(--radius-btn); padding: 14px 16px; border-left: 3px solid #14B8A6;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <strong style="color: var(--text); font-size: 14px;">6. Forensic Metadata &amp; EXIF Scanner</strong>
+          <span class="badge badge-info" style="font-size: 11px;">Forensics</span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 13.5px; line-height: 1.5; margin: 0;">
+          Extracts camera make, timestamp, GPS coordinates, and editing software signatures. If a post claims an event happened yesterday in Lahore, but metadata shows the photo was taken 5 years ago in Cairo, DeepGuard flags the discrepancy.
+        </p>
+      </div>
+
+      <!-- Module 7 -->
+      <div style="background: var(--surface-2); border-radius: var(--radius-btn); padding: 14px 16px; border-left: 3px solid var(--success);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <strong style="color: var(--text); font-size: 14px;">7. Multimodal Decision Fusion &amp; Calibration Engine</strong>
+          <span class="badge badge-success" style="font-size: 11px;">Decision Fusion</span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 13.5px; line-height: 1.5; margin: 0;">
+          Synthesizes all individual module signals into a unified final verdict and confidence score, dynamically adjusting fusion weights depending on whether the input is text-only, image-only, or multimodal.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Section 2: How to Read Your Result -->
+  <div class="card">
+    <div class="card-header">
+      <h3 style="font-size: 16px; font-weight: 700; color: var(--text);">
+        How to Read Your Result (Verdicts, Risk Levels &amp; Scores)
+      </h3>
+    </div>
+    
+    <div class="grid-3" style="margin-bottom: var(--space-4);">
+      <!-- REAL -->
+      <div style="background: var(--surface-2); padding: 16px; border-radius: var(--radius-btn); border-top: 3px solid var(--success);">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span class="badge badge-success" style="font-weight: 700;">REAL</span>
+          <span style="font-size: 13px; color: var(--text); font-weight: 600;">Authentic / Consistent</span>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+          The claim and image exhibit low manipulation signals, high semantic alignment, natural writing style, and unmanipulated forensic markers.
+        </p>
+      </div>
+
+      <!-- FAKE -->
+      <div style="background: var(--surface-2); padding: 16px; border-radius: var(--radius-btn); border-top: 3px solid var(--danger);">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span class="badge badge-danger" style="font-weight: 700;">FAKE</span>
+          <span style="font-size: 13px; color: var(--text); font-weight: 600;">Manipulated / Deceptive</span>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+          Substantial indicators of deception detected: cross-modal context conflict, image manipulation, viral alarmism, or fabricated text patterns.
+        </p>
+      </div>
+
+      <!-- UNCERTAIN -->
+      <div style="background: var(--surface-2); padding: 16px; border-radius: var(--radius-btn); border-top: 3px solid var(--warning);">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span class="badge badge-warning" style="font-weight: 700;">UNCERTAIN</span>
+          <span style="font-size: 13px; color: var(--text); font-weight: 600;">Inconclusive Signal</span>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+          Module indicators are mixed or insufficient to confirm or refute authenticity. Independent corroboration is strongly advised.
+        </p>
+      </div>
+    </div>
+
+    <!-- Risk Level and Score Interpretation -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+      <div style="background: var(--surface-2); padding: 14px; border-radius: var(--radius-btn);">
+        <h4 style="font-size: 14px; color: var(--text); margin-bottom: 6px;">Risk Levels Explained</h4>
+        <ul style="font-size: 13px; color: var(--text-muted); line-height: 1.6; padding-left: 18px; margin: 0;">
+          <li><strong style="color: var(--success);">Low Risk:</strong> Normal informational content; no viral deception markers.</li>
+          <li><strong style="color: var(--warning);">Moderate Risk:</strong> Contains exaggerated claims or partial semantic drift. Verify before sharing.</li>
+          <li><strong style="color: var(--danger);">High / Critical Risk:</strong> Severe inconsistencies, strong indicators of targeted falsehood or media alteration.</li>
+        </ul>
+      </div>
+
+      <div style="background: var(--surface-2); padding: 14px; border-radius: var(--radius-btn);">
+        <h4 style="font-size: 14px; color: var(--text); margin-bottom: 6px;">Scores &amp; Confidence</h4>
+        <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px;">
+          All scores range from <strong>0% to 100%</strong>. Higher overall confidence reflects stronger agreement across multiple independent neural models.
+        </p>
+        <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+          Each component score highlights specific vulnerabilities: e.g., low cross-modal similarity indicates out-of-context photo pairing.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Tips for Spotting Misinformation -->
+  <div class="card">
+    <div class="card-header">
+      <h3 style="font-size: 16px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px;">
+        <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: var(--primary); fill: none; stroke-width: 2;"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+        4 Essential Tips for Spotting Misinformation
+      </h3>
+    </div>
+    <div class="grid-2">
+      <!-- Tip 1 -->
+      <div style="display: flex; gap: 14px; background: var(--surface-2); padding: 16px; border-radius: var(--radius-btn);">
+        <div style="width: 38px; height: 38px; min-width: 38px; background: var(--primary-glow); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: 700; font-size: 16px;">
+          1
+        </div>
+        <div>
+          <h4 style="font-size: 14px; color: var(--text); margin-bottom: 4px;">Check the Source &amp; URL</h4>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+            Inspect website addresses for subtle typosquatting (e.g., <code>bbc-news.co.co</code> instead of <code>bbc.com</code>). Check if established journalistic outlets corroborate the claim.
+          </p>
+        </div>
+      </div>
+
+      <!-- Tip 2 -->
+      <div style="display: flex; gap: 14px; background: var(--surface-2); padding: 16px; border-radius: var(--radius-btn);">
+        <div style="width: 38px; height: 38px; min-width: 38px; background: var(--primary-glow); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: 700; font-size: 16px;">
+          2
+        </div>
+        <div>
+          <h4 style="font-size: 14px; color: var(--text); margin-bottom: 4px;">Conduct a Reverse Image Search</h4>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+            Use Google Lens, TinEye, or Bing Visual Search. Many viral fake posts recycle real imagery from unrelated accidents or foreign events that took place years earlier.
+          </p>
+        </div>
+      </div>
+
+      <!-- Tip 3 -->
+      <div style="display: flex; gap: 14px; background: var(--surface-2); padding: 16px; border-radius: var(--radius-btn);">
+        <div style="width: 38px; height: 38px; min-width: 38px; background: var(--primary-glow); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: 700; font-size: 16px;">
+          3
+        </div>
+        <div>
+          <h4 style="font-size: 14px; color: var(--text); margin-bottom: 4px;">Verify the Date, Time &amp; Location</h4>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+            Look at background signs, street architecture, license plates, and weather conditions. Verify when the story first appeared online rather than assuming it is breaking news today.
+          </p>
+        </div>
+      </div>
+
+      <!-- Tip 4 -->
+      <div style="display: flex; gap: 14px; background: var(--surface-2); padding: 16px; border-radius: var(--radius-btn);">
+        <div style="width: 38px; height: 38px; min-width: 38px; background: var(--primary-glow); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: 700; font-size: 16px;">
+          4
+        </div>
+        <div>
+          <h4 style="font-size: 14px; color: var(--text); margin-bottom: 4px;">Beware of Urgency &amp; Emotional Bait</h4>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+            Phrases like <em>"Share before WhatsApp blocks this"</em> or stories engineered to trigger outrage and panic are designed to bypass critical thinking. Pause and verify before forwarding.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: Frequently Asked Questions (FAQ Accordion) -->
+  <div class="card">
+    <div class="card-header">
+      <h3 style="font-size: 16px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px;">
+        <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: var(--primary); fill: none; stroke-width: 2;"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        Frequently Asked Questions (FAQ)
+      </h3>
+    </div>
+    
+    <div class="faq-accordion">
+      <details class="faq-item" open>
+        <summary class="faq-question">Does DeepGuard guarantee 100% detection accuracy?</summary>
+        <div class="faq-answer">
+          No automated AI system can guarantee 100% accuracy. DeepGuard evaluates structural, linguistic, visual, and semantic probability indicators to produce a risk estimate. It serves as an assistive verification shield, not an absolute arbiter of fact.
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">What is semantic mismatch versus factual mismatch?</summary>
+        <div class="faq-answer">
+          A semantic mismatch occurs when the image content contradicts the accompanying caption (e.g., a photo of a sunny beach attached to a claim about snowstorms in Murree). A factual mismatch involves false data points (e.g., an inaccurate economic metric) that require external knowledge base lookup.
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">Why does social media strip EXIF metadata from photos?</summary>
+        <div class="faq-answer">
+          Platforms like WhatsApp, Facebook, and Instagram automatically scrub camera metadata, GPS tags, and timestamps for user privacy. DeepGuard still analyzes pixel features, compression artifacts, and cross-modal context even when metadata has been removed.
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">Can I analyze Urdu, Roman Urdu, or regional claims?</summary>
+        <div class="faq-answer">
+          DeepGuard’s linguistic models are trained on English language disinformation benchmarks. For regional claims, transliterated statements or translated text can be analyzed, but English inputs achieve optimal calibration.
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">How does DeepGuard protect user privacy during analysis?</summary>
+        <div class="faq-answer">
+          Analysis data belongs exclusively to your user account. Uploaded media is processed through local neural models on our server and is never sent to third-party commercial cloud tracking or advertising networks.
+        </div>
+      </details>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

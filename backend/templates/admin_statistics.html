@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Statistics — DeepGuard{% endblock %}
+{% block page_title %}Platform Statistics{% endblock %}
+
+{% block content %}
+<div style="max-width:1200px;margin:0 auto;">
+
+  <div class="alert alert-info" style="margin-bottom:var(--space-4);">
+    <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+    <span>Statistics are aggregated across <strong>all users</strong>. Data is read-only.</span>
+  </div>
+
+  <!-- Row 1: Verdict + Input Type -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);margin-bottom:var(--space-4);">
+
+    <div class="card">
+      <div class="card-header"><h4 class="card-title">Verdict Distribution</h4></div>
+      <div class="card-body" style="height:280px;position:relative;">
+        <canvas id="verdictChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h4 class="card-title">Input Type Distribution</h4></div>
+      <div class="card-body" style="height:280px;position:relative;">
+        <canvas id="inputChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Row 2: Module Averages -->
+  <div class="card">
+    <div class="card-header"><h4 class="card-title">Average Module Scores (0–1 scale)</h4></div>
+    <div class="card-body" style="height:300px;position:relative;">
+      <canvas id="moduleChart"></canvas>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+  const textColor = isDark ? '#8892a4' : '#555e6d';
+
+  // Verdict Doughnut
+  new Chart(document.getElementById('verdictChart'), {
+    type: 'doughnut',
+    data: {
+      labels: {{ verdict_labels | safe }},
+      datasets: [{ data: {{ verdict_data | safe }}, backgroundColor: ['#ef4444','#22c55e','#f59e0b','#6b7280'], borderWidth: 2, borderColor: 'var(--surface)' }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { color: textColor, padding: 14, font: { size: 12 } } } }
+    }
+  });
+
+  // Input Type Pie
+  new Chart(document.getElementById('inputChart'), {
+    type: 'pie',
+    data: {
+      labels: {{ input_labels | safe }},
+      datasets: [{ data: {{ input_data | safe }}, backgroundColor: ['#00E5FF','#7C3AED','#f59e0b','#22c55e'], borderWidth: 2, borderColor: 'var(--surface)' }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { color: textColor, padding: 14, font: { size: 12 } } } }
+    }
+  });
+
+  // Module Bar
+  new Chart(document.getElementById('moduleChart'), {
+    type: 'bar',
+    data: {
+      labels: {{ module_labels | safe }},
+      datasets: [{
+        label: 'Avg Score',
+        data: {{ module_data | safe }},
+        backgroundColor: 'rgba(0,229,255,0.7)',
+        borderColor: '#00E5FF',
+        borderWidth: 1,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: textColor }, grid: { color: gridColor } },
+        y: { ticks: { color: textColor }, grid: { color: gridColor }, beginAtZero: true, max: 1 }
+      }
+    }
+  });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Admin — Feedback Messages — DeepGuard{% endblock %}
+{% block page_title %}Feedback Messages{% endblock %}
+
+{% block content %}
+<div style="max-width:1100px;margin:0 auto;">
+
+  <div class="alert alert-info" style="margin-bottom:var(--space-4);">
+    <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+    <span>Showing all feedback from all users. Click <strong>Mark Reviewed</strong> to update a message's status.</span>
+  </div>
+
+  {% if msgs %}
+  <div style="display:flex;flex-direction:column;gap:var(--space-3);">
+    {% for m in msgs %}
+    <div class="card" id="feedback-card-{{ m.id }}" style="border-left:4px solid {{ 'var(--danger)' if m.status == 'new' else 'var(--border)' }};">
+      <div class="card-header" style="flex-wrap:wrap;gap:var(--space-2);">
+        <div style="display:flex;align-items:center;gap:var(--space-2);flex:1;min-width:0;">
+          <span class="chip {{ 'chip-fake' if m.status == 'new' else 'chip-real' }}" id="status-chip-{{ m.id }}">
+            {{ 'New' if m.status == 'new' else 'Reviewed' }}
+          </span>
+          <span class="chip chip-info">{{ m.type }}</span>
+          <h4 class="card-title" style="margin:0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ m.subject }}</h4>
+        </div>
+        <div style="display:flex;align-items:center;gap:var(--space-3);flex-shrink:0;">
+          <span style="font-size:12px;color:var(--text-muted);">
+            {{ m.user.email if m.user else '—' }}
+            &nbsp;·&nbsp;
+            {{ m.created_at.strftime('%b %d, %Y %H:%M') if m.created_at else '—' }}
+          </span>
+          {% if m.status == 'new' %}
+          <button
+            class="btn btn-primary btn-sm"
+            id="review-btn-{{ m.id }}"
+            onclick="markReviewed({{ m.id }})"
+          >Mark Reviewed</button>
+          {% else %}
+          <button class="btn btn-secondary btn-sm" disabled style="opacity:0.5;cursor:not-allowed;">Reviewed</button>
+          {% endif %}
+        </div>
+      </div>
+      <div class="card-body">
+        <p style="font-size:14px;color:var(--text);margin:0;line-height:1.6;white-space:pre-wrap;">{{ m.message }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card">
+    <div class="card-body" style="text-align:center;padding:var(--space-6);">
+      <svg viewBox="0 0 24 24" style="width:48px;height:48px;stroke:var(--text-muted);fill:none;stroke-width:1.5;margin-bottom:12px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      <div style="font-size:15px;color:var(--text-muted);">No feedback messages yet.</div>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function markReviewed(msgId) {
+  fetch('/admin/feedback/' + msgId + '/review', { method: 'POST' })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'reviewed') {
+        // Update chip
+        const chip = document.getElementById('status-chip-' + msgId);
+        if (chip) { chip.textContent = 'Reviewed'; chip.className = 'chip chip-real'; }
+        // Update button
+        const btn = document.getElementById('review-btn-' + msgId);
+        if (btn) { btn.textContent = 'Reviewed'; btn.disabled = true; btn.className = 'btn btn-secondary btn-sm'; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
+        // Update border
+        const card = document.getElementById('feedback-card-' + msgId);
+        if (card) card.style.borderLeftColor = 'var(--border)';
+      }
+    })
+    .catch(err => console.error('Mark reviewed error:', err));
+}
+</script>
+{% endblock %}

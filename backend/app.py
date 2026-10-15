@@ -30,8 +30,12 @@ from flask import (
     redirect,
     url_for,
     session,
-    flash
+    flash,
+    g,
+    abort
 )
+import click
+from werkzeug.local import LocalProxy
 
 from database import db
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -39,7 +43,7 @@ from werkzeug.utils import secure_filename
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from metadata_analysis import extract_important_metadata
 from xai_analysis import get_important_words
-from models import User, Prediction, Notification, PasswordReset
+from models import User, Prediction, Notification, PasswordReset, FeedbackMessage, SavedReport
 
 # =====================================
 # Flask App Configuration
@@ -62,6 +66,28 @@ def request_entity_too_large(error):
 
 with app.app_context():
     db.create_all()
+
+@app.before_request
+def load_logged_in_user():
+    user_id = session.get("user_id")
+    if user_id is None:
+        g.current_user = None
+    else:
+        g.current_user = User.query.get(user_id)
+
+current_user = LocalProxy(lambda: g.current_user)
+
+@app.context_processor
+def inject_user_and_theme():
+    user = g.get("current_user", None)
+    theme = session.get("theme")
+    if not theme and user and getattr(user, "theme", None):
+        theme = user.theme
+        session["theme"] = theme
+    return {
+        "current_user": user,
+        "current_theme": theme or "dark"
+    }
 
 # =====================================
 # Sentiment Analyzer Initialization
@@ -216,6 +242,43 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "user_id" not in session:
+            return redirect(url_for("login"))
+        user = g.get("current_user")
+        if not user or getattr(user, "role", "user") != "admin":
+            abort(403)
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.cli.command("create-admin")
+@click.option("--email", prompt="Admin email", help="Admin account email address")
+@click.password_option("--password", prompt="Admin password", help="Admin account password (min 8 chars)")
+def create_admin(email, password):
+    """Create or promote a user to admin role. Reads credentials from prompt or --email/--password flags."""
+    with app.app_context():
+        if len(password) < 8:
+            click.echo("[!] Password must be at least 8 characters.")
+            return
+        user = User.query.filter_by(email=email.strip().lower()).first()
+        if user:
+            user.role = "admin"
+            db.session.commit()
+            click.echo(f"[+] Existing user '{user.name}' promoted to admin.")
+        else:
+            new_admin = User(
+                name=email.split("@")[0],
+                email=email.strip().lower(),
+                password_hash=generate_password_hash(password),
+                role="admin",
+                theme="dark"
+            )
+            db.session.add(new_admin)
+            db.session.commit()
+            click.echo(f"[+] Admin account created: {email}")
+
 # =====================================
 # Authentication Routes
 # =====================================
@@ -281,7 +344,11 @@ def login():
         session["user_id"] = user.id
         session["user_name"] = user.name
         session["user_email"] = user.email
+        session["theme"] = user.theme or "dark"
+        session["role"] = user.role or "user"
 
+        if getattr(user, "role", "user") == "admin":
+            return redirect(url_for("admin_dashboard"))
         return redirect(url_for("dashboard"))
 
     return render_template("login.html")
@@ -291,6 +358,20 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for("login"))
+
+
+@app.route("/api/user/theme", methods=["POST"])
+def update_theme():
+    data = request.get_json(silent=True) or {}
+    new_theme = data.get("theme", "dark")
+    if new_theme not in ["dark", "light"]:
+        new_theme = "dark"
+    session["theme"] = new_theme
+    user = g.get("current_user", None)
+    if user:
+        user.theme = new_theme
+        db.session.commit()
+    return jsonify({"status": "success", "theme": new_theme})
 
 # =====================================
 # Password Reset Routes (Task 6)
@@ -400,8 +481,189 @@ def dashboard():
 @app.route("/history")
 @login_required
 def history():
-    user_preds = Prediction.query.filter_by(user_id=session["user_id"]).order_by(Prediction.created_at.desc()).all()
-    return render_template("history.html", predictions=user_preds)
+    user_id = session["user_id"]
+    user_preds = Prediction.query.filter_by(user_id=user_id).order_by(Prediction.created_at.desc()).all()
+    saved_records = SavedReport.query.filter_by(user_id=user_id).all()
+    saved_dict = {sr.analysis_id: (sr.tag or "To verify later") for sr in saved_records}
+    return render_template("history.html", predictions=user_preds, saved_dict=saved_dict)
+
+
+@app.route("/help")
+@login_required
+def help_hub():
+    return render_template("help.html")
+
+
+@app.route("/insights")
+@login_required
+def insights():
+    user_id = session["user_id"]
+    preds = Prediction.query.filter_by(user_id=user_id).order_by(Prediction.created_at.asc()).all()
+
+    total = len(preds)
+    fake_count = sum(1 for p in preds if "FAKE" in p.prediction.upper())
+    real_count  = sum(1 for p in preds if "REAL" in p.prediction.upper())
+    avg_score = round(sum(p.confidence for p in preds) / total, 1) if total else 0
+
+    # Verdicts over time (last 30 days)
+    from collections import defaultdict
+    from datetime import date, timedelta
+    today = date.today()
+    days_labels, fake_trend, real_trend = [], [], []
+    for i in range(29, -1, -1):
+        d = today - timedelta(days=i)
+        label = d.strftime("%b %d")
+        days_labels.append(label)
+        day_preds = [p for p in preds if p.created_at and p.created_at.date() == d]
+        fake_trend.append(sum(1 for p in day_preds if "FAKE" in p.prediction.upper()))
+        real_trend.append(sum(1 for p in day_preds if "REAL" in p.prediction.upper()))
+
+    # Risk level distribution (derived from confidence + verdict)
+    risk_low    = sum(1 for p in preds if p.confidence < 60)
+    risk_medium = sum(1 for p in preds if 60 <= p.confidence < 80)
+    risk_high   = sum(1 for p in preds if p.confidence >= 80)
+
+    # Input type distribution
+    text_only  = sum(1 for p in preds if p.input_type == "Text")
+    image_only = sum(1 for p in preds if p.input_type == "Image")
+    multimodal = sum(1 for p in preds if p.input_type == "Multimodal")
+
+    # Average module scores from xai_summary
+    module_names  = ["Text", "Image", "Cross-Modal", "Sentiment", "Viral", "Metadata", "Fusion"]
+    module_keys   = ["text_score", "image_score", "cross_modal_score",
+                     "sentiment_score", "viral_score", "metadata_score", "final_score"]
+    module_sums   = defaultdict(float)
+    module_counts = defaultdict(int)
+    for p in preds:
+        if p.xai_summary:
+            try:
+                data = json.loads(p.xai_summary)
+                pipe = data.get("pipeline", {})
+                for key in module_keys:
+                    val = pipe.get(key)
+                    if val is not None:
+                        try:
+                            module_sums[key] += float(val)
+                            module_counts[key] += 1
+                        except (TypeError, ValueError):
+                            pass
+            except Exception:
+                pass
+    module_avgs = []
+    for key in module_keys:
+        if module_counts[key]:
+            module_avgs.append(round(module_sums[key] / module_counts[key], 1))
+        else:
+            module_avgs.append(0)
+
+    return render_template(
+        "insights.html",
+        total=total,
+        fake_count=fake_count,
+        real_count=real_count,
+        avg_score=avg_score,
+        days_labels=days_labels,
+        fake_trend=fake_trend,
+        real_trend=real_trend,
+        risk_low=risk_low,
+        risk_medium=risk_medium,
+        risk_high=risk_high,
+        text_only=text_only,
+        image_only=image_only,
+        multimodal=multimodal,
+        module_names=module_names,
+        module_avgs=module_avgs,
+    )
+
+
+@app.route("/library")
+@login_required
+def library():
+    library_path = BASE_DIR / "data" / "library.json"
+    items = []
+    if library_path.exists():
+        try:
+            with open(library_path, "r", encoding="utf-8") as f:
+                items = json.load(f)
+        except Exception as e:
+            print("Error loading library.json:", e)
+    return render_template("library.html", library_items=items)
+
+
+@app.route("/quiz")
+@login_required
+def quiz():
+    quiz_path = BASE_DIR / "data" / "quiz.json"
+    questions = []
+    if quiz_path.exists():
+        try:
+            with open(quiz_path, "r", encoding="utf-8") as f:
+                questions = json.load(f)
+        except Exception as e:
+            print("Error loading quiz.json:", e)
+    return render_template("quiz.html", quiz_questions=questions)
+
+
+@app.route("/feedback", methods=["GET", "POST"])
+@login_required
+def feedback():
+    user_id = session["user_id"]
+    if request.method == "POST":
+        msg_type = request.form.get("type", "Suggestion").strip()
+        subject = request.form.get("subject", "").strip()
+        message = request.form.get("message", "").strip()
+
+        if msg_type not in ["Bug", "Suggestion", "Other"]:
+            msg_type = "Other"
+
+        submissions = FeedbackMessage.query.filter_by(user_id=user_id).order_by(FeedbackMessage.created_at.desc()).all()
+
+        if not subject or len(subject) > 100:
+            return render_template(
+                "feedback.html",
+                form_error="Subject is required and cannot exceed 100 characters.",
+                entered_type=msg_type,
+                entered_subject=subject,
+                entered_message=message,
+                submissions=submissions
+            )
+
+        if not message or len(message) > 1000:
+            return render_template(
+                "feedback.html",
+                form_error="Message is required and cannot exceed 1000 characters.",
+                entered_type=msg_type,
+                entered_subject=subject,
+                entered_message=message,
+                submissions=submissions
+            )
+
+        new_feedback = FeedbackMessage(
+            user_id=user_id,
+            type=msg_type,
+            subject=subject,
+            message=message,
+            status="new"
+        )
+        db.session.add(new_feedback)
+        db.session.commit()
+
+        create_notification(
+            user_id=user_id,
+            title="Feedback Received",
+            message=f"Thank you! Your feedback '{subject[:40]}' was received and forwarded to our team.",
+            notif_type="info"
+        )
+
+        flash("Thank you! Your feedback has been submitted successfully.", "success")
+        return redirect(url_for("feedback"))
+
+    submissions = FeedbackMessage.query.filter_by(user_id=user_id).order_by(FeedbackMessage.created_at.desc()).all()
+    return render_template("feedback.html", submissions=submissions)
+
+
+
+
 
 
 @app.route("/history/delete/<int:id>", methods=["POST"])
@@ -565,6 +827,9 @@ def predict():
 @login_required
 def view_report(id):
     prediction = Prediction.query.filter_by(id=id, user_id=session["user_id"]).first_or_404()
+    saved_record = SavedReport.query.filter_by(user_id=session["user_id"], analysis_id=id).first()
+    is_saved = (saved_record is not None)
+    saved_tag = saved_record.tag if saved_record else ""
 
     xai_words = []
     human_exp = {}
@@ -590,8 +855,56 @@ def view_report(id):
         human_exp=human_exp,
         pipeline_result=pipeline_result,
         metadata_info=metadata_info,
-        viral_patterns=viral_patterns
+        viral_patterns=viral_patterns,
+        is_saved=is_saved,
+        saved_tag=saved_tag
     )
+
+
+@app.route("/api/reports/<int:analysis_id>/save", methods=["POST"])
+@login_required
+def toggle_save_report(analysis_id):
+    user_id = session["user_id"]
+    prediction = Prediction.query.filter_by(id=analysis_id, user_id=user_id).first()
+    if not prediction:
+        return jsonify({"error": "Analysis not found or unauthorized access."}), 404
+
+    data = request.get_json(silent=True) or {}
+    custom_tag = data.get("tag", "").strip() if data.get("tag") is not None else None
+    action = data.get("action")
+
+    existing = SavedReport.query.filter_by(user_id=user_id, analysis_id=analysis_id).first()
+
+    if action == "save":
+        if not existing:
+            existing = SavedReport(user_id=user_id, analysis_id=analysis_id, tag=custom_tag or "To verify later")
+            db.session.add(existing)
+        elif custom_tag is not None:
+            existing.tag = custom_tag
+        db.session.commit()
+        return jsonify({"status": "saved", "saved": True, "tag": existing.tag})
+
+    elif action == "remove":
+        if existing:
+            db.session.delete(existing)
+            db.session.commit()
+        return jsonify({"status": "removed", "saved": False})
+
+    else:
+        # Default toggle
+        if existing:
+            if custom_tag is not None and custom_tag != existing.tag:
+                existing.tag = custom_tag
+                db.session.commit()
+                return jsonify({"status": "updated", "saved": True, "tag": existing.tag})
+            db.session.delete(existing)
+            db.session.commit()
+            return jsonify({"status": "removed", "saved": False})
+        else:
+            new_saved = SavedReport(user_id=user_id, analysis_id=analysis_id, tag=custom_tag or "To verify later")
+            db.session.add(new_saved)
+            db.session.commit()
+            return jsonify({"status": "saved", "saved": True, "tag": new_saved.tag})
 
 # =====================================
 # Notification Routes (Task 5)
@@ -716,6 +1029,218 @@ def change_password():
     create_notification(user.id, "Password Changed", "Your account password was updated successfully.", "success")
     flash("Password updated successfully!", "success")
     return redirect(url_for("profile"))
+
+# =====================================
+# Admin Panel Routes
+# =====================================
+
+@app.route("/admin")
+@admin_required
+def admin_dashboard():
+    from sqlalchemy import func, cast, Date
+
+    total_users = User.query.count()
+    total_analyses = Prediction.query.count()
+    fake_count = Prediction.query.filter(Prediction.prediction.like("%FAKE%")).count()
+    real_count = Prediction.query.filter(Prediction.prediction.like("%REAL%")).count()
+    today = datetime.utcnow().date()
+    analyses_today = Prediction.query.filter(
+        cast(Prediction.created_at, Date) == today
+    ).count()
+    new_feedback = FeedbackMessage.query.filter_by(status="new").count()
+
+    # Last 30 days daily chart
+    thirty_days_ago = datetime.utcnow() - timedelta(days=29)
+    daily_rows = (
+        db.session.query(
+            cast(Prediction.created_at, Date).label("day"),
+            func.count(Prediction.id).label("cnt")
+        )
+        .filter(Prediction.created_at >= thirty_days_ago)
+        .group_by("day")
+        .order_by("day")
+        .all()
+    )
+    # Build a full 30-day series (fill zeros)
+    daily_map = {str(r.day): r.cnt for r in daily_rows}
+    chart_labels, chart_data = [], []
+    for i in range(29, -1, -1):
+        d = (datetime.utcnow() - timedelta(days=i)).date()
+        chart_labels.append(d.strftime("%b %d"))
+        chart_data.append(daily_map.get(str(d), 0))
+
+    # 5 most recent analyses (all users)
+    recent = (
+        Prediction.query
+        .join(User, Prediction.user_id == User.id)
+        .order_by(Prediction.created_at.desc())
+        .limit(5)
+        .all()
+    )
+
+    return render_template(
+        "admin_dashboard.html",
+        total_users=total_users,
+        total_analyses=total_analyses,
+        fake_count=fake_count,
+        real_count=real_count,
+        analyses_today=analyses_today,
+        new_feedback=new_feedback,
+        chart_labels=json.dumps(chart_labels),
+        chart_data=json.dumps(chart_data),
+        recent=recent,
+    )
+
+
+@app.route("/admin/statistics")
+@admin_required
+def admin_statistics():
+    # Verdict distribution
+    from sqlalchemy import func
+    verdict_rows = (
+        db.session.query(Prediction.prediction, func.count(Prediction.id))
+        .group_by(Prediction.prediction)
+        .all()
+    )
+    verdict_labels = [r[0] for r in verdict_rows]
+    verdict_data = [r[1] for r in verdict_rows]
+
+    # Input type distribution
+    input_rows = (
+        db.session.query(Prediction.input_type, func.count(Prediction.id))
+        .group_by(Prediction.input_type)
+        .all()
+    )
+    input_labels = [r[0] for r in input_rows]
+    input_data = [r[1] for r in input_rows]
+
+    # Module average scores from xai_summary JSON
+    text_scores, image_scores, cross_scores, sentiment_scores, viral_scores, meta_scores, final_scores = [], [], [], [], [], [], []
+    for pred in Prediction.query.filter(Prediction.xai_summary.isnot(None)).all():
+        try:
+            summary = json.loads(pred.xai_summary) if isinstance(pred.xai_summary, str) else pred.xai_summary
+            if isinstance(summary, dict):
+                if summary.get("text_score") is not None:
+                    text_scores.append(float(summary["text_score"]))
+                if summary.get("image_score") is not None:
+                    image_scores.append(float(summary["image_score"]))
+                if summary.get("cross_modal_score") is not None:
+                    cross_scores.append(float(summary["cross_modal_score"]))
+                if summary.get("sentiment_score") is not None:
+                    sentiment_scores.append(float(summary["sentiment_score"]))
+                if summary.get("viral_score") is not None:
+                    viral_scores.append(float(summary["viral_score"]))
+                if summary.get("metadata_score") is not None:
+                    meta_scores.append(float(summary["metadata_score"]))
+                if summary.get("final_score") is not None:
+                    final_scores.append(float(summary["final_score"]))
+        except Exception:
+            pass
+
+    def avg(lst):
+        return round(sum(lst) / len(lst), 2) if lst else 0
+
+    module_labels = ["Text", "Image", "Cross-Modal", "Sentiment", "Viral", "Metadata", "Final"]
+    module_data = [
+        avg(text_scores), avg(image_scores), avg(cross_scores),
+        avg(sentiment_scores), avg(viral_scores), avg(meta_scores), avg(final_scores)
+    ]
+
+    return render_template(
+        "admin_statistics.html",
+        verdict_labels=json.dumps(verdict_labels),
+        verdict_data=json.dumps(verdict_data),
+        input_labels=json.dumps(input_labels),
+        input_data=json.dumps(input_data),
+        module_labels=json.dumps(module_labels),
+        module_data=json.dumps(module_data),
+    )
+
+
+@app.route("/admin/reports")
+@admin_required
+def admin_reports():
+    page = request.args.get("page", 1, type=int)
+    verdict_f = request.args.get("verdict", "").strip()
+    date_f = request.args.get("date", "").strip()
+
+    query = Prediction.query.join(User, Prediction.user_id == User.id)
+    if verdict_f:
+        query = query.filter(Prediction.prediction.like(f"%{verdict_f}%"))
+    if date_f:
+        try:
+            filter_date = datetime.strptime(date_f, "%Y-%m-%d").date()
+            from sqlalchemy import func, cast, Date
+            query = query.filter(cast(Prediction.created_at, Date) == filter_date)
+        except ValueError:
+            pass
+
+    pagination = query.order_by(Prediction.created_at.desc()).paginate(page=page, per_page=20, error_out=False)
+
+    return render_template(
+        "admin_reports.html",
+        pagination=pagination,
+        verdict_f=verdict_f,
+        date_f=date_f,
+    )
+
+
+@app.route("/admin/reports/<int:report_id>")
+@admin_required
+def admin_view_report(report_id):
+    prediction = Prediction.query.get_or_404(report_id)
+    owner = User.query.get(prediction.user_id)
+
+    pipeline_result = None
+    metadata_info = None
+    viral_patterns = None
+    human_exp = None
+    xai_words = []
+
+    if prediction.xai_summary:
+        try:
+            summary = json.loads(prediction.xai_summary) if isinstance(prediction.xai_summary, str) else prediction.xai_summary
+            if isinstance(summary, dict):
+                pipeline_result = summary.get("pipeline_result")
+                metadata_info = summary.get("metadata_info")
+                viral_patterns = summary.get("viral_patterns")
+                human_exp = summary.get("human_explanation")
+                xai_words = summary.get("xai_words", [])
+        except Exception:
+            pass
+
+    return render_template(
+        "admin_report_view.html",
+        prediction=prediction,
+        owner=owner,
+        pipeline_result=pipeline_result,
+        metadata_info=metadata_info,
+        viral_patterns=viral_patterns,
+        human_exp=human_exp,
+        xai_words=xai_words,
+    )
+
+
+@app.route("/admin/feedback")
+@admin_required
+def admin_feedback():
+    msgs = (
+        FeedbackMessage.query
+        .join(User, FeedbackMessage.user_id == User.id)
+        .order_by(FeedbackMessage.created_at.desc())
+        .all()
+    )
+    return render_template("admin_feedback.html", msgs=msgs)
+
+
+@app.route("/admin/feedback/<int:msg_id>/review", methods=["POST"])
+@admin_required
+def admin_review_feedback(msg_id):
+    msg = FeedbackMessage.query.get_or_404(msg_id)
+    msg.status = "reviewed"
+    db.session.commit()
+    return jsonify({"status": "reviewed", "id": msg_id})
+
 
 # =====================================
 # Modules & About Info Pages

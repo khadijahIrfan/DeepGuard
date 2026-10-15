@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "text": "BREAKING: NASA telescopes discover a massive crystalline water pyramid orbiting Neptune! Scientists confirm ancient signs of life.",
+    "image": "quiz_1.jpg",
+    "correct_answer": "fake",
+    "explanation": "This post uses synthetic sci-fi rendering paired with sensational pseudoscientific claims. NASA makes all telescope findings public on official peer-reviewed portals, with zero evidence of artificial orbital pyramids."
+  },
+  {
+    "id": 2,
+    "text": "The James Webb Space Telescope captures the most detailed infrared view of the Ring Nebula (M57), revealing intricate gas shells and dying central star.",
+    "image": "quiz_2.jpg",
+    "correct_answer": "real",
+    "explanation": "Authentic astronomical observation released jointly by NASA, ESA, and CSA through the Space Telescope Science Institute, displaying genuine infrared spectroscopic measurements."
+  },
+  {
+    "id": 3,
+    "text": "URGENT WARNING: Boiling lemon peels with aspirin kills 100% of seasonal flu strains in 3 hours! Forward to every family group immediately!",
+    "image": "quiz_3.jpg",
+    "correct_answer": "fake",
+    "explanation": "A classic viral health hoax utilizing urgency triggers ('URGENT WARNING', 'forward immediately'). Medical health bodies confirm aspirin and citrus cannot eradicate influenza strains in three hours."
+  },
+  {
+    "id": 4,
+    "text": "A newly restored century-old railway bridge in the northern highlands withstands record monsoonal flash floods without structural deformation.",
+    "image": "quiz_4.jpg",
+    "correct_answer": "real",
+    "explanation": "Verified regional civil engineering report supported by provincial railway authorities, showing documented architectural retrofitting completed earlier this year."
+  },
+  {
+    "id": 5,
+    "text": "LEAKED PHOTO: French President spotted serving espresso at an ordinary Paris street cafe during nationwide transit strike negotiations.",
+    "image": "quiz_5.jpg",
+    "correct_answer": "fake",
+    "explanation": "An AI-generated deepfake portrait. Magnification reveals characteristic midjourney smoothing on hands, distorted cafe signage typography, and inconsistent background facial structures."
+  },
+  {
+    "id": 6,
+    "text": "Archaeologists at the Harappa excavation site unearth a well-preserved terracotta seal featuring unicorn motifs dating back to 2500 BCE.",
+    "image": "quiz_6.jpg",
+    "correct_answer": "real",
+    "explanation": "Genuine Indus Valley Civilization archaeological artifact cataloged by the Department of Archaeology and Museums with established stratigraphic context."
+  },
+  {
+    "id": 7,
+    "text": "SHOCKING SCANDAL: State Bank announces all ATM withdrawals will be subject to an emergency 15% overnight levy starting midnight! Check balance NOW!",
+    "image": "quiz_7.jpg",
+    "correct_answer": "fake",
+    "explanation": "A fabricated banking screenshot created to provoke panic. Central banks notify monetary policy adjustments exclusively via official gazettes, press briefings, and verified websites."
+  },
+  {
+    "id": 8,
+    "text": "Automated drone reforestation initiative successfully disperses native mangrove seed pods across the Indus delta coastal wetlands.",
+    "image": "quiz_8.jpg",
+    "correct_answer": "real",
+    "explanation": "Documented environmental conservation project conducted by regional forestry departments and WWF coastal conservation initiatives."
+  }
+]

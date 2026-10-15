@@ -5,11 +5,12 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-:root {
-  /* Colors */
+:root, [data-theme="dark"] {
+  /* Colors - Dark Navy & Electric Cyan */
   --bg: #0B1220;
   --surface: #121B2E;
   --surface-2: #1A2540;
+  --surface-card: #152037;
   --border: #243252;
   --border-light: rgba(36, 50, 82, 0.6);
   --text: #E6EDF7;
@@ -18,6 +19,7 @@
   --primary: #22D3EE;
   --primary-hover: #06B6D4;
   --primary-glow: rgba(34, 211, 238, 0.18);
+  --primary-text: #0B1220;
   
   --success: #22C55E;
   --success-bg: rgba(34, 197, 94, 0.12);
@@ -27,6 +29,17 @@
   --danger-bg: rgba(239, 68, 68, 0.12);
   --info: #3B82F6;
   --info-bg: rgba(59, 130, 246, 0.12);
+
+  --badge-info-text: #93C5FD;
+  --badge-success-text: #86EFAC;
+  --badge-warning-text: #FDE047;
+  --badge-danger-text: #FCA5A5;
+
+  --hero-bg: radial-gradient(circle at 50% 0%, #152342 0%, #0B1220 70%);
+  --hero-grid: rgba(255, 255, 255, 0.03);
+
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.35);
 
   /* Typography */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -43,13 +56,48 @@
   --radius-btn: 8px;
   --radius-sm: 6px;
   --radius-pill: 9999px;
-  --shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.35);
 
   /* Layout dimensions */
   --sidebar-width: 250px;
   --sidebar-collapsed: 72px;
   --topbar-height: 70px;
+}
+
+[data-theme="light"] {
+  /* Colors - Clean Modern High-Contrast Light Theme */
+  --bg: #F4F7FB;
+  --surface: #FFFFFF;
+  --surface-2: #EDF2F7;
+  --surface-card: #FFFFFF;
+  --border: #CBD5E1;
+  --border-light: rgba(203, 213, 225, 0.7);
+  --text: #0F172A;
+  --text-muted: #475569;
+  
+  --primary: #0284C7;
+  --primary-hover: #0369A1;
+  --primary-glow: rgba(2, 132, 199, 0.18);
+  --primary-text: #FFFFFF;
+  
+  --success: #16A34A;
+  --success-bg: rgba(22, 163, 74, 0.12);
+  --warning: #D97706;
+  --warning-bg: rgba(217, 119, 6, 0.12);
+  --danger: #DC2626;
+  --danger-bg: rgba(220, 38, 38, 0.12);
+  --info: #2563EB;
+  --info-bg: rgba(37, 99, 235, 0.12);
+
+  --badge-info-text: #1D4ED8;
+  --badge-success-text: #15803D;
+  --badge-warning-text: #B45309;
+  --badge-danger-text: #B91C1C;
+
+  --hero-bg: radial-gradient(circle at 50% 0%, #E2EBF6 0%, #F4F7FB 70%);
+  --hero-grid: rgba(0, 0, 0, 0.04);
+
+  --shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.12);
 }
 
 /* Base resets */
@@ -127,7 +175,7 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0B1220;
+  color: var(--primary-text);
   font-weight: 800;
   font-size: 18px;
   box-shadow: 0 0 12px var(--primary-glow);
@@ -254,7 +302,7 @@ a:hover {
   height: 34px;
   min-width: 34px;
   background: var(--primary);
-  color: #0B1220;
+  color: var(--primary-text);
   border-radius: var(--radius-pill);
   display: flex;
   align-items: center;
@@ -495,6 +543,50 @@ a:hover {
   color: var(--primary);
 }
 
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  position: relative;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-btn);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--border);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.theme-toggle-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  transition: transform 0.25s ease;
+}
+
+[data-theme="dark"] .theme-icon-light {
+  display: block;
+}
+[data-theme="dark"] .theme-icon-dark {
+  display: none;
+}
+[data-theme="light"] .theme-icon-light {
+  display: none;
+}
+[data-theme="light"] .theme-icon-dark {
+  display: block;
+}
+
 .notif-bell-btn svg {
   width: 20px;
   height: 20px;
@@ -699,7 +791,7 @@ a:hover {
 
 .btn-primary {
   background: var(--primary);
-  color: #0B1220;
+  color: var(--primary-text);
 }
 
 .btn-primary:hover {
@@ -862,6 +954,96 @@ textarea.input-control {
   border: 1px solid var(--border);
 }
 
+/* Interactive Filter Chips */
+.filter-chips-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: var(--radius-pill);
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.filter-chip:hover {
+  background: var(--border);
+  color: var(--text);
+}
+
+.filter-chip.active {
+  background: var(--primary);
+  color: var(--primary-text);
+  border-color: var(--primary);
+  font-weight: 600;
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
+/* Bookmark Button & Tag Label Styles */
+.btn-bookmark {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-btn);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  vertical-align: middle;
+}
+
+.btn-bookmark:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn-bookmark.active {
+  background: var(--primary);
+  color: var(--primary-text);
+  border-color: var(--primary);
+  box-shadow: 0 0 8px var(--primary-glow);
+}
+
+.btn-bookmark svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+.btn-bookmark.active svg {
+  fill: currentColor;
+}
+
+.saved-tag-label {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  color: var(--primary);
+  border: 1px solid var(--border);
+  margin-left: 6px;
+  max-width: 110px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
 /* Alerts */
 .alert {
   padding: var(--space-4);
@@ -875,25 +1057,25 @@ textarea.input-control {
 
 .alert-info {
   background: var(--info-bg);
-  color: #93C5FD;
+  color: var(--badge-info-text);
   border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .alert-success {
   background: var(--success-bg);
-  color: #86EFAC;
+  color: var(--badge-success-text);
   border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
 .alert-warning {
   background: var(--warning-bg);
-  color: #FDE047;
+  color: var(--badge-warning-text);
   border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
 .alert-danger {
   background: var(--danger-bg);
-  color: #FCA5A5;
+  color: var(--badge-danger-text);
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
@@ -1428,6 +1610,62 @@ textarea.input-control {
     width: 300px;
     right: -50px;
   }
+}
+
+/* FAQ Accordion Styles */
+.faq-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 16px 20px;
+  transition: all 0.2s ease;
+}
+
+.faq-item[open] {
+  border-color: var(--primary);
+  background: var(--surface-2);
+}
+
+.faq-question {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text);
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+.faq-question::-webkit-details-marker {
+  display: none;
+}
+
+.faq-question::after {
+  content: "+";
+  font-size: 20px;
+  color: var(--primary);
+  font-weight: 700;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.faq-item[open] .faq-question::after {
+  content: "−";
+}
+
+.faq-answer {
+  margin-top: 12px;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 /* Print Stylesheet for Report Export */

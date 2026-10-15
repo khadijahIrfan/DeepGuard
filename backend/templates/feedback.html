@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback &amp; Suggestions — DeepGuard{% endblock %}
+{% block page_title %}Feedback &amp; Suggestions{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: var(--space-4); max-width: 1000px; margin: 0 auto;">
+
+  <!-- Header Banner -->
+  <div class="card" style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.08) 0%, rgba(59, 130, 246, 0.05) 100%); border-left: 4px solid var(--primary);">
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap;">
+      <div>
+        <h2 style="font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 6px;">
+          Send Feedback &amp; Feature Suggestions
+        </h2>
+        <p style="color: var(--text-muted); font-size: 14px; max-width: 780px; line-height: 1.6; margin: 0;">
+          Help us improve DeepGuard's multimodal detection accuracy and user experience. Report unexpected verdicts, report UI bugs, or suggest new media literacy features.
+        </p>
+      </div>
+      <span class="badge badge-info" style="align-self: flex-start; font-size: 12px; padding: 6px 12px;">
+        ✉️ User Support
+      </span>
+    </div>
+  </div>
+
+  <!-- Feedback Form Card -->
+  <div class="card">
+    <div class="card-header">
+      <h3 style="font-size: 16px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px;">
+        <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: var(--primary); fill: none; stroke-width: 2;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        Submit New Feedback
+      </h3>
+    </div>
+
+    {% if form_error %}
+    <div class="alert alert-danger" style="margin-bottom: var(--space-4);">
+      <span>{{ form_error }}</span>
+    </div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('feedback') }}" id="feedbackForm">
+      <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+        
+        <!-- Feedback Type -->
+        <div>
+          <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px;">
+            Feedback Type <span style="color: var(--danger);">*</span>
+          </label>
+          <select 
+            name="type" 
+            required 
+            style="width: 100%; padding: 10px 14px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-btn); color: var(--text); font-size: 14px;"
+          >
+            <option value="Bug" {% if entered_type == 'Bug' %}selected{% endif %}>🐛 Bug Report (Issue or Unexpected Error)</option>
+            <option value="Suggestion" {% if entered_type == 'Suggestion' or not entered_type %}selected{% endif %}>💡 Feature Suggestion or Improvement</option>
+            <option value="Other" {% if entered_type == 'Other' %}selected{% endif %}>📝 Other Inquiry / Feedback</option>
+          </select>
+        </div>
+
+        <!-- Subject -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label style="font-size: 13px; font-weight: 600; color: var(--text);">
+              Subject <span style="color: var(--danger);">*</span>
+            </label>
+            <span id="subjectCharCount" style="font-size: 12px; color: var(--text-muted);">0 / 100</span>
+          </div>
+          <input 
+            type="text" 
+            name="subject" 
+            id="feedbackSubject" 
+            maxlength="100" 
+            required 
+            placeholder="Brief summary of the issue or idea (max 100 characters)" 
+            value="{{ entered_subject or '' }}"
+            style="width: 100%; padding: 10px 14px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-btn); color: var(--text); font-size: 14px;"
+          >
+        </div>
+
+        <!-- Message -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label style="font-size: 13px; font-weight: 600; color: var(--text);">
+              Message Details <span style="color: var(--danger);">*</span>
+            </label>
+            <span id="messageCharCount" style="font-size: 12px; color: var(--text-muted);">0 / 1000</span>
+          </div>
+          <textarea 
+            name="message" 
+            id="feedbackMessage" 
+            maxlength="1000" 
+            rows="5" 
+            required 
+            placeholder="Describe the bug, inaccurate prediction, or suggestion in detail (max 1000 characters)..." 
+            style="width: 100%; padding: 12px 14px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-btn); color: var(--text); font-size: 14px; font-family: var(--font-family); resize: vertical;"
+          >{{ entered_message or '' }}</textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <div style="display: flex; justify-content: flex-end; margin-top: 6px;">
+          <button type="submit" class="btn btn-primary" style="padding: 10px 24px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            <span>Submit Feedback</span>
+          </button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+
+  <!-- Previous Submissions Card -->
+  <div class="card">
+    <div class="card-header" style="display: flex; align-items: center; justify-content: space-between;">
+      <h3 style="font-size: 16px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px;">
+        <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: var(--primary); fill: none; stroke-width: 2;"><polyline points="12 8 12 12 14 14"></polyline><path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5"></path></svg>
+        My Previous Submissions
+      </h3>
+      <span style="font-size: 12px; color: var(--text-muted);">{{ submissions|length }} total</span>
+    </div>
+
+    {% if submissions %}
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      {% for item in submissions %}
+      <div style="background: var(--surface-2); border-radius: var(--radius-btn); padding: 14px 16px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="chip {% if item.type == 'Bug' %}chip-fake{% elif item.type == 'Suggestion' %}chip-info{% else %}chip-muted{% endif %}">
+              {{ item.type }}
+            </span>
+            <strong style="color: var(--text); font-size: 14.5px;">{{ item.subject }}</strong>
+          </div>
+          
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 12px; color: var(--text-muted);">
+              {{ item.created_at.strftime('%b %d, %Y • %H:%M') if item.created_at else '' }}
+            </span>
+            {% if item.status == 'reviewed' %}
+            <span class="chip chip-real" title="Reviewed by DeepGuard Team">
+              ✓ Reviewed
+            </span>
+            {% else %}
+            <span class="chip chip-warning" title="Under Review">
+              ⏳ New
+            </span>
+            {% endif %}
+          </div>
+        </div>
+
+        <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.55; margin: 0; white-space: pre-wrap;">{{ item.message }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: var(--space-4); color: var(--text-muted);">
+      <p style="font-size: 14px; margin: 0;">You have not submitted any feedback yet. Your submissions will appear here along with their review status.</p>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const subjInput = document.getElementById('feedbackSubject');
+  const subjCount = document.getElementById('subjectCharCount');
+  const msgInput = document.getElementById('feedbackMessage');
+  const msgCount = document.getElementById('messageCharCount');
+
+  if (subjInput && subjCount) {
+    subjCount.textContent = `${subjInput.value.length} / 100`;
+    subjInput.addEventListener('input', () => {
+      subjCount.textContent = `${subjInput.value.length} / 100`;
+    });
+  }
+
+  if (msgInput && msgCount) {
+    msgCount.textContent = `${msgInput.value.length} / 1000`;
+    msgInput.addEventListener('input', () => {
+      msgCount.textContent = `${msgInput.value.length} / 1000`;
+    });
+  }
+});
+</script>
+{% endblock %}
