@@ -411,7 +411,10 @@
         question: query
       })
     })
-    .then(r => r.json().then(data => ({ status: r.status, data: data })))
+    .then(async r => {
+      const data = await r.json().catch(() => ({ error: 'Server returned an invalid response (' + r.status + ').' }));
+      return { status: r.status, data: data };
+    })
     .then(res => {
       const content = aiBubble.querySelector('.ai-chat-content');
       if (res.status === 200 && res.data.status === 'success') {
@@ -423,7 +426,7 @@
         if (content) {
           content.style.opacity = '1';
           content.style.color = 'var(--danger)';
-          content.textContent = res.data.error || "I don't have information on that.";
+          content.textContent = res.data.error || "Unable to get an answer at this time.";
         }
       }
       input.disabled = false;
@@ -435,7 +438,8 @@
       const content = aiBubble.querySelector('.ai-chat-content');
       if (content) {
         content.style.opacity = '1';
-        content.textContent = "I don't have information on that.";
+        content.style.color = 'var(--danger)';
+        content.textContent = "Connection error. Please check server connection.";
       }
       input.disabled = false;
       if (sendBtn) sendBtn.disabled = false;
