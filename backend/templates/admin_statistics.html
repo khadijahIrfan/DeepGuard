@@ -6,6 +6,17 @@
 {% block content %}
 <div style="max-width:1200px;margin:0 auto;">
 
+  <!-- Stats Hero Banner -->
+  <div class="page-hero-banner" style="margin-bottom:var(--space-4); padding: var(--space-4) var(--space-5);">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--space-3);">
+      <div>
+        <h2 style="font-size:20px; font-weight:800; margin:0 0 4px; color:var(--text);">📊 Platform Statistics</h2>
+        <div style="font-size:13px; color:var(--text-muted);">Aggregated read-only data across all registered users.</div>
+      </div>
+      <span class="chip chip-info">🛡️ Admin Only</span>
+    </div>
+  </div>
+
   <div class="alert alert-info" style="margin-bottom:var(--space-4);">
     <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
     <span>Statistics are aggregated across <strong>all users</strong>. Data is read-only.</span>

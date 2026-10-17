@@ -143,8 +143,82 @@ function initNotificationSystem() {
 
   if (!bellBtn || !dropdown) return;
 
-  // Fetch unread count on page load
+  // Track previous unread count to detect NEW notifications
+  let _prevUnreadCount = -1;
+  let _toastContainer = null;
+  let _shownToastIds = new Set();
+
+  // ── Toast helpers ────────────────────────────────────────────────
+  function ensureToastContainer() {
+    if (!_toastContainer) {
+      _toastContainer = document.createElement('div');
+      _toastContainer.id = 'dg-toast-container';
+      Object.assign(_toastContainer.style, {
+        position: 'fixed', bottom: '96px', right: '24px',
+        zIndex: '3000', display: 'flex', flexDirection: 'column',
+        gap: '10px', pointerEvents: 'none', alignItems: 'flex-end'
+      });
+      document.body.appendChild(_toastContainer);
+    }
+    return _toastContainer;
+  }
+
+  function showNotifToast(notif) {
+    if (_shownToastIds.has(notif.id)) return;
+    _shownToastIds.add(notif.id);
+
+    const typeIcons = { analysis: '🔬', system: '🛡️', alert: '⚠️', success: '✅', warning: '⚡' };
+    const icon = typeIcons[notif.type] || '🔔';
+    const container = ensureToastContainer();
+
+    const wrapper = document.createElement('div');
+    wrapper.setAttribute('data-dg-toast', notif.id);
+    wrapper.style.cssText = 'pointer-events:auto;animation:toastSlideIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;';
+
+    wrapper.innerHTML = `
+      <div style="
+        display:flex;align-items:flex-start;gap:12px;
+        background:var(--surface);
+        border:1px solid rgba(34,211,238,0.3);
+        border-radius:16px;padding:14px 16px;
+        min-width:300px;max-width:360px;
+        box-shadow:0 12px 40px rgba(0,0,0,0.5),0 0 0 1px rgba(34,211,238,0.08) inset;
+        backdrop-filter:blur(12px);cursor:pointer;position:relative;overflow:hidden;
+      ">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#00E5FF,#22D3EE,#0EA5E9);"></div>
+        <div style="font-size:22px;line-height:1;flex-shrink:0;margin-top:2px;">${icon}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:700;font-size:13.5px;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(notif.title)}</div>
+          <div style="font-size:12.5px;color:var(--text-muted);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${escapeHtml(notif.message)}</div>
+          <div style="font-size:11px;color:rgba(34,211,238,0.7);margin-top:5px;">Tap to view →</div>
+        </div>
+        <button data-close-toast style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;padding:0;line-height:1;flex-shrink:0;opacity:0.7;" title="Dismiss">×</button>
+      </div>`;
+
+    // Click to navigate
+    wrapper.addEventListener('click', (e) => {
+      if (e.target.closest('[data-close-toast]')) { dismissToast(wrapper); return; }
+      markNotifRead(notif.id, notif.link || '');
+      dismissToast(wrapper);
+    });
+
+    container.prepend(wrapper);
+
+    // Auto-dismiss after 5s
+    const timer = setTimeout(() => dismissToast(wrapper), 5000);
+    wrapper._dismissTimer = timer;
+  }
+
+  function dismissToast(wrapper) {
+    clearTimeout(wrapper._dismissTimer);
+    wrapper.style.animation = 'toastSlideOut 0.3s ease forwards';
+    setTimeout(() => wrapper.remove(), 300);
+  }
+
+  // ── Fetch & poll ─────────────────────────────────────────────────
   fetchNotifications();
+  // Poll every 30 seconds for new notifications
+  setInterval(fetchNotifications, 30000);
 
   // Toggle Dropdown
   bellBtn.addEventListener('click', (e) => {
@@ -182,7 +256,15 @@ function initNotificationSystem() {
       const res = await fetch('/notifications');
       if (!res.ok) return;
       const data = await res.json();
-      
+
+      // ── Show toast for newly arrived notifications ────────────────
+      if (_prevUnreadCount >= 0 && data.unread_count > _prevUnreadCount) {
+        const unread = (data.notifications || []).filter(n => !n.is_read);
+        const diff = data.unread_count - _prevUnreadCount;
+        unread.slice(0, diff).forEach(n => showNotifToast(n));
+      }
+      _prevUnreadCount = data.unread_count;
+
       // Update badge
       if (badgeCount) {
         if (data.unread_count > 0) {
@@ -305,6 +387,7 @@ function initAnalyzeForm() {
         if (previewBox) previewBox.style.display = 'none';
         if (previewImg) previewImg.src = '';
         if (fileNameDisplay) fileNameDisplay.textContent = '';
+        hideImgBanner();
       });
     }
   }
@@ -314,6 +397,7 @@ function initAnalyzeForm() {
     if (!validTypes.includes(file.type)) {
       showError('Invalid file format. Please upload JPG, PNG, or WEBP images.');
       imageInput.value = '';
+      hideImgBanner();
       return;
     }
 
@@ -324,6 +408,7 @@ function initAnalyzeForm() {
       imageInput.value = '';
       if (previewBox) previewBox.style.display = 'none';
       if (fileNameDisplay) fileNameDisplay.textContent = '';
+      hideImgBanner();
       return;
     }
 
@@ -339,6 +424,22 @@ function initAnalyzeForm() {
     };
     reader.readAsDataURL(file);
     hideError();
+
+    // Show the image ready feedback banner
+    const banner = document.getElementById('imgReadyBanner');
+    const bannerTitle = document.getElementById('imgReadyTitle');
+    const bannerDetail = document.getElementById('imgReadyDetail');
+    if (banner) {
+      if (bannerTitle) bannerTitle.textContent = `"${file.name}" ready for analysis`;
+      if (bannerDetail) bannerDetail.textContent = `${sizeMB} MB • Cross-modal verification will be activated`;
+      banner.style.display = 'flex';
+      banner.style.animation = 'fadeInUp 0.35s ease forwards';
+    }
+  }
+
+  function hideImgBanner() {
+    const banner = document.getElementById('imgReadyBanner');
+    if (banner) banner.style.display = 'none';
   }
 
   // Form Submit Handler & Progress Indicator
@@ -429,9 +530,12 @@ function initAnalyzeForm() {
 
       setStep(3);
 
-      // Redirect to full report page
+      // Brief pause so user sees "Done" state before redirect
+      await new Promise(r => setTimeout(r, 700));
+
+      // Redirect to full report page — ?new=1 triggers analysis-complete toast
       if (data.prediction_id) {
-        window.location.href = `/report/${data.prediction_id}`;
+        window.location.href = `/report/${data.prediction_id}?new=1`;
       } else {
         location.reload();
       }

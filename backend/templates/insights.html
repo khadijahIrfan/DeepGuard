@@ -1,89 +1,108 @@
 {% extends "base.html" %}
 
 {% block title %}Insights — DeepGuard{% endblock %}
-{% block page_title %}My Insights{% endblock %}
+{% block page_title %}My Verification Insights{% endblock %}
 
 {% block extra_css %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 {% endblock %}
 
 {% block content %}
-<div style="display:flex;flex-direction:column;gap:var(--space-4);max-width:1200px;margin:0 auto;">
+<div class="insights-container" style="display:flex;flex-direction:column;gap:var(--space-4);max-width:1400px;width:100%;margin:0 auto;padding-bottom:var(--space-5);">
 
 {% if total == 0 %}
 <!-- Empty State -->
-<div class="card" style="text-align:center;padding:var(--space-5);">
-  <div style="width:72px;height:72px;margin:0 auto var(--space-3);border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;">
-    <svg viewBox="0 0 24 24" style="width:36px;height:36px;stroke:var(--text-muted);fill:none;stroke-width:1.5;"><path d="M18 20V10"></path><path d="M12 20V4"></path><path d="M6 20v-6"></path></svg>
+<div class="card" style="text-align:center;">
+  <div class="card-body" style="padding:var(--space-5);">
+    <div style="width:72px;height:72px;margin:0 auto var(--space-3);border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;">
+      <svg viewBox="0 0 24 24" style="width:36px;height:36px;stroke:var(--text-muted);fill:none;stroke-width:1.5;"><path d="M18 20V10"></path><path d="M12 20V4"></path><path d="M6 20v-6"></path></svg>
+    </div>
+    <h3 style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;">No Analyses Yet</h3>
+    <p style="color:var(--text-muted);font-size:14px;max-width:400px;margin:0 auto var(--space-4);">
+      Run your first analysis to unlock personalized insights and multi-modal performance metrics.
+    </p>
+    <a href="{{ url_for('analyze') }}" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;">
+      <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      Run First Analysis
+    </a>
   </div>
-  <h3 style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;">No Analyses Yet</h3>
-  <p style="color:var(--text-muted);font-size:14px;max-width:400px;margin:0 auto var(--space-4);">
-    Run your first analysis to unlock personalised insights and performance charts.
-  </p>
-  <a href="{{ url_for('analyze') }}" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;">
-    <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-    Run First Analysis
-  </a>
 </div>
 {% else %}
 
-<!-- 4 Summary Cards -->
+<!-- 4 Modern Stat Cards (No strip borders) -->
 <div class="grid-4">
-  <div class="card" style="border-top:3px solid var(--primary);text-align:center;">
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--text-muted);margin-bottom:6px;">Total Analyses</div>
-    <div style="font-size:36px;font-weight:800;color:var(--primary);">{{ total }}</div>
+  <div class="card" style="text-align:center; border: 1px solid var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.12);">
+    <div class="card-body" style="padding:var(--space-4);">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--text-muted);margin-bottom:6px;">Total Analyses</div>
+      <div style="font-size:36px;font-weight:800;color:var(--primary);">{{ total }}</div>
+    </div>
   </div>
-  <div class="card" style="border-top:3px solid var(--danger);text-align:center;">
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--text-muted);margin-bottom:6px;">Fake Detected</div>
-    <div style="font-size:36px;font-weight:800;color:var(--danger);">{{ fake_count }}</div>
+  <div class="card" style="text-align:center; border: 1px solid var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.12);">
+    <div class="card-body" style="padding:var(--space-4);">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--text-muted);margin-bottom:6px;">Fake Detected</div>
+      <div style="font-size:36px;font-weight:800;color:var(--danger);">{{ fake_count }}</div>
+    </div>
   </div>
-  <div class="card" style="border-top:3px solid var(--success);text-align:center;">
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--text-muted);margin-bottom:6px;">Real Verified</div>
-    <div style="font-size:36px;font-weight:800;color:var(--success);">{{ real_count }}</div>
+  <div class="card" style="text-align:center; border: 1px solid var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.12);">
+    <div class="card-body" style="padding:var(--space-4);">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--text-muted);margin-bottom:6px;">Real Verified</div>
+      <div style="font-size:36px;font-weight:800;color:var(--success);">{{ real_count }}</div>
+    </div>
   </div>
-  <div class="card" style="border-top:3px solid var(--info);text-align:center;">
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--text-muted);margin-bottom:6px;">Avg Confidence</div>
-    <div style="font-size:36px;font-weight:800;color:var(--info);">{{ avg_score }}%</div>
+  <div class="card" style="text-align:center; border: 1px solid var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.12);">
+    <div class="card-body" style="padding:var(--space-4);">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--text-muted);margin-bottom:6px;">Avg Confidence</div>
+      <div style="font-size:36px;font-weight:800;color:var(--info);">{{ avg_score }}%</div>
+    </div>
   </div>
 </div>
 
 <!-- Row 1: Verdicts over Time (full width) -->
 <div class="card">
-  <div class="card-header">
-    <h3 style="font-size:15px;font-weight:700;color:var(--text);">Verdicts Over Time (Last 30 Days)</h3>
+  <div class="card-header" style="padding:var(--space-4) var(--space-5);">
+    <h3 style="font-size:16px;font-weight:700;color:var(--text);margin:0;">Verdicts Over Time (Last 30 Days)</h3>
   </div>
-  <div style="position:relative;height:240px;">
-    <canvas id="chartTimeline"></canvas>
+  <div class="card-body" style="padding:var(--space-4) var(--space-5);">
+    <div style="position:relative;height:240px;">
+      <canvas id="chartTimeline"></canvas>
+    </div>
   </div>
 </div>
 
 <!-- Row 2: two charts side by side -->
 <div class="grid-2">
   <div class="card">
-    <div class="card-header">
-      <h3 style="font-size:15px;font-weight:700;color:var(--text);">Real vs Fake Distribution</h3>
+    <div class="card-header" style="padding:var(--space-4) var(--space-5);">
+      <h3 style="font-size:16px;font-weight:700;color:var(--text);margin:0;">Real vs Fake Distribution</h3>
     </div>
-    <div style="position:relative;height:220px;display:flex;align-items:center;justify-content:center;">
-      <canvas id="chartRealFake" style="max-width:220px;"></canvas>
+    <div class="card-body" style="padding:var(--space-4) var(--space-5);">
+      <div style="position:relative;height:220px;display:flex;align-items:center;justify-content:center;">
+        <canvas id="chartRealFake" style="max-width:220px;"></canvas>
+      </div>
     </div>
   </div>
   <div class="card">
-    <div class="card-header">
-      <h3 style="font-size:15px;font-weight:700;color:var(--text);">Input Type Distribution</h3>
+    <div class="card-header" style="padding:var(--space-4) var(--space-5);">
+      <h3 style="font-size:16px;font-weight:700;color:var(--text);margin:0;">Input Type Distribution</h3>
     </div>
-    <div style="position:relative;height:220px;display:flex;align-items:center;justify-content:center;">
-      <canvas id="chartInputType" style="max-width:220px;"></canvas>
+    <div class="card-body" style="padding:var(--space-4) var(--space-5);">
+      <div style="position:relative;height:220px;display:flex;align-items:center;justify-content:center;">
+        <canvas id="chartInputType" style="max-width:220px;"></canvas>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Row 3: Module averages bar chart -->
+<!-- Row 3: Module averages bar chart (Fixed: all 7 AI modules extracted) -->
 <div class="card">
-  <div class="card-header">
-    <h3 style="font-size:15px;font-weight:700;color:var(--text);">Average Module Scores</h3>
+  <div class="card-header" style="padding:var(--space-4) var(--space-5);display:flex;align-items:center;justify-content:space-between;">
+    <h3 style="font-size:16px;font-weight:700;color:var(--text);margin:0;">Average Module Scores Across 7 Neural Pipelines</h3>
+    <span class="chip chip-info" style="font-size:11px;font-weight:600;">Calibrated Averages (%)</span>
   </div>
-  <div style="position:relative;height:240px;">
-    <canvas id="chartModules"></canvas>
+  <div class="card-body" style="padding:var(--space-4) var(--space-5);">
+    <div style="position:relative;height:260px;">
+      <canvas id="chartModules"></canvas>
+    </div>
   </div>
 </div>
 
@@ -102,13 +121,13 @@ new Chart(document.getElementById('chartTimeline'), {
   data: {
     labels: {{ days_labels | tojson }},
     datasets: [
-      { label: 'Fake', data: {{ fake_trend | tojson }}, borderColor: '#EF4444', backgroundColor: 'rgba(239,68,68,0.08)', tension: 0.35, fill: true, pointRadius: 2 },
-      { label: 'Real', data: {{ real_trend | tojson }}, borderColor: '#22C55E', backgroundColor: 'rgba(34,197,94,0.08)', tension: 0.35, fill: true, pointRadius: 2 }
+      { label: 'Fake', data: {{ fake_trend | tojson }}, borderColor: '#EF4444', backgroundColor: 'rgba(239,68,68,0.12)', tension: 0.35, fill: true, pointRadius: 2 },
+      { label: 'Real', data: {{ real_trend | tojson }}, borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.12)', tension: 0.35, fill: true, pointRadius: 2 }
     ]
   },
   options: {
     responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { labels: { color: textColor, font: { size: 12 } } } },
+    plugins: { legend: { labels: { color: textColor, font: { size: 12, weight: 'bold' } } } },
     scales: {
       x: { ticks: { color: textColor, maxTicksLimit: 10, font: { size: 11 } }, grid: { color: gridColor } },
       y: { ticks: { color: textColor, font: { size: 11 }, stepSize: 1 }, grid: { color: gridColor }, beginAtZero: true }
@@ -120,13 +139,13 @@ new Chart(document.getElementById('chartTimeline'), {
 new Chart(document.getElementById('chartRealFake'), {
   type: 'doughnut',
   data: {
-    labels: ['Fake', 'Real', 'Uncertain'],
-    datasets: [{ data: [{{ fake_count }}, {{ real_count }}, {{ total - fake_count - real_count }}],
-      backgroundColor: ['#EF4444', '#22C55E', '#F59E0B'], borderWidth: 0 }]
+    labels: ['Fake', 'Real'],
+    datasets: [{ data: [{{ fake_count }}, {{ real_count }}],
+      backgroundColor: ['#EF4444', '#10B981'], borderWidth: 0 }]
   },
   options: {
     responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { position: 'bottom', labels: { color: textColor, font: { size: 12 }, padding: 12 } } }
+    plugins: { legend: { position: 'bottom', labels: { color: textColor, font: { size: 12, weight: 'bold' }, padding: 12 } } }
   }
 });
 
@@ -136,27 +155,58 @@ new Chart(document.getElementById('chartInputType'), {
   data: {
     labels: ['Text Only', 'Image Only', 'Multimodal'],
     datasets: [{ data: [{{ text_only }}, {{ image_only }}, {{ multimodal }}],
-      backgroundColor: ['#3B82F6', '#8B5CF6', '#22D3EE'], borderWidth: 0 }]
+      backgroundColor: ['#3B82F6', '#8B5CF6', '#00E5FF'], borderWidth: 0 }]
   },
   options: {
     responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { position: 'bottom', labels: { color: textColor, font: { size: 12 }, padding: 12 } } }
+    plugins: { legend: { position: 'bottom', labels: { color: textColor, font: { size: 12, weight: 'bold' }, padding: 12 } } }
   }
 });
 
-// Chart 4 – Module averages bar
+// Chart 4 – Module averages bar across all 7 modules
 new Chart(document.getElementById('chartModules'), {
   type: 'bar',
   data: {
     labels: {{ module_names | tojson }},
-    datasets: [{ label: 'Avg Score (%)', data: {{ module_avgs | tojson }},
-      backgroundColor: 'rgba(34,211,238,0.7)', borderColor: '#22D3EE', borderWidth: 1, borderRadius: 6 }]
+    datasets: [{
+      label: 'Avg Score (%)',
+      data: {{ module_avgs | tojson }},
+      backgroundColor: [
+        'rgba(59, 130, 246, 0.75)',  // Text: Blue
+        'rgba(139, 92, 246, 0.75)',  // Image: Purple
+        'rgba(0, 229, 255, 0.75)',   // Cross-Modal: Cyan
+        'rgba(168, 85, 247, 0.75)',  // Sentiment: Violet
+        'rgba(239, 68, 68, 0.75)',   // Viral: Red
+        'rgba(20, 184, 166, 0.75)',  // Metadata: Teal
+        'rgba(16, 185, 129, 0.75)'   // Fusion: Emerald
+      ],
+      borderColor: [
+        '#3B82F6',
+        '#8B5CF6',
+        '#00E5FF',
+        '#A855F7',
+        '#EF4444',
+        '#14B8A6',
+        '#10B981'
+      ],
+      borderWidth: 1.5,
+      borderRadius: 6
+    }]
   },
   options: {
     responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return ' ' + context.parsed.y + '% average';
+          }
+        }
+      }
+    },
     scales: {
-      x: { ticks: { color: textColor, font: { size: 12 } }, grid: { display: false } },
+      x: { ticks: { color: textColor, font: { size: 12, weight: '600' } }, grid: { display: false } },
       y: { ticks: { color: textColor, font: { size: 11 } }, grid: { color: gridColor }, beginAtZero: true, max: 100 }
     }
   }

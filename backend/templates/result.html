@@ -41,7 +41,9 @@
 
   <!-- 1. Verdict Banner -->
   <div class="card" style="background: var(--surface); border: 2px solid {% if 'FAKE' in prediction.prediction %}var(--danger){% elif 'REAL' in prediction.prediction %}var(--success){% else %}var(--warning){% endif %};">
-    <div class="card-body" style="padding: var(--space-5);">
+    <div class="card-body" style="padding: var(--space-5);"
+         data-verdict="{{ prediction.prediction }}"
+         data-confidence="{{ prediction.confidence }}%">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:var(--space-4);">
         <div>
           <div style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:4px;">
@@ -100,7 +102,7 @@
       {% if prediction.input_text and prediction.input_text != 'Image Upload' %}
       <div style="margin-bottom:var(--space-3);">
         <label class="form-label" style="color:var(--text-muted);">Submitted Text:</label>
-        <blockquote style="padding:12px 16px; background:var(--surface-2); border-left:4px solid var(--primary); border-radius:4px; font-size:14px; color:var(--text);">
+        <blockquote style="padding:14px 18px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; font-size:14.5px; color:var(--text); line-height:1.6; margin:0;">
           "{{ prediction.input_text }}"
         </blockquote>
       </div>
@@ -496,8 +498,8 @@
       </div>
     </div>
     <div class="card-body">
-      <!-- Grounded notice banner -->
-      <div style="background:var(--surface-2); border-left:3px solid var(--primary); padding:10px 14px; border-radius:4px; font-size:12.5px; color:var(--text-muted); margin-bottom:var(--space-3);">
+      <!-- Grounded notice banner (Modern styling) -->
+      <div style="background:var(--surface-2); border:1px solid var(--border); padding:12px 16px; border-radius:8px; font-size:12.5px; color:var(--text-muted); margin-bottom:var(--space-3); line-height:1.5;">
         💡 <strong>Grounded in this report:</strong> Answers are based solely on this claim's stored scores. DeepGuard gives a risk estimate, not proof. Confirm important claims with trusted fact-checking sources.
       </div>
 
@@ -556,27 +558,33 @@
       </div>
 
       <!-- Question Input Form -->
-      <form id="assistantForm" onsubmit="handleAssistantSubmit(event)" class="no-print" style="display:flex; gap:8px; align-items:center;">
-        <input
-          type="text"
-          id="assistantInput"
-          class="form-control"
-          placeholder="Ask a question about this report (max 300 chars, English/Urdu)..."
-          maxlength="300"
-          {% if assistant_count|default(0) >= 10 %}disabled{% endif %}
-          required
-          style="flex:1;"
-        />
-        <button
-          type="submit"
-          id="assistantSendBtn"
-          class="btn btn-primary"
-          {% if assistant_count|default(0) >= 10 %}disabled{% endif %}
-          style="display:inline-flex; align-items:center; gap:6px; min-width:85px; justify-content:center;"
-        >
-          <span id="assistantBtnLabel">Ask</span>
-          <svg id="assistantBtnIcon" viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-        </button>
+      <form id="assistantForm" onsubmit="handleAssistantSubmit(event)" class="no-print" style="margin-top: var(--space-3);">
+        <div style="display:flex; gap:10px; align-items:center; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:6px 8px 6px 14px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+          <svg viewBox="0 0 24 24" style="width:18px; height:18px; stroke:var(--primary); fill:none; stroke-width:2; flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <input
+            type="text"
+            id="assistantInput"
+            placeholder="Ask about this claim's scores or findings (English / Urdu)..."
+            maxlength="300"
+            {% if assistant_count|default(0) >= 10 %}disabled{% endif %}
+            required
+            style="flex:1; background:transparent; border:none; outline:none; color:var(--text); font-size:14px; padding:8px 4px; font-family:var(--font-family);"
+          />
+          <button
+            type="submit"
+            id="assistantSendBtn"
+            class="btn btn-primary"
+            {% if assistant_count|default(0) >= 10 %}disabled{% endif %}
+            style="display:inline-flex; align-items:center; gap:6px; min-width:90px; justify-content:center; padding:10px 18px; border-radius:8px; font-weight:700; font-size:13.5px;"
+          >
+            <span id="assistantBtnLabel">Ask</span>
+            <svg id="assistantBtnIcon" viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          </button>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; padding:0 4px;">
+          <span style="font-size:11.5px; color:var(--text-muted);">Max 300 characters • Grounded exclusively in this report's stored findings</span>
+          <span id="assistantCharCounter" style="font-size:11px; color:var(--text-muted);">0 / 300</span>
+        </div>
       </form>
       <div id="assistantStatusMsg" style="font-size:12px; color:var(--danger); margin-top:6px; display:none;"></div>
     </div>
@@ -732,5 +740,67 @@ function handleAssistantSubmit(e) {
     chatLog.scrollTop = chatLog.scrollHeight;
   });
 }
+
+/* ── Analysis-Complete Toast ── */
+(function showAnalysisCompleteToast() {
+  const params = new URLSearchParams(window.location.search);
+  if (!params.get('new')) return;
+
+  // Remove ?new=1 from URL without reload (clean URL)
+  const cleanUrl = window.location.pathname;
+  history.replaceState({}, '', cleanUrl);
+
+  // Read verdict from page
+  const verdictEl = document.querySelector('[data-verdict]');
+  const verdictText = verdictEl ? verdictEl.getAttribute('data-verdict') : '{{ prediction.prediction }}';
+  const confEl = document.querySelector('[data-confidence]');
+  const confText = confEl ? confEl.getAttribute('data-confidence') : '';
+
+  const isFake   = verdictText && verdictText.toUpperCase().includes('FAKE');
+  const isReal   = verdictText && verdictText.toUpperCase().includes('REAL');
+  const icon     = isFake ? '🚨' : isReal ? '✅' : '⚠️';
+  const color    = isFake ? 'rgba(239,68,68,0.35)' : isReal ? 'rgba(34,197,94,0.35)' : 'rgba(245,158,11,0.35)';
+  const topColor = isFake ? 'linear-gradient(90deg,#EF4444,#F87171)' : isReal ? 'linear-gradient(90deg,#22C55E,#4ADE80)' : 'linear-gradient(90deg,#F59E0B,#FCD34D)';
+  const verdict  = verdictText || 'Analysis Complete';
+  const detail   = confText ? confText + ' confidence — view your full report below.' : 'Your full report is ready. Check the module scores below.';
+
+  // Build toast element
+  const toast = document.createElement('div');
+  toast.style.cssText = 'position:fixed;bottom:96px;right:24px;z-index:3000;pointer-events:auto;animation:toastSlideIn 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards;';
+  toast.innerHTML = `
+    <div style="
+      display:flex;align-items:flex-start;gap:14px;
+      background:var(--surface);
+      border:1px solid ${color};
+      border-radius:18px;padding:16px 20px;
+      min-width:300px;max-width:380px;
+      box-shadow:0 16px 48px rgba(0,0,0,0.55),0 0 0 1px rgba(255,255,255,0.04) inset;
+      position:relative;overflow:hidden;cursor:default;
+    ">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${topColor};"></div>
+      <div style="font-size:26px;line-height:1;flex-shrink:0;margin-top:2px;">${icon}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:4px;">DeepGuard Analysis Complete</div>
+        <div style="font-weight:800;font-size:15px;color:var(--text);margin-bottom:4px;">${verdict}</div>
+        <div style="font-size:12.5px;color:var(--text-muted);line-height:1.45;">${detail}</div>
+      </div>
+      <button id="closeAnalysisToast" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:20px;padding:0;line-height:1;flex-shrink:0;opacity:0.7;" title="Dismiss">×</button>
+    </div>`;
+
+  document.body.appendChild(toast);
+
+  document.getElementById('closeAnalysisToast').addEventListener('click', () => {
+    toast.style.animation = 'toastSlideOut 0.3s ease forwards';
+    setTimeout(() => toast.remove(), 300);
+  });
+
+  // Auto-dismiss after 6s
+  setTimeout(() => {
+    if (toast.isConnected) {
+      toast.style.animation = 'toastSlideOut 0.3s ease forwards';
+      setTimeout(() => toast.remove(), 300);
+    }
+  }, 6000);
+})();
 </script>
 {% endblock %}

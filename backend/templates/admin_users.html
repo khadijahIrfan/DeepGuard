@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Admin — Users Management — DeepGuard{% endblock %}
+{% block page_title %}Platform Users Management{% endblock %}
+
+{% block content %}
+<div style="max-width:1200px;margin:0 auto; padding-bottom:var(--space-5);">
+
+  <!-- Users Hero Banner -->
+  <div class="page-hero-banner" style="margin-bottom:var(--space-4); padding: var(--space-4) var(--space-5);">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--space-3);">
+      <div>
+        <h2 style="font-size:20px; font-weight:800; margin:0 0 4px; color:var(--text); display:flex; align-items:center; gap:8px;">
+          <span>👥 Registered Users</span>
+          <span class="chip chip-info" style="font-size:11px;">{{ users_data|length }} Accounts</span>
+        </h2>
+        <div style="font-size:13px; color:var(--text-muted);">Inspect all user accounts, roles, registration dates, and activity counts across DeepGuard.</div>
+      </div>
+      <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary btn-sm" style="font-size:12px; font-weight:700;">
+        ← Back to Dashboard
+      </a>
+    </div>
+  </div>
+
+  <!-- Users Table Card -->
+  <div class="card">
+    <div class="card-header" style="padding:var(--space-4); display:flex; justify-content:space-between; align-items:center;">
+      <h3 class="card-title" style="font-size:16px; margin:0;">All Accounts ({{ users_data|length }})</h3>
+      <span class="chip chip-info">User Management &amp; Access Control</span>
+    </div>
+
+    <div class="card-body" style="padding:0;">
+      <div style="overflow-x:auto;">
+        <table class="table" style="margin:0;">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Theme</th>
+              <th>Analyses Run</th>
+              <th>Member Since</th>
+              <th>Role Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in users_data %}
+            <tr>
+              <td style="font-weight:700; color:var(--primary);">#{{ item.user.id }}</td>
+              <td style="font-weight:600; color:var(--text);">
+                {{ item.user.name }}
+                {% if item.user.id == session.get('user_id') %}
+                  <span class="chip chip-info" style="font-size:10px; padding:1px 6px; margin-left:4px;">You</span>
+                {% endif %}
+              </td>
+              <td style="color:var(--text-muted); font-size:13px;">{{ item.user.email }}</td>
+              <td>
+                {% if item.user.role == 'admin' %}
+                  <span class="chip chip-danger" style="font-weight:700; font-size:11px;">🛡️ Admin</span>
+                {% else %}
+                  <span class="chip chip-info" style="font-weight:600; font-size:11px;">👤 User</span>
+                {% endif %}
+              </td>
+              <td style="font-size:12px; text-transform:capitalize; color:var(--text-muted);">
+                {{ item.user.theme or 'dark' }}
+              </td>
+              <td style="font-weight:700; color:var(--text);">
+                <span class="chip {% if item.prediction_count > 0 %}chip-real{% else %}chip-muted{% endif %}" style="font-size:12px;">
+                  {{ item.prediction_count }}
+                </span>
+              </td>
+              <td style="font-size:12.5px; color:var(--text-muted);">
+                {{ item.user.created_at.strftime('%b %d, %Y • %I:%M %p') if item.user.created_at else 'N/A' }}
+              </td>
+              <td>
+                {% if item.user.id == session.get('user_id') %}
+                  <span class="chip chip-muted" style="font-size:11px;">Active Session</span>
+                {% else %}
+                  <form action="/admin/users/{{ item.user.id }}/toggle-role" method="POST" style="margin:0; display:inline;" onsubmit="return confirm('Are you sure you want to change the role for {{ item.user.name }}?');">
+                    {% if item.user.role == 'admin' %}
+                      <button type="submit" class="btn btn-secondary btn-sm" style="font-size:11px; padding:3px 8px; color:var(--text-muted);" title="Demote to Standard User">
+                        Demote to User
+                      </button>
+                    {% else %}
+                      <button type="submit" class="btn btn-primary btn-sm" style="font-size:11px; padding:3px 10px;" title="Promote to Administrator">
+                        Promote to Admin 🛡️
+                      </button>
+                    {% endif %}
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

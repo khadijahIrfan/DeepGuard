@@ -4,150 +4,252 @@
 {% block page_title %}Spot the Fake Quiz{% endblock %}
 
 {% block content %}
-<div style="display: flex; flex-direction: column; gap: var(--space-4); max-width: 850px; margin: 0 auto;">
+<div class="quiz-page-container" style="display: flex; flex-direction: column; gap: var(--space-4); max-width: 1100px; width: 100%; margin: 0 auto; padding-bottom: var(--space-5);">
 
-  <!-- Header Banner -->
-  <div class="card" style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.08) 0%, rgba(59, 130, 246, 0.05) 100%); border-left: 4px solid var(--primary);">
-    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap;">
+  <!-- Modern Hero Banner -->
+  <div class="card page-hero-banner">
+    <div class="card-body" style="padding: var(--space-4) var(--space-5); display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap;">
       <div>
-        <h2 style="font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 6px;">
-          Spot the Fake: Interactive Verification Challenge
+        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--primary); margin-bottom: 2px;">
+          Interactive Media Literacy Challenge
+        </div>
+        <h2 style="font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 4px;">
+          Spot the Fake: Verification Challenge
         </h2>
         <p style="color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0;">
-          Test your media literacy skills against real vs manipulated claims. Decide whether each post is authentic or deceptive, receive immediate forensic explanations, and track your detection score.
+          Test your media literacy skills against real vs manipulated claims. Inspect simulated social posts, decide whether each claim is authentic or deceptive, receive immediate forensic explanations, and track your progress.
         </p>
       </div>
-      <span class="badge badge-info" style="align-self: flex-start; font-size: 12px; padding: 6px 12px;">
-        🎯 8 Questions
-      </span>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <span class="chip chip-info" style="font-size: 12px; padding: 6px 14px; font-weight: 700;">
+          🎯 {{ quiz_questions|length }} Scenarios
+        </span>
+        <span class="chip chip-real" style="font-size: 12px; padding: 6px 14px; font-weight: 700;">
+          🏆 Best: {{ best_score }}
+        </span>
+      </div>
     </div>
   </div>
 
-  <!-- Quiz Container Card -->
-  <div class="card" id="quizActiveContainer" style="padding: var(--space-4);">
-    
-    <!-- Progress Bar & Question Counter -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-      <span id="quizQuestionCounter" style="font-size: 13px; font-weight: 600; color: var(--primary);">
-        Question 1 of 8
-      </span>
-      <span id="quizScoreTracker" style="font-size: 13px; color: var(--text-muted); font-weight: 500;">
-        Score: 0
-      </span>
-    </div>
-
-    <!-- Visual Progress Bar -->
-    <div style="width: 100%; height: 6px; background: var(--surface-2); border-radius: var(--radius-pill); overflow: hidden; margin-bottom: var(--space-4);">
-      <div id="quizProgressBar" style="width: 12.5%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--info)); transition: width 0.3s ease;"></div>
-    </div>
-
-    <!-- Post Image Area -->
-    <div style="background: var(--surface-2); border-radius: var(--radius-btn); overflow: hidden; margin-bottom: var(--space-4); text-align: center; border: 1px solid var(--border);">
-      <img 
-        id="quizImage" 
-        src="" 
-        alt="Quiz Media Verification Subject" 
-        style="max-width: 100%; max-height: 380px; object-fit: contain; display: inline-block;"
-      >
-    </div>
-
-    <!-- Post Text Area -->
-    <div style="background: var(--surface-2); padding: var(--space-3) var(--space-4); border-radius: var(--radius-btn); border-left: 3px solid var(--primary); margin-bottom: var(--space-4);">
-      <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 700; margin-bottom: 4px;">
-        Social Media Post / Claim:
+  <!-- Category Filter Pills & Mode Switcher -->
+  <div class="card" style="padding: 12px 18px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <span style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Quiz Mode:</span>
+        <a href="{{ url_for('quiz', category='all') }}" class="btn btn-sm {% if current_category == 'all' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius:20px; font-size:12px; padding:4px 14px;">
+          All Challenges (Randomized)
+        </a>
+        <a href="{{ url_for('quiz', category='text') }}" class="btn btn-sm {% if current_category == 'text' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius:20px; font-size:12px; padding:4px 14px;">
+          📝 Text &amp; Viral Claims
+        </a>
+        <a href="{{ url_for('quiz', category='image') }}" class="btn btn-sm {% if current_category == 'image' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius:20px; font-size:12px; padding:4px 14px;">
+          🖼️ Image &amp; DeepFake Cues
+        </a>
+        <a href="{{ url_for('quiz', category='mismatch') }}" class="btn btn-sm {% if current_category == 'mismatch' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius:20px; font-size:12px; padding:4px 14px;">
+          🔄 Context Mismatch (Recycled)
+        </a>
       </div>
-      <p id="quizPostText" style="font-size: 15px; color: var(--text); font-weight: 500; line-height: 1.5; margin: 0;">
-        Loading question...
-      </p>
+      <div style="font-size: 12.5px; color: var(--text-muted);">
+        Quizzes Taken: <strong style="color: var(--primary);">{{ total_quizzes_taken }}</strong>
+      </div>
     </div>
+  </div>
 
-    <!-- Choice Action Buttons (Real / Fake) -->
-    <div id="quizActionButtons" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-4);">
-      <button 
-        type="button" 
-        id="btnAnswerReal" 
-        class="btn btn-secondary" 
-        style="padding: 14px; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; border-color: rgba(34, 197, 94, 0.4);"
-      >
-        <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; stroke: var(--success); fill: none; stroke-width: 2.5;"><polyline points="20 6 9 17 4 12"></polyline></svg>
-        <span style="color: var(--success);">Real Post</span>
-      </button>
-
-      <button 
-        type="button" 
-        id="btnAnswerFake" 
-        class="btn btn-secondary" 
-        style="padding: 14px; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; border-color: rgba(239, 68, 68, 0.4);"
-      >
-        <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; stroke: var(--danger); fill: none; stroke-width: 2.5;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        <span style="color: var(--danger);">Fake / Manipulated</span>
-      </button>
-    </div>
-
-    <!-- Reveal Feedback Box (Hidden initially) -->
-    <div id="quizFeedbackBox" style="display: none; flex-direction: column; gap: 14px;">
+  <!-- Quiz Active Container Card -->
+  <div class="card" id="quizActiveContainer">
+    <div class="card-body" style="padding: var(--space-5);">
       
-      <!-- Verdict Banner -->
-      <div id="quizVerdictBanner" class="alert" style="margin-bottom: 0; padding: 14px 16px;">
-        <span id="quizVerdictText" style="font-weight: 700; font-size: 15px;"></span>
+      <!-- Progress Bar & Question Counter -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <span id="quizQuestionCounter" style="font-size: 14px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 6px;">
+          <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.2;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          Question 1 of {{ quiz_questions|length }}
+        </span>
+        <span id="quizScoreTracker" style="font-size: 13.5px; color: var(--text-muted); font-weight: 600; background: var(--surface-2); padding: 4px 12px; border-radius: 12px; border: 1px solid var(--border);">
+          Score: 0
+        </span>
       </div>
 
-      <!-- Explanation Card -->
-      <div style="background: var(--surface-2); padding: 14px 16px; border-radius: var(--radius-btn); border-left: 3px solid var(--info);">
-        <strong style="display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--info); margin-bottom: 4px;">
-          💡 Verification Analysis &amp; Explanation:
-        </strong>
-        <p id="quizExplanationText" style="font-size: 13.5px; color: var(--text-muted); line-height: 1.55; margin: 0;"></p>
+      <!-- Visual Progress Bar -->
+      <div style="width: 100%; height: 6px; background: var(--surface-2); border-radius: var(--radius-pill); overflow: hidden; margin-bottom: var(--space-5);">
+        <div id="quizProgressBar" style="width: 12.5%; height: 100%; background: linear-gradient(90deg, var(--primary), #3B82F6); transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);"></div>
       </div>
 
-      <!-- Next Button -->
-      <button 
-        type="button" 
-        id="btnNextQuestion" 
-        class="btn btn-primary" 
-        style="align-self: flex-end; padding: 10px 24px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;"
-      >
-        <span>Next Question</span>
-        <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2;"><polyline points="9 18 15 12 9 6"></polyline></svg>
-      </button>
+      <!-- Simulated Social Media Post Verification Card -->
+      <div class="simulated-social-post" style="background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 22px; margin-bottom: var(--space-4); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);">
+        
+        <!-- Post Author Header -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div id="quizAuthorAvatar" style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--info)); color: #070D18; font-weight: 800; font-size: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(34, 211, 238, 0.3);">
+              🔭
+            </div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <strong id="quizAuthorName" style="color: var(--text); font-size: 15px; font-weight: 700;">Global Science Telemetry</strong>
+                <span title="Verified Social Account" style="color: var(--primary); font-size: 14px;">☑</span>
+              </div>
+              <div id="quizAuthorHandle" style="font-size: 12px; color: var(--text-muted);">@CosmicSpaceWatch • 2h ago • Public</div>
+            </div>
+          </div>
+          <span id="quizTypeBadge" class="chip chip-info" style="font-size: 11px; padding: 3px 10px; text-transform: uppercase;">
+            Challenge Scenario
+          </span>
+        </div>
+
+        <!-- Post Headline / Caption Text -->
+        <div id="quizPostText" style="font-size: 15.5px; color: var(--text); line-height: 1.6; margin-bottom: 16px; font-weight: 500;">
+          Loading challenge scenario...
+        </div>
+
+        <!-- Media Attachment -->
+        <div style="border-radius: 10px; overflow: hidden; background: #000; border: 1px solid var(--border); max-height: 440px; display: flex; justify-content: center; align-items: center;">
+          <img id="quizImage" src="" alt="Quiz Media Evidence" style="width: 100%; height: auto; max-height: 420px; object-fit: contain; display: block;">
+        </div>
+
+      </div>
+
+      <!-- Action Decision Section -->
+      <div style="text-align: center; margin-bottom: var(--space-4);">
+        <div style="font-size: 13.5px; font-weight: 700; color: var(--text); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+          What is your forensic verdict on this post?
+        </div>
+        
+        <div style="display: flex; justify-content: center; gap: var(--space-3); flex-wrap: wrap;">
+          <button type="button" class="btn btn-secondary btn-lg" id="btnAnswerReal" style="min-width: 190px; padding: 14px 28px; font-size: 15px; font-weight: 700; border-color: rgba(34, 197, 94, 0.4); display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+            <span style="font-size: 18px;">✅</span>
+            <span>Likely Real / Authentic</span>
+          </button>
+          
+          <button type="button" class="btn btn-secondary btn-lg" id="btnAnswerFake" style="min-width: 190px; padding: 14px 28px; font-size: 15px; font-weight: 700; border-color: rgba(239, 68, 68, 0.4); display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+            <span style="font-size: 18px;">🚨</span>
+            <span>Fake / Misinformation</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Immediate Forensic Feedback Box (Hidden until user clicks an answer) -->
+      <div id="quizFeedbackBox" style="display: none; flex-direction: column; gap: var(--space-3); animation: fadeIn 0.3s ease;">
+        <div id="quizVerdictBanner" class="alert alert-info" style="font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+          <span id="quizVerdictText"></span>
+        </div>
+
+        <div style="background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px;">
+          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--primary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+            <svg viewBox="0 0 24 24" style="width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2.2;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            Forensic &amp; Context Explanation
+          </div>
+          <p id="quizExplanationText" style="font-size: 14px; color: var(--text); line-height: 1.6; margin: 0;"></p>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+          <button type="button" class="btn btn-primary btn-md" id="btnNextQuestion" style="padding: 10px 24px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
+            <span>Next Question</span>
+            <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
+      </div>
+
     </div>
-
   </div>
 
   <!-- Quiz Completed Score Screen (Hidden by default) -->
-  <div class="card" id="quizCompletedScreen" style="display: none; text-align: center; padding: var(--space-5);">
-    <div style="width: 72px; height: 72px; margin: 0 auto var(--space-3); border-radius: 50%; background: var(--primary-glow); display: flex; align-items: center; justify-content: center; color: var(--primary);">
-      <svg viewBox="0 0 24 24" style="width: 36px; height: 36px; stroke: currentColor; fill: none; stroke-width: 2;">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-      </svg>
+  <div class="card" id="quizCompletedScreen" style="display: none; text-align: center;">
+    <div class="card-body" style="padding: var(--space-5);">
+      <div style="width: 76px; height: 76px; margin: 0 auto var(--space-3); border-radius: 50%; background: var(--primary-glow); display: flex; align-items: center; justify-content: center; color: var(--primary);">
+        <svg viewBox="0 0 24 24" style="width: 40px; height: 40px; stroke: currentColor; fill: none; stroke-width: 2;">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+        </svg>
+      </div>
+
+      <h2 style="font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 6px;">
+        Quiz Completed!
+      </h2>
+      <p style="font-size: 14px; color: var(--text-muted); margin-bottom: var(--space-4);">
+        Your media verification accuracy score has been recorded to your profile history:
+      </p>
+
+      <!-- Score Display Banner -->
+      <div style="max-width: 320px; margin: 0 auto var(--space-4); background: var(--surface-2); border-radius: 14px; padding: var(--space-4); border: 1px solid var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+        <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 700; margin-bottom: 4px;">
+          Final Accuracy Score
+        </div>
+        <div id="finalScoreDisplay" style="font-size: 42px; font-weight: 800; color: var(--primary); line-height: 1.2;">
+          0 / {{ quiz_questions|length }}
+        </div>
+        <div id="finalPercentDisplay" style="font-size: 15px; font-weight: 700; color: var(--text); margin-top: 4px;">
+          (0%)
+        </div>
+      </div>
+
+      <p id="finalFeedbackMessage" style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: var(--space-4);"></p>
+
+      <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+        <button type="button" id="btnRestartQuiz" class="btn btn-primary btn-lg" style="padding: 12px 28px; font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; border-radius: 10px;">
+          <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2;"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+          <span>Next Challenge (New Questions)</span>
+        </button>
+        <a href="{{ url_for('quiz') }}" class="btn btn-secondary btn-lg" style="padding: 12px 24px; font-size: 15px; font-weight: 600; border-radius: 10px;">
+          <span>All Categories</span>
+        </a>
+      </div>
     </div>
+  </div>
 
-    <h2 style="font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 6px;">
-      Quiz Completed!
-    </h2>
-    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: var(--space-4);">
-      Here is your final media verification performance summary:
-    </p>
-
-    <!-- Score Display Banner -->
-    <div style="max-width: 320px; margin: 0 auto var(--space-4); background: var(--surface-2); border-radius: var(--radius-card); padding: var(--space-4); border: 1px solid var(--border);">
-      <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">
-        Final Accuracy Score
-      </div>
-      <div id="finalScoreDisplay" style="font-size: 38px; font-weight: 800; color: var(--primary); line-height: 1.2;">
-        0 / 8
-      </div>
-      <div id="finalPercentDisplay" style="font-size: 14px; font-weight: 600; color: var(--text); margin-top: 4px;">
-        (0%)
-      </div>
+  <!-- Quiz Performance History Card -->
+  <div class="card">
+    <div class="card-header" style="padding: var(--space-4);">
+      <h3 class="card-title" style="font-size: 15.5px; font-weight: 700; display:flex; align-items:center; gap:8px;">
+        <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: var(--primary); fill: none; stroke-width: 2.2;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>Your Quiz Performance History</span>
+      </h3>
     </div>
-
-    <p id="finalFeedbackMessage" style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: var(--space-4);"></p>
-
-    <button type="button" id="btnRestartQuiz" class="btn btn-primary" style="padding: 12px 28px; font-size: 15px; display: inline-flex; align-items: center; gap: 8px;">
-      <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2;"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
-      <span>Try Again</span>
-    </button>
+    <div class="card-body" style="padding: 0;">
+      {% if quiz_history %}
+      <div style="overflow-x: auto;">
+        <table class="table" style="margin: 0;">
+          <thead>
+            <tr>
+              <th>Date &amp; Time</th>
+              <th>Score</th>
+              <th>Accuracy</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for rec in quiz_history %}
+            <tr>
+              <td style="font-size: 13px; color: var(--text-muted);">
+                {{ rec.created_at.strftime('%b %d, %Y • %I:%M %p') }}
+              </td>
+              <td style="font-weight: 700; color: var(--text);">
+                {{ rec.score }} / {{ rec.total_questions }}
+              </td>
+              <td>
+                <span class="chip {% if rec.percentage >= 80 %}chip-real{% elif rec.percentage >= 60 %}chip-info{% else %}chip-fake{% endif %}" style="font-weight:700;">
+                  {{ rec.percentage }}%
+                </span>
+              </td>
+              <td style="font-size: 12.5px; color: var(--text-muted);">
+                {% if rec.percentage >= 80 %}
+                  🌟 Expert Spotter
+                {% elif rec.percentage >= 60 %}
+                  👍 Competent Analyst
+                {% else %}
+                  💡 Practice Recommended
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div style="padding: var(--space-4); text-align: center; color: var(--text-muted); font-size: 13.5px;">
+        No completed quizzes yet. Complete your first challenge above to see your performance history and progress metrics.
+      </div>
+      {% endif %}
+    </div>
   </div>
 
 </div>
@@ -156,6 +258,17 @@
 <script>
 const QUIZ_QUESTIONS = {{ quiz_questions | tojson }};
 const QUIZ_IMG_BASE = "{{ url_for('static', filename='quiz/') }}";
+
+const AUTHORS = [
+  { avatar: '🔭', name: 'Cosmic & Space Telemetry', handle: '@CosmicSpaceWatch' },
+  { avatar: '🌌', name: 'James Webb Space Telescope Team', handle: '@NASAWebb' },
+  { avatar: '🌿', name: 'Home Remedy & Wellness Alert', handle: '@NaturalCuresDaily' },
+  { avatar: '🚂', name: 'Infrastructure & Transit Chronicle', handle: '@TransitEngineering' },
+  { avatar: '☕', name: 'Parisian Daily Buzz', handle: '@ParisBuzzLive' },
+  { avatar: '🏺', name: 'Indus Archaeological Heritage', handle: '@HarappaMuseum' },
+  { avatar: '🏦', name: 'Financial Emergency Alert', handle: '@BreakingFinancePK' },
+  { avatar: '🌱', name: 'Coastal Wetlands Restoration', handle: '@IndusEcosystem' }
+];
 
 document.addEventListener('DOMContentLoaded', () => {
   let currentIndex = 0;
@@ -169,6 +282,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const scoreTracker = document.getElementById('quizScoreTracker');
   const progressBar = document.getElementById('quizProgressBar');
 
+  const quizAuthorAvatar = document.getElementById('quizAuthorAvatar');
+  const quizAuthorName = document.getElementById('quizAuthorName');
+  const quizAuthorHandle = document.getElementById('quizAuthorHandle');
+  const quizTypeBadge = document.getElementById('quizTypeBadge');
   const quizImage = document.getElementById('quizImage');
   const quizPostText = document.getElementById('quizPostText');
 
@@ -191,10 +308,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const q = QUIZ_QUESTIONS[idx];
     if (!q) return;
 
+    // Auto-scroll up to the quiz container so user doesn't have to scroll manually
+    if (activeContainer) {
+      activeContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
     // Update counters
-    questionCounter.textContent = `Question ${idx + 1} of ${QUIZ_QUESTIONS.length}`;
+    questionCounter.innerHTML = `<svg viewBox="0 0 24 24" style="width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.2;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> Question ${idx + 1} of ${QUIZ_QUESTIONS.length}`;
     scoreTracker.textContent = `Score: ${score}`;
     progressBar.style.width = `${((idx + 1) / QUIZ_QUESTIONS.length) * 100}%`;
+
+    // Populate simulated author
+    const author = AUTHORS[idx % AUTHORS.length];
+    if (quizAuthorAvatar) quizAuthorAvatar.textContent = author.avatar;
+    if (quizAuthorName) quizAuthorName.textContent = author.name;
+    if (quizAuthorHandle) quizAuthorHandle.textContent = `${author.handle} • 2h ago • Public`;
+
+    if (quizTypeBadge) {
+      const typeLabel = q.type ? q.type.toUpperCase() : 'SCENARIO';
+      quizTypeBadge.textContent = typeLabel + ' VERIFICATION';
+    }
 
     // Populate question details
     quizPostText.textContent = q.text;
@@ -229,9 +362,9 @@ document.addEventListener('DOMContentLoaded', () => {
     btnFake.style.cursor = 'default';
 
     if (userChoice === 'real') {
-      btnFake.style.opacity = '0.4';
+      btnFake.style.opacity = '0.35';
     } else {
-      btnReal.style.opacity = '0.4';
+      btnReal.style.opacity = '0.35';
     }
 
     // Show Verdict Banner
@@ -248,51 +381,55 @@ document.addEventListener('DOMContentLoaded', () => {
     scoreTracker.textContent = `Score: ${score}`;
   }
 
+  function showCompletion() {
+    activeContainer.style.display = 'none';
+    completedScreen.style.display = 'block';
+    completedScreen.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    const total = QUIZ_QUESTIONS.length;
+    const pct = Math.round((score / total) * 100);
+
+    finalScoreDisplay.textContent = `${score} / ${total}`;
+    finalPercentDisplay.textContent = `(${pct}%)`;
+
+    if (pct >= 85) {
+      finalFeedbackMessage.textContent = '🏆 Outstanding! You have expert-level media literacy and forensic detection intuition.';
+    } else if (pct >= 60) {
+      finalFeedbackMessage.textContent = '👍 Good job! You spotted most deception markers. Keep checking sources before forwarding.';
+    } else {
+      finalFeedbackMessage.textContent = '💡 Room for improvement. Explore our Help Hub to learn more about recycled images and viral hoaxes.';
+    }
+
+    // Save result to backend database
+    fetch('/api/quiz/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        score: score,
+        total: total
+      })
+    }).catch(err => console.error('Error saving quiz result:', err));
+  }
+
+  // Event Listeners
   btnReal.addEventListener('click', () => handleAnswer('real'));
   btnFake.addEventListener('click', () => handleAnswer('fake'));
 
   btnNext.addEventListener('click', () => {
-    currentIndex++;
-    if (currentIndex < QUIZ_QUESTIONS.length) {
+    if (currentIndex < QUIZ_QUESTIONS.length - 1) {
+      currentIndex++;
       loadQuestion(currentIndex);
     } else {
-      showCompletedScreen();
+      showCompletion();
     }
   });
-
-  function showCompletedScreen() {
-    activeContainer.style.display = 'none';
-    completedScreen.style.display = 'block';
-
-    const total = QUIZ_QUESTIONS.length;
-    const percent = Math.round((score / total) * 100);
-
-    finalScoreDisplay.textContent = `${score} / ${total}`;
-    finalPercentDisplay.textContent = `(${percent}%)`;
-
-    if (percent === 100) {
-      finalFeedbackMessage.textContent = "🏆 Flawless Truth Defender! You caught every single fake claim and verified every real post.";
-    } else if (percent >= 75) {
-      finalFeedbackMessage.textContent = "🌟 Impressive Media Literacy! You have a sharp eye for detecting manipulated imagery and viral deception.";
-    } else if (percent >= 50) {
-      finalFeedbackMessage.textContent = "👍 Solid Effort! You spotted many tricky items. Review the Help Hub to sharpen your verification skills even further.";
-    } else {
-      finalFeedbackMessage.textContent = "💡 Good Practice Run! Misinformation can be very subtle. Study the common patterns in our Library to boost your defense.";
-    }
-  }
 
   btnRestart.addEventListener('click', () => {
-    currentIndex = 0;
-    score = 0;
-    completedScreen.style.display = 'none';
-    activeContainer.style.display = 'block';
-    loadQuestion(0);
+    window.location.reload();
   });
 
-  // Initialize first question
-  if (QUIZ_QUESTIONS && QUIZ_QUESTIONS.length > 0) {
-    loadQuestion(0);
-  }
+  // Initial Question Load
+  loadQuestion(0);
 });
 </script>
 {% endblock %}

@@ -39,7 +39,36 @@
       </button>
     </div>
     
-    <nav class="sidebar-nav">
+    <nav class="sidebar-nav" style="overflow-y: auto; overflow-x: hidden; min-height: 0;">
+      {% if (current_user and current_user.role == 'admin') or session.get('role') == 'admin' %}
+      <!-- Admin Specific Navigation (Strictly Admin Persona) -->
+      <a href="{{ url_for('admin_dashboard') }}" class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}" title="Admin Dashboard">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>Dashboard</span>
+      </a>
+
+      <a href="{{ url_for('admin_statistics') }}" class="nav-link {% if request.endpoint == 'admin_statistics' %}active{% endif %}" title="Platform Statistics">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        <span>Statistics</span>
+      </a>
+
+      <a href="{{ url_for('admin_reports') }}" class="nav-link {% if request.endpoint in ['admin_reports','admin_view_report'] %}active{% endif %}" title="Audit Reports">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+        <span>Reports</span>
+      </a>
+
+      <a href="{{ url_for('admin_users') }}" class="nav-link {% if request.endpoint == 'admin_users' %}active{% endif %}" title="User Management">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span>Users</span>
+      </a>
+
+      <a href="{{ url_for('admin_feedback') }}" class="nav-link {% if request.endpoint == 'admin_feedback' %}active{% endif %}" title="User Feedback">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span>Feedback</span>
+      </a>
+
+      {% else %}
+      <!-- Standard User Navigation -->
       <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" title="Dashboard">
         <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
         <span>Dashboard</span>
@@ -65,6 +94,12 @@
         <span>Library</span>
       </a>
 
+      <!-- Prominent Feedback Link in Sidebar -->
+      <a href="{{ url_for('feedback') }}" class="nav-link {% if request.endpoint == 'feedback' %}active{% endif %}" title="Feedback &amp; Suggestions">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span>Feedback</span>
+      </a>
+
       <a href="{{ url_for('help_hub') }}" class="nav-link {% if request.endpoint == 'help_hub' %}active{% endif %}" title="Help &amp; Media Literacy Hub">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
         <span>Help Hub</span>
@@ -75,65 +110,33 @@
         <span>Insights</span>
       </a>
 
-      <a href="{{ url_for('feedback') }}" class="nav-link {% if request.endpoint == 'feedback' %}active{% endif %}" title="Feedback &amp; Suggestions">
-        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-        <span>Feedback</span>
-      </a>
-
       <a href="{{ url_for('profile') }}" class="nav-link {% if request.endpoint == 'profile' %}active{% endif %}" title="Profile">
         <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         <span>Profile</span>
       </a>
-
-      {% if current_user and current_user.role == 'admin' %}
-      <!-- Admin Section (visible to admins only) -->
-      <div style="margin-top:var(--space-2);padding-top:var(--space-2);border-top:1px solid var(--border);">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--danger);padding:4px 14px;opacity:0.8;">Admin Panel</div>
-        <a href="{{ url_for('admin_dashboard') }}" class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}" title="Admin Dashboard">
-          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-          <span>Dashboard</span>
-        </a>
-        <a href="{{ url_for('admin_statistics') }}" class="nav-link {% if request.endpoint == 'admin_statistics' %}active{% endif %}" title="Statistics">
-          <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-          <span>Statistics</span>
-        </a>
-        <a href="{{ url_for('admin_reports') }}" class="nav-link {% if request.endpoint in ['admin_reports','admin_view_report'] %}active{% endif %}" title="Reports">
-          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-          <span>Reports</span>
-        </a>
-        <a href="{{ url_for('admin_feedback') }}" class="nav-link {% if request.endpoint == 'admin_feedback' %}active{% endif %}" title="Feedback">
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-          <span>Feedback</span>
-        </a>
-      </div>
       {% endif %}
     </nav>
 
     <!-- FYP Label at bottom of sidebar -->
-    <div class="fyp-sidebar-block" style="padding: var(--space-3) var(--space-3); border-top: 1px solid var(--border); margin-top: auto;">
-      <div style="font-size:8.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--primary); opacity:0.8; margin-bottom:4px;">FYP — BS Software Engineering</div>
-      <div style="font-size:8px; color:var(--text-muted); line-height:1.5; font-weight:500;">
-        Lahore Garrison University<br>
-        Context-Aware Multimodal<br>
-        Misinformation Detection<br>
-        with Explainable AI
+    <div class="fyp-sidebar-block" style="padding: 10px 14px; border-top: 1px solid var(--border); margin-top: auto; flex-shrink: 0;">
+      <div style="font-size:8.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--primary); opacity:0.8; margin-bottom:2px;">FYP — BS Software Engineering</div>
+      <div style="font-size:8px; color:var(--text-muted); line-height:1.4; font-weight:500;">
+        Lahore Garrison University • Multimodal Misinformation Detection
       </div>
     </div>
     
-    <div class="sidebar-footer">
+    <div class="sidebar-footer" style="position: sticky; bottom: 0; background: var(--surface); z-index: 10; border-top: 1px solid var(--border); padding: 8px 10px;">
       {% if session.get('user_name') %}
-      <div class="user-profile-summary">
-        <div class="user-avatar" title="{{ session.get('user_name') }}">{{ session.get('user_name', 'U')[0] | upper }}</div>
-        <div class="user-meta">
-          <div class="name">{{ session.get('user_name') }}</div>
-          <div class="email">{{ session.get('user_email') }}</div>
+      <a href="{{ url_for('profile') if session.get('role') != 'admin' else url_for('admin_dashboard') }}" style="text-decoration:none; color:inherit; display:block;" title="{{ session.get('user_name') }} • View Profile">
+        <div class="user-profile-summary" style="margin-bottom:0; padding: 6px 8px; display:flex; align-items:center; gap:10px;">
+          <div class="user-avatar" style="width:30px; height:30px; min-width:30px; font-size:13px;">{{ session.get('user_name', 'U')[0] | upper }}</div>
+          <div class="user-meta" style="overflow:hidden;">
+            <div class="name" style="font-size:12.5px; font-weight:700; color:var(--text); white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">{{ session.get('user_name') }}</div>
+            <div class="email" style="font-size:11px; color:var(--text-muted); white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">{{ session.get('user_email') }}</div>
+          </div>
         </div>
-      </div>
-      {% endif %}
-      <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm logout-btn-sidebar" style="width:100%;" title="Logout">
-        <svg viewBox="0 0 24 24" style="width:16px;height:16px;min-width:16px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-        <span>Logout</span>
       </a>
+      {% endif %}
     </div>
   </aside>
 
@@ -200,6 +203,12 @@
           </div>
         </div>
 
+        <!-- Direct Logout Action -->
+        <a href="{{ url_for('logout') }}" class="btn-topbar-logout" title="Log out of DeepGuard">
+          <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          <span>Logout</span>
+        </a>
+
         <!-- User Menu Quick Avatar -->
         <a href="{{ url_for('profile') }}" class="user-avatar" title="View Profile" style="text-decoration:none;">
           {{ session.get('user_name', 'U')[0] | upper }}
@@ -229,8 +238,9 @@
 {% if session.get('user_id') %}
 <!-- Floating AI Chatbot Widget (Task 9b RAG) -->
 <div id="deepguardGlobalChat" class="no-print">
-  <!-- Floating Button -->
-  <button id="chatbotFab" class="chatbot-fab" title="DeepGuard AI Assistant" aria-label="Open AI Assistant">
+  <!-- Floating Button with Levitating AI Status -->
+  <button id="chatbotFab" class="chatbot-fab" title="DeepGuard AI Assistant (Active)" aria-label="Open AI Assistant">
+    <span class="chatbot-fab-badge">AI</span>
     <svg id="chatbotFabOpenIcon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M8 10h.01M12 10h.01M16 10h.01"></path></svg>
     <svg id="chatbotFabCloseIcon" viewBox="0 0 24 24" style="display:none;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
   </button>

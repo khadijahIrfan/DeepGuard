@@ -164,6 +164,32 @@
           <div class="error-text" id="passMatchError"></div>
         </div>
 
+        <!-- Account Role Selection -->
+        <div class="form-group" style="margin-top:var(--space-2);">
+          <label class="form-label" for="regRole">Account Type / Role</label>
+          <select name="role" id="regRole" class="input-control" onchange="toggleAdminKeyField(this.value)" style="cursor:pointer; font-weight:600;">
+            <option value="user" {% if entered_role != 'admin' %}selected{% endif %}>👤 Standard Investigator (Regular User)</option>
+            <option value="admin" {% if entered_role == 'admin' %}selected{% endif %}>🛡️ System Administrator (Admin Access)</option>
+          </select>
+          <div class="input-hint" style="margin-top:4px; font-size:11.5px; color:var(--text-muted);">
+            Choose <strong>Standard Investigator</strong> to submit analyses, or <strong>Administrator</strong> for platform monitoring.
+          </div>
+        </div>
+
+        <!-- Admin Secret Key Input (conditionally visible) -->
+        <div class="form-group" id="adminKeyGroup" style="display: {% if entered_role == 'admin' %}block{% else %}none{% endif %}; background: rgba(239, 68, 68, 0.08); padding: 12px 14px; border-radius: var(--radius-btn); border: 1px solid rgba(239, 68, 68, 0.35); margin-top: var(--space-2);">
+          <label class="form-label" for="adminKey" style="color: var(--danger); font-weight: 700; display:flex; align-items:center; gap:6px;">
+            <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            Admin Secret Passkey <span style="color:var(--danger)">*</span>
+          </label>
+          <input type="password" name="admin_key" id="adminKey" class="input-control"
+                 placeholder="Enter Admin Secret Key"
+                 style="background: var(--surface); border-color: rgba(239,68,68,0.4);">
+          <div class="input-hint" style="color: var(--danger); font-size: 11.5px; margin-top: 4px; font-weight: 500;">
+            Authorized administrator passkey required for privilege escalation.
+          </div>
+        </div>
+
         <button type="submit" class="btn btn-primary btn-lg" style="width:100%; margin-top:var(--space-3);">
           <span>Create Account &amp; Sign In</span>
           <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
@@ -230,18 +256,21 @@ if (confirmField) {
   });
 }
 
-// Email format check
-const emailField = document.getElementById('regEmail');
-if (emailField) {
-  emailField.addEventListener('blur', () => {
-    const err = document.getElementById('emailError');
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (emailField.value && !re.test(emailField.value)) {
-      err.textContent = 'Please enter a valid email address';
+// Admin Key field toggle
+function toggleAdminKeyField(role) {
+  const group = document.getElementById('adminKeyGroup');
+  const input = document.getElementById('adminKey');
+  if (group && input) {
+    if (role === 'admin') {
+      group.style.display = 'block';
+      input.setAttribute('required', 'required');
+      input.focus();
     } else {
-      err.textContent = '';
+      group.style.display = 'none';
+      input.removeAttribute('required');
+      input.value = '';
     }
-  });
+  }
 }
 </script>
 

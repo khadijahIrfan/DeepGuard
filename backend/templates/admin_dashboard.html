@@ -21,10 +21,78 @@
 {% block content %}
 <div style="max-width:1200px;margin:0 auto;">
 
-  <!-- Admin Notice -->
-  <div class="alert alert-warning" style="margin-bottom:var(--space-4);">
-    <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-    <span><strong>Admin Panel.</strong> You have elevated privileges. All actions are logged. Do not share your admin credentials.</span>
+  <!-- Admin Hero Banner -->
+  <div class="page-hero-banner" style="margin-bottom:var(--space-4); padding: var(--space-4) var(--space-5);">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--space-3);">
+      <div>
+        <h2 style="font-size:22px; font-weight:800; margin:0 0 4px; color:var(--text); display:flex; align-items:center; gap:8px;">
+          <span>🛡️ Admin Central Control</span>
+          <span class="chip chip-danger" style="font-size:11px; padding:2px 8px;">Super Admin</span>
+        </h2>
+        <div style="font-size:13px; color:var(--text-muted);">Manage platform security, inspect all user submissions, review deep analytics, and handle feedback.</div>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <a href="{{ url_for('admin_statistics') }}" class="btn btn-primary btn-sm" style="font-size:12px; font-weight:700;">
+          📊 Statistics
+        </a>
+        <a href="{{ url_for('admin_reports') }}" class="btn btn-secondary btn-sm" style="font-size:12px; font-weight:700;">
+          🗂️ Reports
+        </a>
+        <a href="{{ url_for('admin_users') }}" class="btn btn-secondary btn-sm" style="font-size:12px; font-weight:700;">
+          👥 Users ({{ total_users }})
+        </a>
+        <a href="{{ url_for('admin_feedback') }}" class="btn btn-secondary btn-sm" style="font-size:12px; font-weight:700;">
+          💬 Feedback ({{ new_feedback }})
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Quick Navigation Tabs Hub -->
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-3); margin-bottom: var(--space-4);">
+    <a href="{{ url_for('admin_statistics') }}" style="text-decoration:none; color:inherit;">
+      <div class="card" style="padding: 16px 20px; transition: transform 0.2s, border-color 0.2s; border: 1px solid var(--border); display:flex; align-items:center; gap:14px; cursor:pointer;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:28px;">📊</div>
+        <div style="flex:1;">
+          <div style="font-weight:800; font-size:15px; color:var(--text);">Platform Statistics</div>
+          <div style="font-size:12px; color:var(--text-muted);">7-module score averages & distributions</div>
+        </div>
+        <span style="color:var(--primary); font-weight:bold;">→</span>
+      </div>
+    </a>
+
+    <a href="{{ url_for('admin_reports') }}" style="text-decoration:none; color:inherit;">
+      <div class="card" style="padding: 16px 20px; transition: transform 0.2s, border-color 0.2s; border: 1px solid var(--border); display:flex; align-items:center; gap:14px; cursor:pointer;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:28px;">🗂️</div>
+        <div style="flex:1;">
+          <div style="font-weight:800; font-size:15px; color:var(--text);">Analysis Reports</div>
+          <div style="font-size:12px; color:var(--text-muted);">Filter, inspect & review user predictions</div>
+        </div>
+        <span style="color:var(--primary); font-weight:bold;">→</span>
+      </div>
+    </a>
+
+    <a href="{{ url_for('admin_users') }}" style="text-decoration:none; color:inherit;">
+      <div class="card" style="padding: 16px 20px; transition: transform 0.2s, border-color 0.2s; border: 1px solid var(--border); display:flex; align-items:center; gap:14px; cursor:pointer;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:28px;">👥</div>
+        <div style="flex:1;">
+          <div style="font-weight:800; font-size:15px; color:var(--text);">Platform Users</div>
+          <div style="font-size:12px; color:var(--text-muted);">{{ total_users }} registered accounts & activity</div>
+        </div>
+        <span style="color:var(--primary); font-weight:bold;">→</span>
+      </div>
+    </a>
+
+    <a href="{{ url_for('admin_feedback') }}" style="text-decoration:none; color:inherit;">
+      <div class="card" style="padding: 16px 20px; transition: transform 0.2s, border-color 0.2s; border: 1px solid var(--border); display:flex; align-items:center; gap:14px; cursor:pointer;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:28px;">💬</div>
+        <div style="flex:1;">
+          <div style="font-weight:800; font-size:15px; color:var(--text);">User Feedback</div>
+          <div style="font-size:12px; color:var(--text-muted);">{{ new_feedback }} pending messages to review</div>
+        </div>
+        <span style="color:var(--primary); font-weight:bold;">→</span>
+      </div>
+    </a>
   </div>
 
   <!-- 6 Summary Cards -->

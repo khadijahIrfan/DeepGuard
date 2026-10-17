@@ -1,100 +1,262 @@
 {% extends "base.html" %}
 
-{% block title %}Analyze Content — DeepGuard{% endblock %}
-{% block page_title %}Analyze Content{% endblock %}
+{% block title %}Verify Content — DeepGuard Multi-Modal Workbench{% endblock %}
+{% block page_title %}Verify Content{% endblock %}
 
 {% block content %}
-<div style="max-width: 900px; margin: 0 auto;">
-  
-  <div class="card">
-    <div class="card-header">
-      <h3 class="card-title">
-        <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--primary);fill:none;stroke-width:2;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-        Multimodal Misinformation Verification
-      </h3>
-      <span class="chip chip-info">DistilBERT + EfficientNetV2-S + CLIP</span>
-    </div>
+<div class="analyze-workbench-container" style="max-width: 1400px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: var(--space-4);">
 
-    <div class="card-body">
-      <!-- Inline Error Message -->
-      <div class="alert alert-danger" id="inlineError" style="display:none;"></div>
-
-      <form id="analyzeForm" enctype="multipart/form-data">
-        
-        <!-- Text Analysis Input -->
-        <div class="form-group">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-2);">
-            <label class="form-label" for="newsText" style="margin-bottom:0;">Text Content / Claim</label>
-            <span class="input-hint" id="charCounter">0 / 1200 characters</span>
-          </div>
-          <textarea class="input-control" id="newsText" placeholder="Paste news article, claim, social media post, or WhatsApp message to verify..." rows="5" maxlength="1200"></textarea>
-          <div class="input-hint"><span style="color:var(--warning, #f59e0b); font-weight:600;">Minimum 20 characters required.</span> Maximum 1200 characters &bull; Analyzed via DistilBERT &amp; viral heuristics.</div>
+  <!-- Workbench Header Ribbon (Modern styling, no strip border) -->
+  <div class="card page-hero-banner">
+    <div class="card-body" style="padding: var(--space-4) var(--space-5); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+      <div>
+        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--primary); margin-bottom: 2px;">
+          Multi-Modal Verification Studio
         </div>
+        <h2 style="font-size: 20px; font-weight: 800; color: var(--text); margin: 0;">
+          Context-Aware Claim &amp; Media Analysis
+        </h2>
+      </div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <span class="chip chip-info" style="font-size: 11.5px; font-weight: 600;">DistilBERT</span>
+        <span class="chip chip-info" style="font-size: 11.5px; font-weight: 600;">EfficientNetV2-S</span>
+        <span class="chip chip-info" style="font-size: 11.5px; font-weight: 600;">CLIP Cross-Modal</span>
+        <span class="chip chip-success" style="font-size: 11.5px; font-weight: 600;">Decision Fusion</span>
+      </div>
+    </div>
+  </div>
 
-        <!-- Image Upload Drag and Drop Zone -->
-        <div class="form-group">
-          <label class="form-label">Image Upload (Optional for Multimodal Analysis)</label>
-          <div class="dropzone" id="dropzone">
-            <svg viewBox="0 0 24 24" style="width:40px;height:40px;stroke:var(--primary);fill:none;stroke-width:2;margin-bottom:10px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-            <div style="font-weight:600; font-size:15px; margin-bottom:4px;">Drag & Drop image here or click to browse</div>
-            <div style="font-size:12px; color:var(--text-muted);">Supports JPG, JPEG, PNG, WEBP files &bull; <strong>Max file size: 10 MB</strong></div>
+  <!-- Main 2-Column Responsive Interface Layout -->
+  <div style="display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(320px, 1fr); gap: var(--space-4); align-items: start;">
+    
+    <!-- LEFT COLUMN: Main Verification Input Interface -->
+    <div class="card" style="border: 1px solid var(--border);">
+      <div class="card-header" style="display: flex; align-items: center; justify-content: space-between; padding: var(--space-4) var(--space-5);">
+        <h3 class="card-title" style="font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin: 0;">
+          <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--primary);fill:none;stroke-width:2.2;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          Claim &amp; Image Verification Workspace
+        </h3>
+        <span style="font-size: 12px; color: var(--text-muted);">Text + Image Supported</span>
+      </div>
+
+      <div class="card-body" style="padding: var(--space-5);">
+        <!-- Inline Error Message -->
+        <div class="alert alert-danger" id="inlineError" style="display:none; margin-bottom: var(--space-4);"></div>
+
+        <form id="analyzeForm" enctype="multipart/form-data">
+          
+          <!-- Text Analysis Input -->
+          <div class="form-group" style="margin-bottom: var(--space-4);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-2);">
+              <label class="form-label" for="newsText" style="margin-bottom:0; font-weight: 700; font-size: 14px;">Text Content / Claim</label>
+              <span class="input-hint" id="charCounter" style="font-weight: 600;">0 / 1200 characters</span>
+            </div>
+            <textarea class="input-control" id="newsText" placeholder="Paste news article headline, claim, viral social media post, or WhatsApp message to verify..." rows="5" maxlength="1200" style="padding: 14px; font-size: 14px; line-height: 1.6; border-radius: var(--radius-btn);"></textarea>
             
-            <input type="file" id="imageInput" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none;">
-            
-            <!-- File Preview Box -->
-            <div class="preview-box" id="previewBox" style="display:none;">
-              <img id="previewImg" src="" alt="Selected image preview" class="preview-img">
-              <button type="button" class="remove-img-btn" id="removeImgBtn" title="Remove image">✕</button>
-              <div style="font-size:12px; color:var(--primary); font-weight:600; margin-top:6px;" id="fileNameDisplay"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; flex-wrap: wrap; gap: 6px;">
+              <div class="input-hint" style="margin: 0;">
+                <span style="color:var(--warning, #f59e0b); font-weight:600;">Minimum 20 characters required.</span> Maximum 1200 characters &bull; Analyzed via DistilBERT &amp; viral heuristics.
+              </div>
+            </div>
+
+            <!-- Quick Load Sample Claims Pills -->
+            <div style="display: flex; align-items: center; gap: 6px; margin-top: 10px; flex-wrap: wrap;">
+              <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Samples:</span>
+              <button type="button" class="btn btn-secondary btn-sm" style="font-size: 11px; padding: 3px 8px;" onclick="loadSampleText('Emergency alert: Severe cyclonic storm heading to Karachi coast! Evacuate coastal areas immediately, share before WhatsApp blocks this!')">Viral Alarm</button>
+              <button type="button" class="btn btn-secondary btn-sm" style="font-size: 11px; padding: 3px 8px;" onclick="loadSampleText('State Bank of Pakistan announces official monetary policy rate unchanged at 17.5% following quarterly review meeting.')">Official SBP Statement</button>
+              <button type="button" class="btn btn-secondary btn-sm" style="font-size: 11px; padding: 3px 8px;" onclick="loadSampleText('NASA confirms 3 days of absolute darkness across Asia and Europe starting tomorrow due to planetary alignment!')">Sensational Rumor</button>
             </div>
           </div>
+
+          <!-- Image Upload Drag and Drop Zone -->
+          <div class="form-group" style="margin-bottom: var(--space-4);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label class="form-label" style="font-weight: 700; font-size: 14px; margin: 0;">Visual Media Upload (Optional for Cross-Modal Verification)</label>
+              <span style="font-size: 11.5px; color: var(--text-muted);">JPEG, PNG, WEBP (Max 10MB)</span>
+            </div>
+            
+            <div class="dropzone" id="dropzone" style="padding: 28px 20px; border-radius: var(--radius-card); transition: all 0.2s ease;">
+              <svg viewBox="0 0 24 24" style="width:42px;height:42px;stroke:var(--primary);fill:none;stroke-width:2;margin-bottom:8px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              <div style="font-weight:700; font-size:15px; margin-bottom:4px; color: var(--text);">Drag &amp; Drop image here or click to browse</div>
+              <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">Inspects tampering, generative artifacts &amp; semantic alignment with claim</div>
+
+              <!-- Format + Size badges -->
+              <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:4px;">
+                <span style="font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; background:rgba(34,211,238,0.1); color:var(--primary); border:1px solid rgba(34,211,238,0.25);">JPG</span>
+                <span style="font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; background:rgba(34,211,238,0.1); color:var(--primary); border:1px solid rgba(34,211,238,0.25);">PNG</span>
+                <span style="font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; background:rgba(34,211,238,0.1); color:var(--primary); border:1px solid rgba(34,211,238,0.25);">WEBP</span>
+                <span style="font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; background:rgba(245,158,11,0.12); color:var(--warning); border:1px solid rgba(245,158,11,0.25);">Max 10 MB</span>
+              </div>
+              
+              <input type="file" id="imageInput" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none;">
+              
+              <!-- File Preview Box -->
+              <div class="preview-box" id="previewBox" style="display:none; margin-top: 14px;">
+                <img id="previewImg" src="" alt="Selected image preview" class="preview-img" style="max-height: 220px; border-radius: 8px; width:100%; object-fit:cover;">
+                <button type="button" class="remove-img-btn" id="removeImgBtn" title="Remove image">✕</button>
+                <div style="font-size:12px; color:var(--primary); font-weight:600; margin-top:8px;" id="fileNameDisplay"></div>
+              </div>
+
+              <!-- Image Selected Feedback Banner -->
+              <div id="imgReadyBanner" style="display:none; margin-top:12px; padding:10px 14px; background:rgba(34,211,238,0.08); border:1px solid rgba(34,211,238,0.3); border-radius:10px; align-items:center; gap:10px;">
+                <span style="font-size:18px;">🖼️</span>
+                <div style="flex:1; min-width:0;">
+                  <div style="font-size:12.5px; font-weight:700; color:var(--primary);" id="imgReadyTitle">Image ready for analysis</div>
+                  <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;" id="imgReadyDetail">Cross-modal verification will be activated</div>
+                </div>
+                <span style="font-size:18px; color:var(--success);">✅</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <div style="margin-top:var(--space-4);">
+            <button type="submit" class="btn btn-primary btn-lg" id="analyzeBtn" style="width:100%; padding: 14px; font-size: 15px; font-weight: 800; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 16px rgba(0, 229, 255, 0.25);">
+              <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.2;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <span>Run DeepGuard Multi-Modal Verification</span>
+            </button>
+          </div>
+
+        </form>
+
+        <!-- Analysis Progress Steps Indicator -->
+        <div class="progress-steps-box" id="progressBox" style="display:none; margin-top: var(--space-4); border: 1.5px solid var(--primary); border-radius: 12px; padding: 18px;">
+          <div style="font-weight:700; font-size:15px; margin-bottom:var(--space-3); color:var(--primary); display:flex; align-items:center; gap:8px;">
+            <div class="step-icon-spin"></div>
+            <span>DeepGuard Pipeline Active — Executing Neural Verification</span>
+          </div>
+
+          <div class="progress-step-item" id="step1">
+            <div class="step-icon-spin"></div>
+            <div style="flex:1;">1. Text Analysis (DistilBERT &amp; Viral Heuristics)</div>
+            <span class="step-status">Waiting</span>
+          </div>
+
+          <div class="progress-step-item" id="step2">
+            <div class="step-icon-spin"></div>
+            <div style="flex:1;">2. Image DeepFake Detection &amp; EXIF Metadata</div>
+            <span class="step-status">Waiting</span>
+          </div>
+
+          <div class="progress-step-item" id="step3">
+            <div class="step-icon-spin"></div>
+            <div style="flex:1;">3. CLIP Cross-Modal Context Mismatch Check</div>
+            <span class="step-status">Waiting</span>
+          </div>
+
+          <div class="progress-step-item" id="step4">
+            <div class="step-icon-spin"></div>
+            <div style="flex:1;">4. Fusion Engine Score Weighting &amp; XAI Report</div>
+            <span class="step-status">Waiting</span>
+          </div>
         </div>
 
-        <!-- Action Button -->
-        <div style="display:flex; justify-height:flex-end; gap:var(--space-3); margin-top:var(--space-4);">
-          <button type="submit" class="btn btn-primary btn-lg" id="analyzeBtn" style="width:100%;">
-            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <span>Run DeepGuard Multi-Modal Verification</span>
-          </button>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Verification Intelligence Deck & Active Architecture -->
+    <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+      
+      <!-- Card: 7-Module Neural Engine -->
+      <div class="card" style="border: 1px solid var(--border);">
+        <div class="card-header" style="padding: var(--space-4);">
+          <h4 style="font-size: 15px; font-weight: 700; color: var(--text); margin: 0; display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" style="width: 17px; height: 17px; stroke: var(--primary); fill: none; stroke-width: 2.2;"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            Neural Verification Pipeline
+          </h4>
         </div>
+        <div class="card-body" style="padding: var(--space-4); display: flex; flex-direction: column; gap: 10px;">
+          
+          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; padding: 8px 10px; background: var(--surface-2); border-radius: var(--radius-btn);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--primary);"></span>
+              <strong style="color: var(--text);">Linguistic Transformer</strong>
+            </div>
+            <span style="color: var(--text-muted); font-size: 11px;">DistilBERT</span>
+          </div>
 
-      </form>
+          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; padding: 8px 10px; background: var(--surface-2); border-radius: var(--radius-btn);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--info);"></span>
+              <strong style="color: var(--text);">Visual Tampering</strong>
+            </div>
+            <span style="color: var(--text-muted); font-size: 11px;">EfficientNetV2-S</span>
+          </div>
 
-      <!-- Analysis Progress Steps Indicator -->
-      <div class="progress-steps-box" id="progressBox" style="display:none;">
-        <div style="font-weight:700; font-size:15px; margin-bottom:var(--space-3); color:var(--primary); display:flex; align-items:center; gap:8px;">
-          <div class="step-icon-spin"></div>
-          <span>DeepGuard Pipeline Active</span>
+          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; padding: 8px 10px; background: var(--surface-2); border-radius: var(--radius-btn);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--warning);"></span>
+              <strong style="color: var(--text);">Cross-Modal Alignment</strong>
+            </div>
+            <span style="color: var(--text-muted); font-size: 11px;">CLIP ViT-B/32</span>
+          </div>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; padding: 8px 10px; background: var(--surface-2); border-radius: var(--radius-btn);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: #8B5CF6;"></span>
+              <strong style="color: var(--text);">Emotional &amp; Viral Hooks</strong>
+            </div>
+            <span style="color: var(--text-muted); font-size: 11px;">VADER + Heuristics</span>
+          </div>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; padding: 8px 10px; background: var(--surface-2); border-radius: var(--radius-btn);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: #14B8A6;"></span>
+              <strong style="color: var(--text);">EXIF Forensics</strong>
+            </div>
+            <span style="color: var(--text-muted); font-size: 11px;">Metadata Integrity</span>
+          </div>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; padding: 8px 10px; background: var(--surface-2); border-radius: var(--radius-btn);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--success);"></span>
+              <strong style="color: var(--text);">Adaptive Decision Fusion</strong>
+            </div>
+            <span style="color: var(--text-muted); font-size: 11px;">Calibrated Verdict</span>
+          </div>
+
         </div>
+      </div>
 
-        <div class="progress-step-item" id="step1">
-          <div class="step-icon-spin"></div>
-          <div style="flex:1;">1. Text Analysis (DistilBERT & Viral Heuristics)</div>
-          <span class="step-status">Waiting</span>
+      <!-- Card: Best Verification Practices -->
+      <div class="card" style="border: 1px solid var(--border);">
+        <div class="card-header" style="padding: var(--space-4);">
+          <h4 style="font-size: 15px; font-weight: 700; color: var(--text); margin: 0; display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" style="width: 17px; height: 17px; stroke: var(--primary); fill: none; stroke-width: 2.2;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            Verification Tips
+          </h4>
         </div>
-
-        <div class="progress-step-item" id="step2">
-          <div class="step-icon-spin"></div>
-          <div style="flex:1;">2. Image DeepFake Detection & EXIF Metadata</div>
-          <span class="step-status">Waiting</span>
-        </div>
-
-        <div class="progress-step-item" id="step3">
-          <div class="step-icon-spin"></div>
-          <div style="flex:1;">3. CLIP Cross-Modal Context Mismatch Check</div>
-          <span class="step-status">Waiting</span>
-        </div>
-
-        <div class="progress-step-item" id="step4">
-          <div class="step-icon-spin"></div>
-          <div style="flex:1;">4. Fusion Engine Score Weighting & XAI Report</div>
-          <span class="step-status">Waiting</span>
+        <div class="card-body" style="padding: var(--space-4); font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+          <ul style="padding-left: 18px; margin: 0; display: flex; flex-direction: column; gap: 8px;">
+            <li><strong>Provide context:</strong> Include full headlines or paragraphs for higher text model accuracy.</li>
+            <li><strong>Original photos:</strong> When checking images, prefer high-resolution original files rather than re-compressed screenshots.</li>
+            <li><strong>Cross-modal power:</strong> Pairing the text claim with its associated photo activates CLIP semantic alignment to detect recycled imagery.</li>
+          </ul>
         </div>
       </div>
 
     </div>
+
   </div>
 
 </div>
-{% endblock %}
 
+<script>
+function loadSampleText(sample) {
+  const txtArea = document.getElementById('newsText');
+  if (txtArea) {
+    txtArea.value = sample;
+    txtArea.dispatchEvent(new Event('input', { bubbles: true }));
+    txtArea.focus();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const claimParam = params.get('claim');
+  if (claimParam) {
+    loadSampleText(claimParam);
+  }
+});
+</script>
+{% endblock %}

@@ -17,6 +17,7 @@ import uuid
 import secrets
 import hashlib
 import smtplib
+from collections import defaultdict
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta
 from functools import wraps
@@ -43,7 +44,7 @@ from werkzeug.utils import secure_filename
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from metadata_analysis import extract_important_metadata
 from xai_analysis import get_important_words
-from models import User, Prediction, Notification, PasswordReset, FeedbackMessage, SavedReport, AssistantMessage
+from models import User, Prediction, Notification, PasswordReset, FeedbackMessage, SavedReport, AssistantMessage, QuizResult
 from rag_service import LightweightRAG
 
 # =====================================
@@ -55,6 +56,9 @@ app.secret_key = os.environ.get("SECRET_KEY", "deepguard-secret-key-2026")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///deepguard.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB Maximum upload limit per SRS NFR
+app.config["SESSION_COOKIE_HTTPONLY"] = True         # Prevent JavaScript access to session cookie (XSS mitigation)
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"        # Mitigate CSRF on cross-site requests
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=24)  # 24-hour session lifetime
 
 db.init_app(app)
 
@@ -75,6 +79,12 @@ def load_logged_in_user():
         g.current_user = None
     else:
         g.current_user = User.query.get(user_id)
+        if g.current_user:
+            # Keep session role and name synchronized with database state
+            db_role = getattr(g.current_user, "role", "user") or "user"
+            session["role"] = db_role
+            session["user_name"] = g.current_user.name
+            session["user_email"] = g.current_user.email
 
 current_user = LocalProxy(lambda: g.current_user)
 
@@ -246,9 +256,13 @@ def login_required(f):
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if "user_id" not in session:
+        user_id = session.get("user_id")
+        if not user_id:
             return redirect(url_for("login"))
         user = g.get("current_user")
+        if not user:
+            user = User.query.get(user_id)
+            g.current_user = user
         if not user or getattr(user, "role", "user") != "admin":
             abort(403)
         return f(*args, **kwargs)
@@ -291,39 +305,67 @@ def register():
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
         confirm_password = request.form.get("confirm_password", "")
+        role = request.form.get("role", "user").strip().lower()
+        admin_key = request.form.get("admin_key", "").strip()
+
+        ADMIN_SECRET_KEY = os.environ.get("ADMIN_SECRET_KEY", "DEEPGUARD-ADMIN-2026")
 
         if not name or not email or not password or not confirm_password:
-            return render_template("register.html", error="All fields are required.", entered_name=name, entered_email=email)
+            return render_template("register.html", error="All fields are required.", entered_name=name, entered_email=email, entered_role=role)
 
         if len(name) < 2:
-            return render_template("register.html", error="Name must contain at least 2 characters.", entered_name=name, entered_email=email)
+            return render_template("register.html", error="Name must contain at least 2 characters.", entered_name=name, entered_email=email, entered_role=role)
 
         if "@" not in email or "." not in email.split("@")[-1]:
-            return render_template("register.html", error="Please enter a valid email address.", entered_name=name, entered_email=email)
+            return render_template("register.html", error="Please enter a valid email address.", entered_name=name, entered_email=email, entered_role=role)
 
         if len(password) < 8:
-            return render_template("register.html", error="Password must be at least 8 characters long.", entered_name=name, entered_email=email)
+            return render_template("register.html", error="Password must be at least 8 characters long.", entered_name=name, entered_email=email, entered_role=role)
 
         if password != confirm_password:
-            return render_template("register.html", error="Passwords do not match.", entered_name=name, entered_email=email)
+            return render_template("register.html", error="Passwords do not match.", entered_name=name, entered_email=email, entered_role=role)
+
+        # Validate Role & Admin Secret Key
+        admin_key_clean = (admin_key or "").strip()
+        if role == "admin" or admin_key_clean:
+            if not admin_key_clean or admin_key_clean.upper() != ADMIN_SECRET_KEY.strip().upper():
+                return render_template(
+                    "register.html",
+                    error="Invalid Admin Secret Key. Please provide the authorized key or choose Standard Investigator.",
+                    entered_name=name,
+                    entered_email=email,
+                    entered_role="admin"
+                )
+            assigned_role = "admin"
+        else:
+            assigned_role = "user"
 
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
-            return render_template("register.html", error="An account with this email already exists.", entered_name=name, entered_email=email)
+            return render_template("register.html", error="An account with this email already exists.", entered_name=name, entered_email=email, entered_role=role)
 
         password_hash = generate_password_hash(password)
-        new_user = User(name=name, email=email, password_hash=password_hash)
+        new_user = User(name=name, email=email, password_hash=password_hash, role=assigned_role)
         db.session.add(new_user)
         db.session.commit()
 
-        create_notification(
-            user_id=new_user.id,
-            title="Welcome to DeepGuard!",
-            message="Your account has been created successfully. Start verifying claims and images on your dashboard.",
-            notif_type="success"
-        )
+        if assigned_role == "admin":
+            create_notification(
+                user_id=new_user.id,
+                title="Admin Account Provisioned",
+                message="Welcome to DeepGuard Admin! You have administrative control over platform reports, metrics, and users.",
+                notif_type="info"
+            )
+            flash("Administrator account created successfully! Sign in to access the Admin Central Control.", "success")
+        else:
+            create_notification(
+                user_id=new_user.id,
+                title="Welcome to DeepGuard!",
+                message="Your account has been created successfully. Start verifying claims and images on your dashboard.",
+                notif_type="success"
+            )
+            flash("Account created successfully! Please sign in.", "success")
 
-        flash("Account created successfully! Please sign in.", "success")
         return redirect(url_for("login"))
 
     return render_template("register.html")
@@ -342,6 +384,7 @@ def login():
         if not user or not check_password_hash(user.password_hash, password):
             return render_template("login.html", error="Invalid email or password.", entered_email=email)
 
+        session.permanent = True
         session["user_id"] = user.id
         session["user_name"] = user.name
         session["user_email"] = user.email
@@ -495,6 +538,85 @@ def help_hub():
     return render_template("help.html")
 
 
+def extract_prediction_module_scores(p):
+    """
+    Extracts scores for all 7 neural & heuristic modules from xai_summary JSON,
+    handling modern pipeline schemas, nested fusion_breakdown, and legacy list records.
+    """
+    scores = {}
+    if p.xai_summary:
+        try:
+            data = json.loads(p.xai_summary) if isinstance(p.xai_summary, str) else p.xai_summary
+            if isinstance(data, dict):
+                pipe = data.get("pipeline", {})
+                fb = pipe.get("fusion_breakdown", {})
+                md = pipe.get("module_details", {})
+
+                # 1. Text Analysis
+                if "text_score" in fb and isinstance(fb["text_score"], dict):
+                    scores["text"] = float(fb["text_score"].get("raw_score", 0))
+                elif "text_analysis" in md and isinstance(md["text_analysis"], dict):
+                    scores["text"] = float(md["text_analysis"].get("score", 0))
+
+                # 2. Image Detection
+                if "image_score" in fb and isinstance(fb["image_score"], dict):
+                    scores["image"] = float(fb["image_score"].get("raw_score", 0))
+                elif "image_detection" in md and isinstance(md["image_detection"], dict):
+                    scores["image"] = float(md["image_detection"].get("score", 0))
+
+                # 3. Cross-Modal CLIP Consistency
+                if "context_mismatch_score" in fb and isinstance(fb["context_mismatch_score"], dict):
+                    scores["cross_modal"] = float(fb["context_mismatch_score"].get("raw_score", 0))
+                elif "cross_modal_score" in fb and isinstance(fb["cross_modal_score"], dict):
+                    scores["cross_modal"] = float(fb["cross_modal_score"].get("raw_score", 0))
+                elif "context_mismatch" in md and isinstance(md["context_mismatch"], dict):
+                    scores["cross_modal"] = float(md["context_mismatch"].get("score", 0))
+
+                # 4. Viral Patterns
+                if "viral_score" in fb and isinstance(fb["viral_score"], dict):
+                    scores["viral"] = float(fb["viral_score"].get("raw_score", 0))
+                elif "viral_pattern" in md and isinstance(md["viral_pattern"], dict):
+                    scores["viral"] = float(md["viral_pattern"].get("score", 0))
+
+                # 5. Metadata EXIF Authenticity
+                if "metadata_score" in fb and isinstance(fb["metadata_score"], dict):
+                    scores["metadata"] = float(fb["metadata_score"].get("raw_score", 0))
+                elif "metadata" in data and isinstance(data["metadata"], dict):
+                    scores["metadata"] = float(data["metadata"].get("score", 50.0))
+
+                # 6. Sentiment & Emotional Bias
+                if "sentiment_score" in fb and isinstance(fb["sentiment_score"], dict):
+                    scores["sentiment"] = float(fb["sentiment_score"].get("raw_score", 0))
+                elif "sentiment" in md and isinstance(md["sentiment"], dict):
+                    scores["sentiment"] = float(md["sentiment"].get("score", 0))
+                elif p.sentiment:
+                    scores["sentiment"] = 75.0 if p.sentiment.lower() == "negative" else (25.0 if p.sentiment.lower() == "positive" else 50.0)
+
+                # 7. Fusion Final Score
+                if "final_score" in pipe:
+                    scores["fusion"] = float(pipe["final_score"])
+                elif "final_score" in data:
+                    scores["fusion"] = float(data["final_score"])
+        except Exception:
+            pass
+
+    # Intelligent fallback to prediction properties if records are legacy or partial
+    if "fusion" not in scores and p.confidence is not None:
+        scores["fusion"] = float(p.confidence)
+    if "text" not in scores and p.input_type in ["Text", "Multimodal"] and p.confidence:
+        scores["text"] = float(p.confidence)
+    if "image" not in scores and p.input_type in ["Image", "Multimodal"] and p.confidence:
+        scores["image"] = float(p.confidence)
+    if "sentiment" not in scores:
+        scores["sentiment"] = 50.0
+    if "viral" not in scores:
+        scores["viral"] = 15.0 if "FAKE" in (p.prediction or "").upper() else 5.0
+    if "metadata" not in scores and p.input_type in ["Image", "Multimodal"]:
+        scores["metadata"] = 50.0
+
+    return scores
+
+
 @app.route("/insights")
 @login_required
 def insights():
@@ -529,31 +651,22 @@ def insights():
     image_only = sum(1 for p in preds if p.input_type == "Image")
     multimodal = sum(1 for p in preds if p.input_type == "Multimodal")
 
-    # Average module scores from xai_summary
-    module_names  = ["Text", "Image", "Cross-Modal", "Sentiment", "Viral", "Metadata", "Fusion"]
-    module_keys   = ["text_score", "image_score", "cross_modal_score",
-                     "sentiment_score", "viral_score", "metadata_score", "final_score"]
+    # Robust extraction across all 7 AI & heuristic modules
+    module_names = ["Text", "Image", "Cross-Modal", "Sentiment", "Viral", "Metadata", "Fusion"]
+    order_keys   = ["text", "image", "cross_modal", "sentiment", "viral", "metadata", "fusion"]
     module_sums   = defaultdict(float)
     module_counts = defaultdict(int)
     for p in preds:
-        if p.xai_summary:
-            try:
-                data = json.loads(p.xai_summary)
-                pipe = data.get("pipeline", {})
-                for key in module_keys:
-                    val = pipe.get(key)
-                    if val is not None:
-                        try:
-                            module_sums[key] += float(val)
-                            module_counts[key] += 1
-                        except (TypeError, ValueError):
-                            pass
-            except Exception:
-                pass
+        sc = extract_prediction_module_scores(p)
+        for k in order_keys:
+            if k in sc and sc[k] is not None:
+                module_sums[k] += float(sc[k])
+                module_counts[k] += 1
+
     module_avgs = []
-    for key in module_keys:
-        if module_counts[key]:
-            module_avgs.append(round(module_sums[key] / module_counts[key], 1))
+    for k in order_keys:
+        if module_counts[k]:
+            module_avgs.append(round(module_sums[k] / module_counts[k], 1))
         else:
             module_avgs.append(0)
 
@@ -591,9 +704,12 @@ def library():
     return render_template("library.html", library_items=items)
 
 
+import random
+
 @app.route("/quiz")
 @login_required
 def quiz():
+    category = request.args.get("category", "all").strip().lower()
     quiz_path = BASE_DIR / "data" / "quiz.json"
     questions = []
     if quiz_path.exists():
@@ -602,7 +718,86 @@ def quiz():
                 questions = json.load(f)
         except Exception as e:
             print("Error loading quiz.json:", e)
-    return render_template("quiz.html", quiz_questions=questions)
+
+    # Filter by category if requested
+    if category in ["text", "image", "mismatch"]:
+        filtered = [q for q in questions if q.get("type", "mismatch").lower() == category]
+        if filtered:
+            questions = filtered
+
+    # Unique question sampling per attempt (6 questions per quiz challenge)
+    QUIZ_SAMPLE_SIZE = 6
+    seen_ids = session.get("seen_quiz_ids", [])
+    pool_ids = {q["id"] for q in questions}
+
+    # Identify unseen questions in the current pool/category
+    unseen = [q for q in questions if q["id"] not in seen_ids]
+
+    # If remaining questions are fewer than the quiz size, reset seen IDs for this pool to cycle
+    if len(unseen) < QUIZ_SAMPLE_SIZE:
+        seen_ids = [sid for sid in seen_ids if sid not in pool_ids]
+        unseen = [q for q in questions if q["id"] not in seen_ids]
+
+    # Sample unique questions and randomize their sequence
+    sample_count = min(QUIZ_SAMPLE_SIZE, len(unseen))
+    selected_questions = random.sample(unseen, sample_count) if unseen else questions[:QUIZ_SAMPLE_SIZE]
+    random.shuffle(selected_questions)
+
+    # Persist the seen IDs in the user's session so future attempts don't repeat
+    session["seen_quiz_ids"] = seen_ids + [q["id"] for q in selected_questions]
+
+    # Fetch user's past quiz history
+    user_id = session.get("user_id")
+    quiz_history = (
+        QuizResult.query
+        .filter_by(user_id=user_id)
+        .order_by(QuizResult.created_at.desc())
+        .limit(10)
+        .all()
+    )
+    total_quizzes_taken = QuizResult.query.filter_by(user_id=user_id).count()
+    best_score_record = (
+        QuizResult.query
+        .filter_by(user_id=user_id)
+        .order_by(QuizResult.percentage.desc())
+        .first()
+    )
+    best_score = f"{int(best_score_record.percentage)}%" if best_score_record else "—"
+
+    return render_template(
+        "quiz.html",
+        quiz_questions=selected_questions,
+        current_category=category,
+        quiz_history=quiz_history,
+        total_quizzes_taken=total_quizzes_taken,
+        best_score=best_score
+    )
+
+
+@app.route("/api/quiz/save", methods=["POST"])
+@login_required
+def save_quiz_result():
+    data = request.get_json(silent=True) or {}
+    score = int(data.get("score", 0))
+    total = int(data.get("total", 8))
+    percentage = round((score / total) * 100, 1) if total > 0 else 0.0
+
+    user_id = session.get("user_id")
+    res = QuizResult(
+        user_id=user_id,
+        score=score,
+        total_questions=total,
+        percentage=percentage
+    )
+    db.session.add(res)
+    db.session.commit()
+
+    return jsonify({
+        "status": "success",
+        "score": score,
+        "total": total,
+        "percentage": percentage
+    })
 
 
 @app.route("/feedback", methods=["GET", "POST"])
@@ -686,12 +881,18 @@ def delete_history(id):
 @app.route("/analyze")
 @login_required
 def analyze():
+    if session.get("role") == "admin" or (g.get("current_user") and getattr(g.current_user, "role", "user") == "admin"):
+        flash("Administrators have dedicated platform auditing and supervisory privileges. To analyze new claims, please use a standard user account.", "info")
+        return redirect(url_for("admin_dashboard"))
     return render_template("analyze.html")
 
 
 @app.route("/predict", methods=["POST"])
 @login_required
 def predict():
+    if session.get("role") == "admin" or (g.get("current_user") and getattr(g.current_user, "role", "user") == "admin"):
+        return jsonify({"error": "Admin accounts cannot register new analyses. Please log in with a user account to run verifications."}), 403
+
     text = ""
     temp_image_path = None
 
@@ -827,8 +1028,15 @@ def predict():
 @app.route("/report/<int:id>")
 @login_required
 def view_report(id):
-    prediction = Prediction.query.filter_by(id=id, user_id=session["user_id"]).first_or_404()
-    saved_record = SavedReport.query.filter_by(user_id=session["user_id"], analysis_id=id).first()
+    user_id = session.get("user_id")
+    is_admin = session.get("role") == "admin" or (g.get("current_user") and getattr(g.current_user, "role", "user") == "admin")
+
+    if is_admin:
+        prediction = Prediction.query.get_or_404(id)
+    else:
+        prediction = Prediction.query.filter_by(id=id, user_id=user_id).first_or_404()
+
+    saved_record = SavedReport.query.filter_by(user_id=user_id, analysis_id=id).first()
     is_saved = (saved_record is not None)
     saved_tag = saved_record.tag if saved_record else ""
 
@@ -1093,7 +1301,16 @@ def _generate_template_answer(question, context):
             "DeepGuard gives a risk estimate, not proof. Confirm important claims with trusted sources."
         )
 
-    return "Assistant unavailable right now. (DeepGuard gives a risk estimate, not proof. Confirm important claims with trusted sources.)"
+    # General question about the report
+    verdict = context.get("verdict", "analyzed")
+    confidence = context.get("confidence", 0)
+    reasons = context.get("reasons", [])
+    reason_str = f" Key contributing factor: {reasons[0]}." if reasons else ""
+    return (
+        f"This claim was evaluated as {verdict} with {confidence}% confidence.{reason_str} "
+        "DeepGuard evaluates linguistic markers, image manipulation, EXIF forensics, and multimodal semantic alignment. "
+        "DeepGuard gives a risk estimate, not proof. Confirm important claims with trusted sources."
+    )
 
 
 @app.route("/assistant", methods=["POST"])
@@ -1105,12 +1322,15 @@ def report_assistant():
     analysis_id = data.get("analysis_id")
     prediction = None
     context = None
+    is_admin = session.get("role") == "admin" or (g.get("current_user") and getattr(g.current_user, "role", "user") == "admin")
 
     if analysis_id:
         try:
             analysis_id = int(analysis_id)
-            # Verify report belongs to current user
-            prediction = Prediction.query.filter_by(id=analysis_id, user_id=user_id).first()
+            if is_admin:
+                prediction = Prediction.query.get(analysis_id)
+            else:
+                prediction = Prediction.query.filter_by(id=analysis_id, user_id=user_id).first()
             if not prediction:
                 return jsonify({"error": "Analysis report not found or unauthorized access."}), 404
             context = _build_grounded_report_context(prediction)
@@ -1304,7 +1524,23 @@ def profile():
     if not user:
         session.clear()
         return redirect(url_for("login"))
-    return render_template("profile.html", user=user)
+
+    uid = user.id
+    preds = Prediction.query.filter_by(user_id=uid).all()
+    total_analyses = len(preds)
+    fake_count  = sum(1 for p in preds if p.prediction and 'FAKE' in p.prediction.upper())
+    real_count  = sum(1 for p in preds if p.prediction and 'REAL' in p.prediction.upper())
+    # Best quiz score stored in user.quiz_high_score if it exists, else '—'
+    quiz_score  = getattr(user, 'quiz_high_score', None) or '—'
+
+    return render_template(
+        "profile.html",
+        user=user,
+        total_analyses=total_analyses,
+        fake_count=fake_count,
+        real_count=real_count,
+        quiz_score=quiz_score,
+    )
 
 
 @app.route("/update-profile", methods=["POST"])
@@ -1381,28 +1617,33 @@ def change_password():
 @app.route("/admin")
 @admin_required
 def admin_dashboard():
-    from sqlalchemy import func, cast, Date
+    from sqlalchemy import func
 
     total_users = User.query.count()
     total_analyses = Prediction.query.count()
     fake_count = Prediction.query.filter(Prediction.prediction.like("%FAKE%")).count()
     real_count = Prediction.query.filter(Prediction.prediction.like("%REAL%")).count()
-    today = datetime.utcnow().date()
+    
+    # Robust start/end of today in UTC to avoid dialect date casting issues
+    now_utc = datetime.utcnow()
+    start_of_today = datetime(now_utc.year, now_utc.month, now_utc.day, 0, 0, 0)
+    end_of_today = datetime(now_utc.year, now_utc.month, now_utc.day, 23, 59, 59)
     analyses_today = Prediction.query.filter(
-        cast(Prediction.created_at, Date) == today
+        Prediction.created_at >= start_of_today,
+        Prediction.created_at <= end_of_today
     ).count()
     new_feedback = FeedbackMessage.query.filter_by(status="new").count()
 
-    # Last 30 days daily chart
+    # Last 30 days daily chart using func.date (compatible with SQLite/MySQL/PostgreSQL)
     thirty_days_ago = datetime.utcnow() - timedelta(days=29)
     daily_rows = (
         db.session.query(
-            cast(Prediction.created_at, Date).label("day"),
+            func.date(Prediction.created_at).label("day"),
             func.count(Prediction.id).label("cnt")
         )
         .filter(Prediction.created_at >= thirty_days_ago)
-        .group_by("day")
-        .order_by("day")
+        .group_by(func.date(Prediction.created_at))
+        .order_by(func.date(Prediction.created_at))
         .all()
     )
     # Build a full 30-day series (fill zeros)
@@ -1458,36 +1699,21 @@ def admin_statistics():
     input_labels = [r[0] for r in input_rows]
     input_data = [r[1] for r in input_rows]
 
-    # Module average scores from xai_summary JSON
-    text_scores, image_scores, cross_scores, sentiment_scores, viral_scores, meta_scores, final_scores = [], [], [], [], [], [], []
-    for pred in Prediction.query.filter(Prediction.xai_summary.isnot(None)).all():
-        try:
-            summary = json.loads(pred.xai_summary) if isinstance(pred.xai_summary, str) else pred.xai_summary
-            if isinstance(summary, dict):
-                if summary.get("text_score") is not None:
-                    text_scores.append(float(summary["text_score"]))
-                if summary.get("image_score") is not None:
-                    image_scores.append(float(summary["image_score"]))
-                if summary.get("cross_modal_score") is not None:
-                    cross_scores.append(float(summary["cross_modal_score"]))
-                if summary.get("sentiment_score") is not None:
-                    sentiment_scores.append(float(summary["sentiment_score"]))
-                if summary.get("viral_score") is not None:
-                    viral_scores.append(float(summary["viral_score"]))
-                if summary.get("metadata_score") is not None:
-                    meta_scores.append(float(summary["metadata_score"]))
-                if summary.get("final_score") is not None:
-                    final_scores.append(float(summary["final_score"]))
-        except Exception:
-            pass
-
-    def avg(lst):
-        return round(sum(lst) / len(lst), 2) if lst else 0
-
+    # Module average scores using extract_prediction_module_scores
     module_labels = ["Text", "Image", "Cross-Modal", "Sentiment", "Viral", "Metadata", "Final"]
+    order_keys    = ["text", "image", "cross_modal", "sentiment", "viral", "metadata", "fusion"]
+    admin_sums    = defaultdict(float)
+    admin_counts  = defaultdict(int)
+    for pred in Prediction.query.all():
+        sc = extract_prediction_module_scores(pred)
+        for k in order_keys:
+            if k in sc and sc[k] is not None:
+                admin_sums[k] += float(sc[k])
+                admin_counts[k] += 1
+
     module_data = [
-        avg(text_scores), avg(image_scores), avg(cross_scores),
-        avg(sentiment_scores), avg(viral_scores), avg(meta_scores), avg(final_scores)
+        round(admin_sums[k] / admin_counts[k], 2) if admin_counts[k] else 0
+        for k in order_keys
     ]
 
     return render_template(
@@ -1514,8 +1740,9 @@ def admin_reports():
     if date_f:
         try:
             filter_date = datetime.strptime(date_f, "%Y-%m-%d").date()
-            from sqlalchemy import func, cast, Date
-            query = query.filter(cast(Prediction.created_at, Date) == filter_date)
+            start_date = datetime(filter_date.year, filter_date.month, filter_date.day, 0, 0, 0)
+            end_date = datetime(filter_date.year, filter_date.month, filter_date.day, 23, 59, 59)
+            query = query.filter(Prediction.created_at >= start_date, Prediction.created_at <= end_date)
         except ValueError:
             pass
 
@@ -1577,6 +1804,42 @@ def admin_feedback():
     return render_template("admin_feedback.html", msgs=msgs)
 
 
+@app.route("/admin/users")
+@admin_required
+def admin_users():
+    users_list = User.query.order_by(User.created_at.desc()).all()
+    # Attach analysis counts for each user
+    users_with_counts = []
+    for u in users_list:
+        p_count = Prediction.query.filter_by(user_id=u.id).count()
+        users_with_counts.append({
+            "user": u,
+            "prediction_count": p_count
+        })
+    return render_template("admin_users.html", users_data=users_with_counts)
+
+
+@app.route("/admin/users/<int:target_user_id>/toggle-role", methods=["POST"])
+@admin_required
+def admin_toggle_user_role(target_user_id):
+    current_admin_id = session.get("user_id")
+    if target_user_id == current_admin_id:
+        flash("You cannot demote your own active administrator account.", "error")
+        return redirect(url_for("admin_users"))
+
+    target_user = User.query.get_or_404(target_user_id)
+    if target_user.role == "admin":
+        target_user.role = "user"
+        db.session.commit()
+        flash(f"User '{target_user.name}' has been changed to Standard User.", "info")
+    else:
+        target_user.role = "admin"
+        db.session.commit()
+        flash(f"User '{target_user.name}' has been promoted to Administrator!", "success")
+
+    return redirect(url_for("admin_users"))
+
+
 @app.route("/admin/feedback/<int:msg_id>/review", methods=["POST"])
 @admin_required
 def admin_review_feedback(msg_id):
@@ -1604,4 +1867,23 @@ def about():
 # =====================================
 
 if __name__ == "__main__":
-    app.run(debug=True, use_reloader=False)
+    import os as _os
+
+    # Restrict the reloader to only watch the backend source directory.
+    # By default Flask/Werkzeug watches ALL loaded modules, including the
+    # virtualenv (shap, numba, etc.), which caused constant server restarts
+    # mid-request — resulting in "Network error during analysis" on the client.
+    _backend_dir = _os.path.dirname(_os.path.abspath(__file__))
+    _venv_dir    = _os.path.join(_backend_dir, "..", "deepguard_env")
+    _venv_dir    = _os.path.normpath(_venv_dir)
+
+    app.run(
+        debug=True,
+        use_reloader=True,
+        reloader_type="stat",          # 'stat' is more stable than 'watchdog' on Windows
+        extra_files=[_backend_dir],    # watch backend dir for our own file changes
+        exclude_patterns=[             # do NOT restart on virtualenv library changes
+            _os.path.join(_venv_dir, "*"),
+            _os.path.join(_venv_dir, "**", "*"),
+        ]
+    )

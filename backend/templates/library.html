@@ -6,18 +6,21 @@
 {% block content %}
 <div style="display: flex; flex-direction: column; gap: var(--space-4); max-width: 1200px; margin: 0 auto;">
 
-  <!-- Header Banner -->
-  <div class="card" style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.08) 0%, rgba(59, 130, 246, 0.05) 100%); border-left: 4px solid var(--primary);">
-    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap;">
+  <!-- Header Banner (Modern styling, no strip border) -->
+  <div class="card page-hero-banner">
+    <div class="card-body" style="padding: var(--space-4) var(--space-5); display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap;">
       <div>
-        <h2 style="font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 6px;">
+        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--primary); margin-bottom: 2px;">
+          Knowledge &amp; Threat Intelligence
+        </div>
+        <h2 style="font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 4px;">
           Common Misinformation Patterns &amp; Case Library
         </h2>
-        <p style="color: var(--text-muted); font-size: 14px; max-width: 820px; line-height: 1.6;">
+        <p style="color: var(--text-muted); font-size: 14px; max-width: 820px; line-height: 1.6; margin: 0;">
           Explore real-world patterns of digital deception, recycled media, and viral hoaxes. Use the category chips or search bar to discover how deceptive posts are constructed and learn how to identify them before sharing.
         </p>
       </div>
-      <span class="badge badge-info" style="align-self: flex-start; font-size: 12px; padding: 6px 12px;">
+      <span class="chip chip-info" style="align-self: flex-start; font-size: 12px; padding: 6px 14px; font-weight: 700;">
         📚 {{ library_items|length }} Case Patterns
       </span>
     </div>
@@ -90,10 +93,11 @@
           {{ item.summary }}
         </p>
 
-        <!-- How to Spot It Section -->
-        <div style="background: var(--surface-2); border-radius: var(--radius-btn); padding: 12px 14px; margin-bottom: 16px; border-left: 3px solid var(--primary);">
-          <strong style="display: block; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--primary); margin-bottom: 6px;">
-            🔍 How to Spot It:
+        <!-- How to Spot It Section (Modern styling) -->
+        <div style="background: var(--surface-2); border-radius: var(--radius-btn); padding: 14px 16px; margin-bottom: 16px; border: 1px solid var(--border);">
+          <strong style="display: flex; align-items: center; gap: 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--primary); margin-bottom: 8px;">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--primary);"></span>
+            How to Spot It:
           </strong>
           <ul style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5; padding-left: 18px; margin: 0;">
             {% for tip in item.how_to_spot %}
@@ -103,27 +107,35 @@
         </div>
       </div>
 
-      <!-- Card Footer / External Link -->
-      <div style="border-top: 1px solid var(--border); padding-top: 12px; display: flex; align-items: center; justify-content: space-between;">
-        <span style="font-size: 12px; color: var(--text-muted);">
+      <!-- Card Footer / External Link & Direct Verify Action -->
+      <div style="border-top: 1px solid var(--border); padding-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+        <span style="font-size: 11.5px; color: var(--text-muted); font-weight: 500;">
           Ref: {{ item.source_name }}
         </span>
-        {% if item.fact_check_link %}
-        <a 
-          href="{{ item.fact_check_link }}" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          class="btn btn-secondary btn-sm" 
-          style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 6px 12px;"
-        >
-          <span>Fact Check Portal</span>
-          <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2;">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
-        {% endif %}
+        <div style="display:flex; gap:6px; align-items:center;">
+          <a 
+            href="{{ url_for('analyze') }}?claim={{ item.title | urlencode }}" 
+            class="btn btn-primary btn-sm" 
+            title="Load this pattern into the verification workspace"
+            style="display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; padding: 4px 10px; font-weight: 700;"
+          >
+            <span>Verify Pattern</span>
+            <svg viewBox="0 0 24 24" style="width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.2;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </a>
+          {% if item.fact_check_link %}
+          <a 
+            href="{{ item.fact_check_link }}" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="btn btn-secondary btn-sm" 
+            style="display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; padding: 4px 8px;"
+            title="Read external fact check"
+          >
+            <span>Evidence</span>
+            <svg viewBox="0 0 24 24" style="width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          </a>
+          {% endif %}
+        </div>
       </div>
     </div>
     {% endfor %}

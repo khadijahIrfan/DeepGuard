@@ -1,58 +1,292 @@
 [
   {
     "id": 1,
+    "type": "image",
     "text": "BREAKING: NASA telescopes discover a massive crystalline water pyramid orbiting Neptune! Scientists confirm ancient signs of life.",
     "image": "quiz_1.jpg",
     "correct_answer": "fake",
-    "explanation": "This post uses synthetic sci-fi rendering paired with sensational pseudoscientific claims. NASA makes all telescope findings public on official peer-reviewed portals, with zero evidence of artificial orbital pyramids."
+    "explanation": "Synthetic 3D sci-fi rendering combined with pseudoscientific clickbait. NASA peer-reviewed missions report zero evidence of artificial planetary megastructures."
   },
   {
     "id": 2,
+    "type": "image",
     "text": "The James Webb Space Telescope captures the most detailed infrared view of the Ring Nebula (M57), revealing intricate gas shells and dying central star.",
     "image": "quiz_2.jpg",
     "correct_answer": "real",
-    "explanation": "Authentic astronomical observation released jointly by NASA, ESA, and CSA through the Space Telescope Science Institute, displaying genuine infrared spectroscopic measurements."
+    "explanation": "Authentic infrared astronomical observation published jointly by NASA, ESA, and CSA via the Space Telescope Science Institute."
   },
   {
     "id": 3,
-    "text": "URGENT WARNING: Boiling lemon peels with aspirin kills 100% of seasonal flu strains in 3 hours! Forward to every family group immediately!",
-    "image": "quiz_3.jpg",
-    "correct_answer": "fake",
-    "explanation": "A classic viral health hoax utilizing urgency triggers ('URGENT WARNING', 'forward immediately'). Medical health bodies confirm aspirin and citrus cannot eradicate influenza strains in three hours."
-  },
-  {
-    "id": 4,
+    "type": "image",
     "text": "A newly restored century-old railway bridge in the northern highlands withstands record monsoonal flash floods without structural deformation.",
     "image": "quiz_4.jpg",
     "correct_answer": "real",
-    "explanation": "Verified regional civil engineering report supported by provincial railway authorities, showing documented architectural retrofitting completed earlier this year."
+    "explanation": "Verified regional civil engineering photographic record corroborated by provincial railway transport authorities following historical retrofitting."
   },
   {
-    "id": 5,
+    "id": 4,
+    "type": "image",
     "text": "LEAKED PHOTO: French President spotted serving espresso at an ordinary Paris street cafe during nationwide transit strike negotiations.",
     "image": "quiz_5.jpg",
     "correct_answer": "fake",
-    "explanation": "An AI-generated deepfake portrait. Magnification reveals characteristic midjourney smoothing on hands, distorted cafe signage typography, and inconsistent background facial structures."
+    "explanation": "AI-generated deepfake portrait. Microscopic examination displays signature generative artifacts: smoothed skin textures, nonsensical background typography, and asymmetrical finger joints."
+  },
+  {
+    "id": 5,
+    "type": "image",
+    "text": "World leaders caught secretly wearing identical futuristic biometric rings at international economic summit to monitor heart rates.",
+    "image": "quiz_5.jpg",
+    "correct_answer": "fake",
+    "explanation": "Digital manipulation and conspiracy rumor. High-resolution press wire photos confirm standard jewelry and shadows misidentified intentionally to drive engagement."
   },
   {
     "id": 6,
-    "text": "Archaeologists at the Harappa excavation site unearth a well-preserved terracotta seal featuring unicorn motifs dating back to 2500 BCE.",
-    "image": "quiz_6.jpg",
+    "type": "image",
+    "text": "Solar eclipse shadow path photographed directly from the International Space Station, projecting an eerie circular twilight over North America.",
+    "image": "quiz_1.jpg",
     "correct_answer": "real",
-    "explanation": "Genuine Indus Valley Civilization archaeological artifact cataloged by the Department of Archaeology and Museums with established stratigraphic context."
+    "explanation": "Authenticated orbital photography captured by ISS Expedition crew members and cataloged in the NASA Earth Observatory scientific archive."
   },
   {
     "id": 7,
-    "text": "SHOCKING SCANDAL: State Bank announces all ATM withdrawals will be subject to an emergency 15% overnight levy starting midnight! Check balance NOW!",
-    "image": "quiz_7.jpg",
+    "type": "image",
+    "text": "Deep sea submersible expedition captures a 40-foot bioluminescent aquatic reptilian creature swimming past thermal vents near the Mariana Trench.",
+    "image": "quiz_1.jpg",
     "correct_answer": "fake",
-    "explanation": "A fabricated banking screenshot created to provoke panic. Central banks notify monetary policy adjustments exclusively via official gazettes, press briefings, and verified websites."
+    "explanation": "CGI rendering designed to mimic underwater footage. Marine biology institutions confirm no giant prehistoric aquatic reptiles inhabit abyssal thermal vents."
   },
   {
     "id": 8,
+    "type": "image",
+    "text": "Historic steam locomotive makes ceremonial run across revitalized stone viaduct celebrating centenary of regional rail transit.",
+    "image": "quiz_4.jpg",
+    "correct_answer": "real",
+    "explanation": "Accurate photojournalism documented by cultural preservation societies commemorating historical railway engineering milestones."
+  },
+  {
+    "id": 9,
+    "type": "image",
+    "text": "UNBELIEVABLE: Giant preserved humanoid skeleton unearthed in construction crater in central desert! Mainstream media is completely silent!",
+    "image": "quiz_6.jpg",
+    "correct_answer": "fake",
+    "explanation": "A perennial internet hoax recycling a digitally scaled Photoshop contest image. Human skeletal remains of this scale are physiologically impossible under terrestrial gravity."
+  },
+  {
+    "id": 10,
+    "type": "image",
+    "text": "Archaeologists at the Harappa excavation site unearth a well-preserved terracotta seal featuring unicorn motifs dating back to 2500 BCE.",
+    "image": "quiz_6.jpg",
+    "correct_answer": "real",
+    "explanation": "Genuine Indus Valley archaeological seal cataloged by national archaeological repositories with verified stratigraphic records."
+  },
+  {
+    "id": 11,
+    "type": "image",
+    "text": "VIRAL: Pope Francis steps onto Vatican balcony wearing an ultra-luxurious designer white puffer coat and designer sneakers.",
+    "image": "quiz_5.jpg",
+    "correct_answer": "fake",
+    "explanation": "Famous Midjourney generative AI deepfake. Noticeable visual telltales include indistinct crucifix chain links, glossy synthetic fabric sheen, and blurred hand contours."
+  },
+  {
+    "id": 12,
+    "type": "image",
     "text": "Automated drone reforestation initiative successfully disperses native mangrove seed pods across the Indus delta coastal wetlands.",
     "image": "quiz_8.jpg",
     "correct_answer": "real",
-    "explanation": "Documented environmental conservation project conducted by regional forestry departments and WWF coastal conservation initiatives."
+    "explanation": "Verified environmental initiative supervised by regional forestry agencies and WWF conservation groups employing drone-assisted seed dispersal."
+  },
+
+  {
+    "id": 13,
+    "type": "text",
+    "text": "URGENT WARNING: Boiling lemon peels with aspirin kills 100% of seasonal flu strains in 3 hours! Forward to every family group immediately!",
+    "image": "quiz_3.jpg",
+    "correct_answer": "fake",
+    "explanation": "Classic viral health hoax using high urgency (URGENT WARNING, forward immediately). Medical health bodies confirm aspirin and citrus cannot eliminate viral influenza in 3 hours."
+  },
+  {
+    "id": 14,
+    "type": "text",
+    "text": "World Health Organization announces updated clinical guidelines for seasonal respiratory illness prevention emphasizing hand hygiene and early ventilation.",
+    "image": "quiz_3.jpg",
+    "correct_answer": "real",
+    "explanation": "Standard, evidence-based public health advisory matching official WHO communicable disease prevention protocols."
+  },
+  {
+    "id": 15,
+    "type": "text",
+    "text": "SHOCKING SCANDAL: State Bank announces all ATM withdrawals will be subject to an emergency 15% overnight levy starting midnight! Check balance NOW!",
+    "image": "quiz_7.jpg",
+    "correct_answer": "fake",
+    "explanation": "Fabricated panic message designed to spark bank runs. Central banks notify monetary adjustments solely via official gazettes, press briefings, and verified websites."
+  },
+  {
+    "id": 16,
+    "type": "text",
+    "text": "National telecommunications authority issues public warning reminding consumers that regulatory bodies never request PINs or passwords via SMS or WhatsApp.",
+    "image": "quiz_7.jpg",
+    "correct_answer": "real",
+    "explanation": "Verified consumer cybersecurity advisory published across official regulatory portals to combat fraudulent phishing campaigns."
+  },
+  {
+    "id": 17,
+    "type": "text",
+    "text": "ALERT: WhatsApp will start charging 0.99 USD per month starting next Monday unless you forward this exact message to 15 active contacts!",
+    "image": "quiz_7.jpg",
+    "correct_answer": "fake",
+    "explanation": "Tenured chain-letter scam circulating since 2012. Messaging services never update operational policies through viral user-forwarded text cascades."
+  },
+  {
+    "id": 18,
+    "type": "text",
+    "text": "Meteorological department forecasts pre-monsoon squalls and isolated dust storms across central plains, urging citizens to secure outdoor fixtures.",
+    "image": "quiz_4.jpg",
+    "correct_answer": "real",
+    "explanation": "Official meteorological bulletin issued through regular synoptic weather charts and national weather agency broadcasts."
+  },
+  {
+    "id": 19,
+    "type": "text",
+    "text": "BREAKING: Drinking pure onion juice left near your bedside absorbs airborne viral toxins and guarantees immunity against all infections!",
+    "image": "quiz_3.jpg",
+    "correct_answer": "fake",
+    "explanation": "Ancient folk-medicine myth completely debunked by infectious disease specialists. Cut onions do not act as ambient biological magnets for microscopic pathogens."
+  },
+  {
+    "id": 20,
+    "type": "text",
+    "text": "Global semiconductor alliance reports 14% increase in microchip fabrication capacity as major new manufacturing foundry complexes come online.",
+    "image": "quiz_8.jpg",
+    "correct_answer": "real",
+    "explanation": "Factual industrial trade report corroborated by verified international trade statistics and quarterly fabrication output indices."
+  },
+  {
+    "id": 21,
+    "type": "text",
+    "text": "GOVERNMENT SECRET EXPOSED: All new cell towers transmit encrypted frequencies causing severe memory loss and behavioral conformity! Share before deleted!",
+    "image": "quiz_7.jpg",
+    "correct_answer": "fake",
+    "explanation": "Conspiracy trope using paranoia triggers (SECRET EXPOSED, Share before deleted). Telecom frequency bands are strictly non-ionizing RF spectrum compliant with international safety limits."
+  },
+  {
+    "id": 22,
+    "type": "text",
+    "text": "Central environmental protection agency reports seasonal air quality index readings exceeding hazardous levels, recommending N95 respirators for vulnerable populations.",
+    "image": "quiz_3.jpg",
+    "correct_answer": "real",
+    "explanation": "Authentic environmental monitoring advisory verified against independent PM2.5 particulate sensor stations and official EPA daily dashboards."
+  },
+  {
+    "id": 23,
+    "type": "text",
+    "text": "EMERGENCY: Charging your phone overnight produces lethal radiation that causes spontaneous battery explosions in 8 out of 10 modern smartphones!",
+    "image": "quiz_7.jpg",
+    "correct_answer": "fake",
+    "explanation": "Fear-mongering sensationalism. Modern lithium-ion devices incorporate dedicated power-management ICs that automatically terminate charging current upon reaching full capacity."
+  },
+  {
+    "id": 24,
+    "type": "text",
+    "text": "International civil aviation body mandates reinforced cockpit inspection protocols following routine safety review of commercial passenger fleet operations.",
+    "image": "quiz_8.jpg",
+    "correct_answer": "real",
+    "explanation": "Standard regulatory airworthiness directive issued through official ICAO and FAA international aviation safety frameworks."
+  },
+
+  {
+    "id": 25,
+    "type": "mismatch",
+    "text": "High-altitude weather station in northern mountain range records solar halo optical phenomenon following morning ice crystal dispersion.",
+    "image": "quiz_2.jpg",
+    "correct_answer": "fake",
+    "explanation": "Context Mismatch! The photo displays the Ring Nebula deep in space taken by an orbital space telescope, but is falsely passed off as a mountain atmospheric solar halo."
+  },
+  {
+    "id": 26,
+    "type": "mismatch",
+    "text": "NASA planetary observatory team tracks orbital dynamics of planetary nebula gas envelopes surrounding dying white dwarf star.",
+    "image": "quiz_2.jpg",
+    "correct_answer": "real",
+    "explanation": "Accurate cross-modal alignment. Both the headline text and astronomical imagery accurately describe verified stellar nebula observations."
+  },
+  {
+    "id": 27,
+    "type": "mismatch",
+    "text": "BREAKING: Catastrophic flash flood washes away primary commuter bridge in metropolitan capital during rush hour this afternoon!",
+    "image": "quiz_4.jpg",
+    "correct_answer": "fake",
+    "explanation": "Context Mismatch! The image shows a serene, structurally sound railway viaduct in high-altitude mountain terrain, completely contradicting the claim of a collapsed metropolitan commuter bridge."
+  },
+  {
+    "id": 28,
+    "type": "mismatch",
+    "text": "Alpine regional railway maintains vintage stone viaduct as vital transportation corridor across mountain river valley.",
+    "image": "quiz_4.jpg",
+    "correct_answer": "real",
+    "explanation": "Harmonious multimodal context. The visual architecture, surrounding landscape, and descriptive headline are in factual alignment."
+  },
+  {
+    "id": 29,
+    "type": "mismatch",
+    "text": "DIPLOMATIC CRISIS: Foreign ambassador detained by security forces following fiery altercation outside international embassy gates!",
+    "image": "quiz_5.jpg",
+    "correct_answer": "fake",
+    "explanation": "Context Mismatch! The photo depicts an outdoor Parisian cafe table setting, displaying zero indication of security forces, diplomatic embassies, or arrests."
+  },
+  {
+    "id": 30,
+    "type": "mismatch",
+    "text": "Urban lifestyle and hospitality culture continues to thrive along classic European boulevard cafes during spring tourist season.",
+    "image": "quiz_5.jpg",
+    "correct_answer": "real",
+    "explanation": "Cohesive visual alignment. The image depicts cafe dining ambiance consistent with the lifestyle feature topic."
+  },
+  {
+    "id": 31,
+    "type": "mismatch",
+    "text": "MASSIVE DISASTER: Massive offshore oil rig explodes into blazing inferno sending toxic smoke across coastal settlements!",
+    "image": "quiz_8.jpg",
+    "correct_answer": "fake",
+    "explanation": "Context Mismatch! The image shows tranquil green coastal wetlands and mangrove vegetation under daylight, with zero fire, smoke, or industrial drilling structures."
+  },
+  {
+    "id": 32,
+    "type": "mismatch",
+    "text": "Coastal environmental teams monitor healthy wetland vegetation and coastal mangrove estuaries to buffer storm surge impacts.",
+    "image": "quiz_8.jpg",
+    "correct_answer": "real",
+    "explanation": "Authentic semantic alignment. The image accurately depicts coastal mangrove wetlands matching the environmental management text."
+  },
+  {
+    "id": 33,
+    "type": "mismatch",
+    "text": "BREAKING CRIME ALERT: Cybercrime syndicate raids Central Bank vault, leaving bank automated tellers completely disabled nationwide!",
+    "image": "quiz_7.jpg",
+    "correct_answer": "fake",
+    "explanation": "Context Mismatch! The image shows a standard handheld mobile messaging screen with a chain-letter text forward, not a physical bank vault or compromised cash dispensing infrastructure."
+  },
+  {
+    "id": 34,
+    "type": "mismatch",
+    "text": "Cybersecurity education campaign warns mobile phone users against clicking unverified hyperlinks in unsolicited viral chain messages.",
+    "image": "quiz_7.jpg",
+    "correct_answer": "real",
+    "explanation": "Appropriate context pairing. The phone messaging interface directly illustrates digital literacy cautions regarding chain messages."
+  },
+  {
+    "id": 35,
+    "type": "mismatch",
+    "text": "SHOCKING FIND: Construction crew excavating subway tunnel unearths futuristic robotic machinery buried in prehistoric fossil layer!",
+    "image": "quiz_6.jpg",
+    "correct_answer": "fake",
+    "explanation": "Context Mismatch! The image shows an ancient terracotta archaeological seal from the Indus Bronze Age, completely unrelated to futuristic robotics or subway tunnels."
+  },
+  {
+    "id": 36,
+    "type": "mismatch",
+    "text": "Museum exhibition presents ancient ceramic and terracotta seals demonstrating trade iconography from early Bronze Age urban settlements.",
+    "image": "quiz_6.jpg",
+    "correct_answer": "real",
+    "explanation": "Direct contextual alignment. The artifact photo faithfully illustrates the academic exhibition description."
   }
 ]

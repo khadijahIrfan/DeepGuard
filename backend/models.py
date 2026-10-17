@@ -127,4 +127,22 @@ class AssistantMessage(db.Model):
 
     # Relationships
     prediction = db.relationship("Prediction", backref=db.backref("assistant_records", cascade="all, delete-orphan"))
+
+
+# =====================================
+# Quiz Result Model
+# =====================================
+
+class QuizResult(db.Model):
+    __tablename__ = "quiz_results"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    score = db.Column(db.Integer, nullable=False)
+    total_questions = db.Column(db.Integer, nullable=False)
+    percentage = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship("User", backref=db.backref("quiz_history", lazy=True, cascade="all, delete-orphan"))
+
 

@@ -6,22 +6,37 @@
 {% block content %}
 <div>
 
-  <!-- Welcome Header Banner -->
-  <div class="card" style="background: linear-gradient(135deg, var(--surface-2) 0%, var(--surface) 100%); border: 1px solid var(--border); margin-bottom: var(--space-4);">
-    <div class="card-body" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--space-4);">
-      <div>
-        <h2 style="font-size:24px; font-weight:800; color:var(--text); margin-bottom:4px;">
-          Welcome back, {{ session.get('user_name', 'User') }} 👋
-        </h2>
-        <p style="color:var(--text-muted); font-size:14px;">
-          Multimodal AI-Powered Misinformation & DeepFake Verification Workspace
-        </p>
+  <!-- Welcome Header Banner with Interactive Truth-Shield Phrases (Modern styling) -->
+  <div class="card page-hero-banner" style="margin-bottom: var(--space-4);">
+    <div class="card-body" style="padding: var(--space-4) var(--space-5); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--space-4);">
+      <div style="flex: 1; min-width: 300px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+          <h2 style="font-size:22px; font-weight:800; color:var(--text); margin:0;" id="dashboardGreeting">
+            Welcome back, {{ session.get('user_name', 'Analyst') }} 👋
+          </h2>
+          <span class="chip chip-info" style="font-size:11px; font-weight:700;">Active Shield</span>
+        </div>
+        
+        <!-- Interactive Truth-Shield Phrase Box -->
+        <div style="margin-top: 8px; display: flex; align-items: center; gap: 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; max-width: 820px;">
+          <div style="font-size: 18px; line-height: 1;" id="phraseEmoji">🛡️</div>
+          <div style="flex: 1; font-size: 13.5px; color: var(--text); line-height: 1.45; font-weight: 500;" id="dashboardInteractivePhrase">
+            <em>"Before you forward, pause for 10 seconds: Disinformation is engineered to provoke panic, anger, and urgency."</em>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" id="shufflePhraseBtn" title="Get another truth tip" style="font-size: 11px; padding: 4px 10px; border-radius: 14px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
+            <span>Shuffle 🎲</span>
+          </button>
+        </div>
       </div>
 
-      <div>
-        <a href="{{ url_for('analyze') }}" class="btn btn-primary btn-lg">
-          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <span>+ Start New Analysis</span>
+      <div style="display: flex; gap: 10px; align-items: center; flex-shrink: 0; white-space: nowrap;">
+        <a href="{{ url_for('quiz') }}" class="btn btn-secondary btn-md" style="font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <span>Daily Quiz</span>
+        </a>
+        <a href="{{ url_for('analyze') }}" class="btn btn-primary btn-md" style="font-weight: 700; box-shadow: 0 4px 14px rgba(0, 229, 255, 0.25); display: inline-flex; align-items: center; gap: 6px;">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span>+ Verify Claim</span>
         </a>
       </div>
     </div>
@@ -151,4 +166,65 @@
   </div>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Time-aware greeting
+  const greetingEl = document.getElementById('dashboardGreeting');
+  if (greetingEl) {
+    const hr = new Date().getHours();
+    let timeGreeting = 'Good morning';
+    if (hr >= 12 && hr < 17) timeGreeting = 'Good afternoon';
+    else if (hr >= 17) timeGreeting = 'Good evening';
+    const userName = "{{ session.get('user_name', 'Analyst') }}";
+    greetingEl.innerHTML = `${timeGreeting}, ${userName} 👋`;
+  }
+
+  // Interactive rotating phrases
+  const phrases = [
+    { emoji: '🛡️', text: '"Before you forward, pause for 10 seconds: Disinformation is engineered to provoke panic, anger, and urgency."' },
+    { emoji: '🔍', text: '"78% of viral fake media is not an AI deepfake — it is real footage recycled from unrelated past events."' },
+    { emoji: '⚡', text: '"A sensational claim with no authoritative source is merely a rumor designed for viral propagation."' },
+    { emoji: '🎯', text: '"Disinformation relies on confirmation bias. Always ask: Who benefits if I react emotionally and share this?"' },
+    { emoji: '🧠', text: '"Cross-Modal Check: Does this photo genuinely portray what the headline states, or does the context contradict it?"' },
+    { emoji: '🔬', text: '"DeepGuard runs 7 independent neural pipelines simultaneously to calibrate authenticity probability."' },
+    { emoji: '💡', text: '"Check the domain: Fake news portals often use deceptive typosquatting like .co.co or .news-today.net."' }
+  ];
+
+  let currentIdx = 0;
+  const phraseEl = document.getElementById('dashboardInteractivePhrase');
+  const emojiEl = document.getElementById('phraseEmoji');
+  const shuffleBtn = document.getElementById('shufflePhraseBtn');
+
+  function showPhrase(idx) {
+    if (!phraseEl) return;
+    phraseEl.style.opacity = '0';
+    phraseEl.style.transform = 'translateY(4px)';
+    setTimeout(() => {
+      phraseEl.innerHTML = `<em>${phrases[idx].text}</em>`;
+      if (emojiEl) emojiEl.textContent = phrases[idx].emoji;
+      phraseEl.style.transition = 'all 0.25s ease';
+      phraseEl.style.opacity = '1';
+      phraseEl.style.transform = 'translateY(0)';
+    }, 150);
+  }
+
+  if (shuffleBtn) {
+    shuffleBtn.addEventListener('click', () => {
+      let nextIdx;
+      do {
+        nextIdx = Math.floor(Math.random() * phrases.length);
+      } while (nextIdx === currentIdx && phrases.length > 1);
+      currentIdx = nextIdx;
+      showPhrase(currentIdx);
+    });
+  }
+
+  // Automatically cycle every 12 seconds
+  setInterval(() => {
+    currentIdx = (currentIdx + 1) % phrases.length;
+    showPhrase(currentIdx);
+  }, 12000);
+});
+</script>
 {% endblock %}
