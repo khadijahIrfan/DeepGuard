@@ -1,5 +1,6 @@
 # DEEPGUARD: Context-Aware Multimodal Misinformation Detection with Explainable AI
 
+[![GitHub Repo](https://img.shields.io/badge/GitHub-khadijahIrfan%2FDeepGuard-181717.svg?logo=github)](https://github.com/khadijahIrfan/DeepGuard)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Framework-Flask%202.3-green.svg)](https://flask.palletsprojects.com/)
 [![PyTorch](https://img.shields.io/badge/Deep%20Learning-PyTorch%20%7C%20ONNX-red.svg)](https://pytorch.org/)
@@ -87,7 +88,11 @@ DEEPGUARD/
 
 ## 🚀 Quick Start Guide
 
-### 1. Prerequisites
+### 1. Prerequisites & Repository Clone
+```bash
+git clone https://github.com/khadijahIrfan/DeepGuard.git
+cd DeepGuard
+```
 - Python 3.10+
 - Activated environment: `deepguard_env`
 
