@@ -13,7 +13,7 @@
 
 ## 🏛 System Architecture
 
-DeepGuard orchestrates 7 specialized AI sub-modules linked to a central Multimodal Fusion Engine:
+DeepGuard orchestrates specialized AI sub-modules linked to a central Multimodal Fusion Engine:
 
 ```mermaid
 flowchart TD
@@ -25,19 +25,21 @@ flowchart TD
         PIPELINE --> T3[VADER Sentiment Intensity Analyzer]
     end
 
-    subgraph Visual & Forensic Stream
-        PIPELINE --> V1[EfficientNetV2-S ONNX Authenticity Detector]
-        PIPELINE --> V2[EXIF Metadata & Hardware Forensics]
+    subgraph Grounded Infographic & Visual Forensics
+        PIPELINE --> G1[EasyOCR Grounded Text & Visual ROI Extractor]
+        PIPELINE --> V1[ConvNeXt / EfficientNetV2 Visual Authenticity]
+        PIPELINE --> V2[C2PA Cryptographic Provenance & EXIF Metadata]
     end
 
-    subgraph Cross-Modal Reasoning
+    subgraph Cross-Modal Reasoning & Temporal Consistency
         PIPELINE --> C1[OpenAI CLIP Context Contradiction Detector]
-        PIPELINE --> C2[SHAP Token Explainability Engine]
+        PIPELINE --> C2[Temporal Consistency & Chronology Verifier]
+        PIPELINE --> C3[SHAP Token Explainability Engine]
     end
 
-    T1 & T2 & V1 & C1 --> FUSION[Multimodal Weighted Decision Engine]
+    T1 & T2 & G1 & V1 & C1 --> FUSION[Multimodal Weighted Decision Engine]
     FUSION --> VERDICT[Final Verdict: REAL / FAKE / UNCERTAIN]
-    C2 & V2 & T3 & FUSION --> UI[Interactive Forensic Report & Visual Dashboard]
+    C3 & V2 & T3 & FUSION --> UI[Interactive Forensic Report & Visual Dashboard]
 ```
 
 ---
@@ -88,29 +90,33 @@ DEEPGUARD/
 
 ## 🚀 Quick Start Guide
 
-### 1. Prerequisites & Repository Clone
+### 1. Prerequisites, Clone & Update
 ```bash
+# Clone the repository (or pull latest changes if already cloned):
 git clone https://github.com/khadijahIrfan/DeepGuard.git
 cd DeepGuard
+git pull origin main
+
+# Install all dependencies (including EasyOCR, C2PA, PyTorch, Transformers):
+pip install -r requirements.txt
 ```
 - Python 3.10+
 - Activated environment: `deepguard_env`
 
-### 2. Launch the Application
+### 2. Verify Grounded OCR Engine
 ```bash
-# Navigate to the backend directory and run:
+python modules/ocr_extractor.py
+```
+
+### 3. Launch the Application
+```bash
 python backend/app.py
 ```
 Open your web browser at **`http://127.0.0.1:5000`**.
 
-### 3. Run the Automated 44-Test QA Suite
+### 4. Run the Automated QA Suite
 ```bash
 python benchmark_100/deepguard_qa_tests.py
-```
-
-### 4. Check Database Status
-```bash
-python database/db_status.py
 ```
 
 ---

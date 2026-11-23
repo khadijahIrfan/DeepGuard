@@ -278,3 +278,18 @@ def extract_visual_roi(image_path, output_dir=None, boxes=None):
         logger.warning(f"Could not extract visual ROI: {e}")
 
     return image_path
+
+
+if __name__ == "__main__":
+    import sys
+    test_path = sys.argv[1] if len(sys.argv) > 1 else r"Testing Samples/Text grounded on Image/Real/image_92cd90e.jpg"
+    print(f"=== Testing DeepGuard Grounded Text OCR ===")
+    print(f"Target Image: {test_path}")
+    res = extract_grounded_text(test_path)
+    print(f"Has Grounded Text : {res.get('has_grounded_text')}")
+    print(f"Cleaned Claim     : {res.get('cleaned_text')}")
+    print(f"Confidence Avg    : {res.get('confidence_avg')}")
+    print(f"Detected Lines    : {res.get('total_lines_detected')}")
+    roi = extract_visual_roi(test_path)
+    print(f"Visual ROI Path   : {roi}")
+    print(f"=== OCR Self-Test Complete ===")
