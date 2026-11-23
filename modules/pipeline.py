@@ -138,7 +138,8 @@ class DeepGuardPipeline:
 
         # 4. Context Mismatch Module (Cross-modal CLIP Visual-Semantic Alignment)
         if has_text and has_image:
-            mismatch_res = detect_context_mismatch(image_path, text)
+            is_grounded_mode = is_grounded or ("grounded_text_ocr" in module_outputs)
+            mismatch_res = detect_context_mismatch(image_path, text, is_grounded=is_grounded_mode)
             module_outputs["context_mismatch"] = mismatch_res
             fusion_inputs["context_mismatch_score"] = mismatch_res.get("mismatch_score", 0.0)
 

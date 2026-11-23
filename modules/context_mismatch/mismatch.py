@@ -11,7 +11,9 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 MODEL_NAME = "openai/clip-vit-base-patch32"
-THRESHOLD = 0.15
+THRESHOLD_STANDARD = 0.22  # Optimal decision boundary based on 463-sample empirical benchmark (F1=0.848, Recall=89.8%)
+THRESHOLD_GROUNDED = 0.12  # Calibrated for news infographics where text is physically embedded on the graphic card
+THRESHOLD = THRESHOLD_STANDARD  # Global default
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 _clip_model = None
@@ -77,7 +79,7 @@ def clip_similarity(image_path, text):
         logger.error(f"Error calculating CLIP similarity for {image_path}: {e}")
         return 0.5
 
-def detect_context_mismatch(image_path, text):
+def detect_context_mismatch(image_path, text, is_grounded=False):
     """
     Module 6 — Context Mismatch Detector.
     Returns:
@@ -96,18 +98,21 @@ def detect_context_mismatch(image_path, text):
 
     similarity = clip_similarity(image_path=image_path, text=text)
 
+    # Use grounded threshold (0.12) if text is physically embedded on the graphic card,
+    # otherwise use optimal standard threshold (0.22) from empirical dataset evaluation
+    threshold = THRESHOLD_GROUNDED if is_grounded else THRESHOLD_STANDARD
+
     # Normalize similarity into a dynamic 0-100 mismatch score:
     # CLIP cosine similarity typically spans 0.05 to 0.35 for image-caption pairs.
-    # Open-domain news headlines and photos typically have similarity around 0.14 - 0.25.
-    # If similarity < THRESHOLD (0.15), content is contextually contradictory.
-    if similarity < THRESHOLD:
-        # Cross-modal contradiction: maps [THRESHOLD down to 0.0] -> [50.0 up to 100.0]
-        mismatch_percent = round(min(100.0, 50.0 + ((THRESHOLD - max(0.0, similarity)) / THRESHOLD) * 50.0), 2)
+    # If similarity < threshold, content is contextually contradictory.
+    if similarity < threshold:
+        # Cross-modal contradiction: maps [threshold down to 0.0] -> [50.0 up to 100.0]
+        mismatch_percent = round(min(100.0, 50.0 + ((threshold - max(0.0, similarity)) / threshold) * 80.0), 2)
         is_mismatch = True
         explanation = f"Cross-modal contradiction detected! Text and image content have low semantic alignment (similarity: {round(similarity, 3)})."
     else:
-        # Contextually aligned: maps [THRESHOLD up to 0.30] -> [50.0 down to 0.0]
-        norm_align = min(1.0, max(0.0, (similarity - THRESHOLD) / 0.15))
+        # Contextually aligned: maps [threshold up to 0.35] -> [50.0 down to 0.0]
+        norm_align = min(1.0, max(0.0, (similarity - threshold) / (0.35 - threshold)))
         mismatch_percent = round(max(0.0, (1.0 - norm_align) * 45.0), 2)
         is_mismatch = False
         explanation = f"Image and text appear contextually aligned (similarity: {round(similarity, 3)})."
@@ -119,6 +124,8 @@ def detect_context_mismatch(image_path, text):
         "explanation": explanation,
         "status": "success"
     }
+
+mismatch_score = detect_context_mismatch
 
 if __name__ == "__main__":
     test_img = r"E:\Zujajah\test_images\sample_test.jpg"

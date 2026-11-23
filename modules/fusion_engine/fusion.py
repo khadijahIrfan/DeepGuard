@@ -173,29 +173,37 @@ class FusionEngine:
             risk_level = "LOW"
             risk_description = "Content exhibits authentic linguistic, visual, and contextual patterns."
 
-        # 6. Temporal Mismatch Nuance Handling
-        # If temporal analysis detected POSSIBLE_TEMPORAL_MISMATCH (e.g. an authentic 2022 photo
-        # reused with "happening today"), the overall assessment must alert the user that the media
+        # 6. Cross-Modal Mismatch & Temporal Inconsistency Handling
+        # If cross-modal contradiction or temporal mismatch is detected (e.g. an authentic photo
+        # reused with an unrelated narrative or "happening today"), alert the user that the media
         # is out-of-context, without crudely classifying the photo itself as synthetic fake.
         temporal_info = module_results.get("temporal_verification")
         overall_assessment = "NO_DETECTED_INCONSISTENCY"
         temporal_warning = None
+
+        if mismatch >= 50.0:
+            overall_assessment = "CROSS_MODAL_CONTRADICTION"
+            if risk_level == "LOW":
+                risk_level = "HIGH"
+                risk_description = "Cross-modal contradiction detected: authentic media paired with an unrelated news narrative."
 
         if temporal_info and isinstance(temporal_info, dict):
             t_status = temporal_info.get("status")
             if t_status == "POSSIBLE_TEMPORAL_MISMATCH":
                 overall_assessment = "POTENTIALLY_MISLEADING_CONTEXT"
                 temporal_warning = "Image is authentic but temporally outdated for the current event claim."
-                if risk_level == "LOW":
+                if risk_level in ["LOW", "MODERATE"]:
                     risk_level = "MODERATE"
                     risk_description = "The image appears authentic but evidence indicates it originated from a previous event/timeframe."
             elif t_status == "CONTRADICTORY_DATE_EVIDENCE":
                 overall_assessment = "POTENTIALLY_INCONSISTENT"
                 temporal_warning = "Discrepancy detected between claimed event date and image records."
             elif t_status == "TEMPORAL_STATUS_UNVERIFIED":
-                overall_assessment = "INSUFFICIENT_TEMPORAL_EVIDENCE"
+                if mismatch < 50.0:
+                    overall_assessment = "INSUFFICIENT_TEMPORAL_EVIDENCE"
             elif t_status == "TEMPORALLY_CONSISTENT":
-                overall_assessment = "TEMPORALLY_CONSISTENT"
+                if mismatch < 50.0:
+                    overall_assessment = "TEMPORALLY_CONSISTENT"
 
         return {
             "verdict": verdict,
