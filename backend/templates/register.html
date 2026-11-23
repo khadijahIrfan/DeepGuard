@@ -55,13 +55,13 @@
         <div class="hero-feature-item">
           <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
           <div class="title">Text AI</div>
-          <div class="desc">DistilBERT</div>
+          <div class="desc">Linguistic Truth Engine</div>
         </div>
 
         <div class="hero-feature-item">
           <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle></svg>
           <div class="title">Vision AI</div>
-          <div class="desc">EfficientNetV2-S</div>
+          <div class="desc">Forensic Vision Engine</div>
         </div>
 
         <div class="hero-feature-item">
@@ -168,8 +168,8 @@
         <div class="form-group" style="margin-top:var(--space-2);">
           <label class="form-label" for="regRole">Account Type / Role</label>
           <select name="role" id="regRole" class="input-control" onchange="toggleAdminKeyField(this.value)" style="cursor:pointer; font-weight:600;">
-            <option value="user" {% if entered_role != 'admin' %}selected{% endif %}>👤 Standard Investigator (Regular User)</option>
-            <option value="admin" {% if entered_role == 'admin' %}selected{% endif %}>🛡️ System Administrator (Admin Access)</option>
+            <option value="user" {% if entered_role != 'admin' %}selected{% endif %}>Standard Investigator (Regular User)</option>
+            <option value="admin" {% if entered_role == 'admin' %}selected{% endif %}>System Administrator (Admin Access)</option>
           </select>
           <div class="input-hint" style="margin-top:4px; font-size:11.5px; color:var(--text-muted);">
             Choose <strong>Standard Investigator</strong> to submit analyses, or <strong>Administrator</strong> for platform monitoring.

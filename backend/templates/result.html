@@ -52,11 +52,11 @@
 
           <h2 style="font-size:32px; font-weight:800; color: {% if 'FAKE' in prediction.prediction %}var(--danger){% elif 'REAL' in prediction.prediction %}var(--success){% else %}var(--warning){% endif %}; font-size:32px; display:flex; align-items:center; gap:12px;">
             {% if 'FAKE' in prediction.prediction %}
-              <span class="chip chip-fake" style="font-size:18px; padding:6px 16px;">🚨 FAKE / MISINFORMATION</span>
+              <span class="chip chip-fake" style="font-size:18px; padding:6px 16px;"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.5;display:inline-block;vertical-align:text-bottom;margin-right:6px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>FAKE / MISINFORMATION</span>
             {% elif 'REAL' in prediction.prediction %}
-              <span class="chip chip-real" style="font-size:18px; padding:6px 16px;">✅ LIKELY REAL / AUTHENTIC</span>
+              <span class="chip chip-real" style="font-size:18px; padding:6px 16px;"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.5;display:inline-block;vertical-align:text-bottom;margin-right:6px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>LIKELY REAL / AUTHENTIC</span>
             {% else %}
-              <span class="chip chip-uncertain" style="font-size:18px; padding:6px 16px;">⚠️ UNCERTAIN / UNVERIFIED</span>
+              <span class="chip chip-uncertain" style="font-size:18px; padding:6px 16px;"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.5;display:inline-block;vertical-align:text-bottom;margin-right:6px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>UNCERTAIN / UNVERIFIED</span>
             {% endif %}
           </h2>
         </div>
@@ -110,8 +110,8 @@
     </div>
   </div>
 
-  <!-- 3. Grid of 7 Module Cards -->
-  <h3 style="font-size:18px; font-weight:700; margin-bottom:var(--space-4);">Detailed Module Analysis Breakdown (7 AI Engine Modules)</h3>
+  <!-- 3. Grid of 8 Module Cards -->
+  <h3 style="font-size:18px; font-weight:700; margin-bottom:var(--space-4);">Detailed Module Analysis Breakdown (8 AI Engine Modules)</h3>
 
   <div class="grid-7-modules">
     
@@ -124,10 +124,10 @@
         </h4>
         {% if pipeline_result and pipeline_result.module_details and pipeline_result.module_details.text_analysis %}
           {% set text_mod = pipeline_result.module_details.text_analysis %}
-          {% if text_mod.prediction == 'FAKE' %}
-            <span class="chip chip-fake">Fake</span>
+          {% if (text_mod.is_fake is defined and text_mod.is_fake) or (text_mod.fake_probability|default(0.0) >= 53.0) %}
+            <span class="chip chip-fake">Fake / Deceptive</span>
           {% else %}
-            <span class="chip chip-real">Real</span>
+            <span class="chip chip-real">Real / Credible</span>
           {% endif %}
         {% else %}
           <span class="chip chip-muted">Not Analyzed</span>
@@ -137,11 +137,19 @@
         {% if pipeline_result and pipeline_result.module_details and pipeline_result.module_details.text_analysis %}
           {% set text_mod = pipeline_result.module_details.text_analysis %}
           <div style="font-size:22px; font-weight:800; color:var(--text); margin-bottom:4px;">
-            {{ "%.1f"|format(text_mod.fake_probability|default(0.0)) }}% Fake Probability
+            {% if (text_mod.is_fake is defined and text_mod.is_fake) or (text_mod.fake_probability|default(0.0) >= 53.0) %}
+              <span style="color:var(--danger, #ef4444);">{{ "%.1f"|format(text_mod.fake_probability|default(0.0)) }}%</span> Fake Probability
+            {% else %}
+              <span style="color:var(--success, #10b981);">{{ "%.1f"|format(100.0 - (text_mod.fake_probability|default(0.0))) }}%</span> Credibility Score
+              <span style="font-size:12px; color:var(--text-muted); font-weight:400;">({{ "%.1f"|format(text_mod.fake_probability|default(0.0)) }}% risk)</span>
+            {% endif %}
           </div>
-          <p style="font-size:13px; color:var(--text-muted);">
-            Analyzed using fine-tuned DistilBERT transformer model. Classification model evaluated linguistic pattern markers.
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom: 6px;">
+            Evaluated using deep linguistic transformer architecture. Analysis scanned syntax, semantic veracity, and contextual credibility.
           </p>
+          <div style="font-size:11px; color:var(--text-muted); background:rgba(255,255,255,0.03); border-left:2px solid var(--primary); padding:4px 8px; border-radius:0 4px 4px 0;">
+            Independent text module score. The overall verdict is synthesized dynamically across all active modalities by the Fusion Engine.
+          </div>
         {% else %}
           <p style="font-size:13px; color:var(--text-muted); font-style:italic;">
             Not analyzed (no text provided).
@@ -172,10 +180,15 @@
         {% if pipeline_result and pipeline_result.module_details and pipeline_result.module_details.image_detection %}
           {% set img_mod = pipeline_result.module_details.image_detection %}
           <div style="font-size:22px; font-weight:800; color:var(--text); margin-bottom:4px;">
-            {{ "%.1f"|format(img_mod.manipulation_score|default(0.0)) }}% Manipulation Score
+            {% if img_mod.is_fake or (img_mod.manipulation_score|default(0.0) >= 50.0) %}
+              <span style="color:var(--danger, #ef4444);">{{ "%.1f"|format(img_mod.manipulation_score|default(0.0)) }}%</span> Manipulation Score
+            {% else %}
+              <span style="color:var(--success, #10b981);">{{ "%.1f"|format(100.0 - (img_mod.manipulation_score|default(0.0))) }}%</span> Authenticity Score
+              <span style="font-size:12px; color:var(--text-muted); font-weight:400;">({{ "%.1f"|format(img_mod.manipulation_score|default(0.0)) }}% anomaly)</span>
+            {% endif %}
           </div>
           <p style="font-size:13px; color:var(--text-muted);">
-            Evaluated by fine-tuned EfficientNetV2-S Neural Network with dual-engine ONNX runtime for AI-generated and manipulated image detection.
+            Evaluated by forensic vision neural network for synthetic AI generation, splicing anomalies, and photographic pixel artifacts.
           </p>
         {% else %}
           <p style="font-size:13px; color:var(--text-muted); font-style:italic;">
@@ -214,7 +227,7 @@
             </div>
           {% else %}
             <div class="alert alert-success" style="margin-bottom: var(--space-3);">
-              <span>✅ No editing software detected. Image appears to be camera-authentic based on EXIF metadata.</span>
+              <span><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--success);fill:none;stroke-width:2.5;display:inline-block;vertical-align:text-bottom;margin-right:6px;"><polyline points="20 6 9 17 4 12"></polyline></svg>No editing software detected. Image appears to be camera-authentic based on EXIF metadata.</span>
             </div>
           {% endif %}
 
@@ -286,7 +299,7 @@
             {% if metadata_info.software %}
             <div style="background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-btn); padding:12px;">
               <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); margin-bottom:4px;">Editing Software</div>
-              <div style="font-size:13px; font-weight:600; color:var(--warning);">⚠️ {{ metadata_info.software }}</div>
+              <div style="font-size:13px; font-weight:600; color:var(--warning);"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:var(--warning);fill:none;stroke-width:2;display:inline-block;vertical-align:text-bottom;margin-right:4px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>{{ metadata_info.software }}</div>
             </div>
             {% endif %}
           </div>
@@ -299,7 +312,7 @@
             {{ metadata_info.note | default("This commonly happens when photos are shared via WhatsApp or Telegram (which strips EXIF), downloaded from the web, or when the image is AI-generated. Camera-captured photos normally contain camera make/model, date, GPS, and lens settings.") }}
           </p>
           <div class="alert alert-info" style="margin-top:var(--space-3);">
-            <span>ℹ️ Note: AI-generated images (from tools like Stable Diffusion, DALL-E, Midjourney) typically contain no EXIF metadata as they are not captured by physical camera hardware.</span>
+            <span>[Info] Note: AI-generated images (from tools like Stable Diffusion, DALL-E, Midjourney) typically contain no EXIF metadata as they are not captured by physical camera hardware.</span>
           </div>
         {% else %}
           <p style="font-size:13px; color:var(--text-muted); font-style:italic;">
@@ -429,7 +442,13 @@
         {% if pipeline_result and pipeline_result.module_details and pipeline_result.module_details.context_mismatch %}
           {% set cm = pipeline_result.module_details.context_mismatch %}
           <div style="font-size:20px; font-weight:700; color:var(--text); margin-bottom:4px;">
-            Alignment: {{ "%.1f"|format((cm.similarity|default(0.0)) * 100) }}% | Mismatch: {{ "%.1f"|format(cm.mismatch_score|default(0.0)) }}%
+            {% if cm.is_mismatch %}
+              <span style="color:var(--danger, #ef4444);">Mismatch Detected</span>
+              <span style="font-size:13px; color:var(--text-muted); font-weight:400;">(Discordance: {{ "%.1f"|format(cm.mismatch_score|default(0.0)) }}%)</span>
+            {% else %}
+              <span style="color:var(--success, #10b981);">Context Matched</span>
+              <span style="font-size:13px; color:var(--text-muted); font-weight:400;">(Alignment: {{ "%.1f"|format((cm.similarity|default(0.0)) * 100) }}%)</span>
+            {% endif %}
           </div>
           <p style="font-size:13px; color:var(--text-muted);">
             {{ cm.explanation|default('CLIP neural network evaluated image-text semantic alignment.') }}
@@ -442,12 +461,102 @@
       </div>
     </div>
 
-    <!-- 7) Explainable AI Card -->
+    <!-- 7) Temporal Consistency & Image Provenance Card -->
+    <div class="card" style="grid-column: 1 / -1; margin-bottom: var(--space-4);">
+      <div class="card-header">
+        <h4 class="card-title">
+          <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:var(--primary);fill:none;stroke-width:2;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          7. Temporal Consistency & Image Provenance Verification
+        </h4>
+        {% set temp_mod = pipeline_result.module_details.temporal_verification if (pipeline_result and pipeline_result.module_details and pipeline_result.module_details.temporal_verification) else pipeline_result.temporal_verification %}
+        {% if temp_mod %}
+          {% if temp_mod.status == 'TEMPORALLY_CONSISTENT' %}
+            <span class="chip chip-real">Temporally Consistent</span>
+          {% elif temp_mod.status == 'POSSIBLE_TEMPORAL_MISMATCH' %}
+            <span class="chip chip-fake" style="background:rgba(239, 68, 68, 0.2); color:#f87171; border:1px solid rgba(239, 68, 68, 0.4);">Possible Temporal Mismatch</span>
+          {% elif temp_mod.status == 'CONTRADICTORY_DATE_EVIDENCE' %}
+            <span class="chip chip-fake" style="background:rgba(245, 158, 11, 0.2); color:#fbbf24; border:1px solid rgba(245, 158, 11, 0.4);">Contradictory Date Evidence</span>
+          {% elif temp_mod.status == 'INSUFFICIENT_CONTEXT' %}
+            <span class="chip chip-muted">Context Uncertain</span>
+          {% else %}
+            <span class="chip chip-muted">Temporal Status Unverified</span>
+          {% endif %}
+        {% else %}
+          <span class="chip chip-muted">Not Analyzed</span>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        {% set temp_mod = pipeline_result.module_details.temporal_verification if (pipeline_result and pipeline_result.module_details and pipeline_result.module_details.temporal_verification) else pipeline_result.temporal_verification %}
+        {% if temp_mod %}
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px; margin-bottom:14px;">
+            <div style="background:rgba(255,255,255,0.03); padding:10px 14px; border-radius:8px; border-left:3px solid var(--primary);">
+              <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Claimed Event Timeframe</div>
+              <div style="font-size:14px; font-weight:700; color:var(--text); margin-top:2px;">
+                {{ temp_mod.text_event_date or temp_mod.text_event_year or 'No explicit date in text' }}
+                {% if temp_mod.temporal_expressions and temp_mod.temporal_expressions|length > 0 %}
+                  <span style="font-size:12px; font-weight:400; color:var(--text-muted);">({{ temp_mod.temporal_expressions|join(', ') }})</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.03); padding:10px 14px; border-radius:8px; border-left:3px solid #38bdf8;">
+              <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Camera EXIF Timestamp</div>
+              <div style="font-size:14px; font-weight:700; color:var(--text); margin-top:2px;">
+                {{ temp_mod.image_capture_date or 'No capture date found in EXIF' }}
+              </div>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.03); padding:10px 14px; border-radius:8px; border-left:3px solid #a855f7;">
+              <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Earliest Web Provenance</div>
+              <div style="font-size:14px; font-weight:700; color:var(--text); margin-top:2px;">
+                {{ temp_mod.earliest_provenance_date or (temp_mod.earliest_provenance_year|string if temp_mod.earliest_provenance_year else 'No earlier appearance found') }}
+              </div>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.03); padding:10px 14px; border-radius:8px; border-left:3px solid #10b981;">
+              <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Evidence Strength</div>
+              <div style="font-size:14px; font-weight:700; color:var(--text); margin-top:2px;">
+                {{ temp_mod.evidence_strength or 'LOW' }}
+              </div>
+            </div>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08); padding:12px 16px; border-radius:8px; margin-bottom:12px;">
+            <div style="font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px;">Journalistic Forensic Evaluation:</div>
+            <p style="font-size:13px; color:var(--text-muted); margin:0; line-height:1.6;">
+              {{ temp_mod.explanation }}
+            </p>
+          </div>
+
+          {% if temp_mod.provenance_sources and temp_mod.provenance_sources|length > 0 %}
+            <div style="margin-bottom:10px;">
+              <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Discovered Prior Sources:</div>
+              <ul style="margin:0; padding-left:18px; font-size:12px;">
+                {% for src in temp_mod.provenance_sources %}
+                  <li><a href="{{ src }}" target="_blank" rel="noopener noreferrer" style="color:var(--primary); word-break:break-all;">{{ src }}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          <p style="font-size:11px; color:var(--text-muted); font-style:italic; margin:0;">
+            Note: {{ temp_mod.limitations }}
+          </p>
+        {% else %}
+          <p style="font-size:13px; color:var(--text-muted); font-style:italic; margin:0;">
+            Temporal consistency verification was not triggered (requires both text claim and image payload).
+          </p>
+        {% endif %}
+      </div>
+    </div>
+
+
+        <!-- 8) Explainable AI Card -->
     <div class="card" style="grid-column: 1 / -1;">
       <div class="card-header">
         <h4 class="card-title">
           <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:var(--primary);fill:none;stroke-width:2;"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-          7. Explainable AI (XAI Word Importance & Model Reasoning)
+          8. Explainable AI (XAI Word Importance & Model Reasoning)
         </h4>
         <span class="chip chip-info">SHAP + Word Attribution</span>
       </div>
@@ -500,7 +609,7 @@
     <div class="card-body">
       <!-- Grounded notice banner (Modern styling) -->
       <div style="background:var(--surface-2); border:1px solid var(--border); padding:12px 16px; border-radius:8px; font-size:12.5px; color:var(--text-muted); margin-bottom:var(--space-3); line-height:1.5;">
-        💡 <strong>Grounded in this report:</strong> Answers are based solely on this claim's stored scores. DeepGuard gives a risk estimate, not proof. Confirm important claims with trusted fact-checking sources.
+        <strong>Grounded Analysis:</strong> Answers are based solely on this claim's stored scores. DeepGuard gives a risk estimate, not proof. Confirm important claims with trusted fact-checking sources.
       </div>
 
       <!-- Suggested Question Quick Buttons (Dynamic per Report) -->
@@ -758,7 +867,7 @@ function handleAssistantSubmit(e) {
 
   const isFake   = verdictText && verdictText.toUpperCase().includes('FAKE');
   const isReal   = verdictText && verdictText.toUpperCase().includes('REAL');
-  const icon     = isFake ? '🚨' : isReal ? '✅' : '⚠️';
+  const icon = isFake ? 'FLAGGED' : isReal ? 'AUTHENTIC' : 'UNVERIFIED';
   const color    = isFake ? 'rgba(239,68,68,0.35)' : isReal ? 'rgba(34,197,94,0.35)' : 'rgba(245,158,11,0.35)';
   const topColor = isFake ? 'linear-gradient(90deg,#EF4444,#F87171)' : isReal ? 'linear-gradient(90deg,#22C55E,#4ADE80)' : 'linear-gradient(90deg,#F59E0B,#FCD34D)';
   const verdict  = verdictText || 'Analysis Complete';

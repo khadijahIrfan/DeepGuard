@@ -26,23 +26,23 @@
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--space-3);">
       <div>
         <h2 style="font-size:22px; font-weight:800; margin:0 0 4px; color:var(--text); display:flex; align-items:center; gap:8px;">
-          <span>🛡️ Admin Central Control</span>
+          <span>Admin Central Control</span>
           <span class="chip chip-danger" style="font-size:11px; padding:2px 8px;">Super Admin</span>
         </h2>
         <div style="font-size:13px; color:var(--text-muted);">Manage platform security, inspect all user submissions, review deep analytics, and handle feedback.</div>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <a href="{{ url_for('admin_statistics') }}" class="btn btn-primary btn-sm" style="font-size:12px; font-weight:700;">
-          📊 Statistics
+          Statistics
         </a>
         <a href="{{ url_for('admin_reports') }}" class="btn btn-secondary btn-sm" style="font-size:12px; font-weight:700;">
-          🗂️ Reports
+          Reports
         </a>
         <a href="{{ url_for('admin_users') }}" class="btn btn-secondary btn-sm" style="font-size:12px; font-weight:700;">
-          👥 Users ({{ total_users }})
+          Users ({{ total_users }})
         </a>
         <a href="{{ url_for('admin_feedback') }}" class="btn btn-secondary btn-sm" style="font-size:12px; font-weight:700;">
-          💬 Feedback ({{ new_feedback }})
+          Feedback ({{ new_feedback }})
         </a>
       </div>
     </div>
@@ -52,7 +52,7 @@
   <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-3); margin-bottom: var(--space-4);">
     <a href="{{ url_for('admin_statistics') }}" style="text-decoration:none; color:inherit;">
       <div class="card" style="padding: 16px 20px; transition: transform 0.2s, border-color 0.2s; border: 1px solid var(--border); display:flex; align-items:center; gap:14px; cursor:pointer;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
-        <div style="font-size:28px;">📊</div>
+        <svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:var(--primary);fill:none;stroke-width:2;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
         <div style="flex:1;">
           <div style="font-weight:800; font-size:15px; color:var(--text);">Platform Statistics</div>
           <div style="font-size:12px; color:var(--text-muted);">7-module score averages & distributions</div>
@@ -63,7 +63,7 @@
 
     <a href="{{ url_for('admin_reports') }}" style="text-decoration:none; color:inherit;">
       <div class="card" style="padding: 16px 20px; transition: transform 0.2s, border-color 0.2s; border: 1px solid var(--border); display:flex; align-items:center; gap:14px; cursor:pointer;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
-        <div style="font-size:28px;">🗂️</div>
+        <svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:var(--info);fill:none;stroke-width:2;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
         <div style="flex:1;">
           <div style="font-weight:800; font-size:15px; color:var(--text);">Analysis Reports</div>
           <div style="font-size:12px; color:var(--text-muted);">Filter, inspect & review user predictions</div>
@@ -74,7 +74,7 @@
 
     <a href="{{ url_for('admin_users') }}" style="text-decoration:none; color:inherit;">
       <div class="card" style="padding: 16px 20px; transition: transform 0.2s, border-color 0.2s; border: 1px solid var(--border); display:flex; align-items:center; gap:14px; cursor:pointer;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
-        <div style="font-size:28px;">👥</div>
+        <svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:var(--warning);fill:none;stroke-width:2;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
         <div style="flex:1;">
           <div style="font-weight:800; font-size:15px; color:var(--text);">Platform Users</div>
           <div style="font-size:12px; color:var(--text-muted);">{{ total_users }} registered accounts & activity</div>
@@ -85,7 +85,7 @@
 
     <a href="{{ url_for('admin_feedback') }}" style="text-decoration:none; color:inherit;">
       <div class="card" style="padding: 16px 20px; transition: transform 0.2s, border-color 0.2s; border: 1px solid var(--border); display:flex; align-items:center; gap:14px; cursor:pointer;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
-        <div style="font-size:28px;">💬</div>
+        <svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:var(--success);fill:none;stroke-width:2;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
         <div style="flex:1;">
           <div style="font-weight:800; font-size:15px; color:var(--text);">User Feedback</div>
           <div style="font-size:12px; color:var(--text-muted);">{{ new_feedback }} pending messages to review</div>
@@ -190,10 +190,12 @@
 
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script id="daily-chart-labels" type="application/json">{{ chart_labels | tojson }}</script>
+<script id="daily-chart-data" type="application/json">{{ chart_data | tojson }}</script>
 <script>
 (function() {
-  const labels = {{ chart_labels | safe }};
-  const data   = {{ chart_data   | safe }};
+  const labels = JSON.parse(document.getElementById('daily-chart-labels').textContent);
+  const data   = JSON.parse(document.getElementById('daily-chart-data').textContent);
   const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
   const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
   const textColor = isDark ? '#8892a4' : '#555e6d';

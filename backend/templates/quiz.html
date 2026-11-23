@@ -22,10 +22,10 @@
       </div>
       <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
         <span class="chip chip-info" style="font-size: 12px; padding: 6px 14px; font-weight: 700;">
-          🎯 {{ quiz_questions|length }} Scenarios
+          Scenario Count: {{ quiz_questions|length }}
         </span>
         <span class="chip chip-real" style="font-size: 12px; padding: 6px 14px; font-weight: 700;">
-          🏆 Best: {{ best_score }}
+          Top Score: {{ best_score }}
         </span>
       </div>
     </div>
@@ -40,13 +40,13 @@
           All Challenges (Randomized)
         </a>
         <a href="{{ url_for('quiz', category='text') }}" class="btn btn-sm {% if current_category == 'text' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius:20px; font-size:12px; padding:4px 14px;">
-          📝 Text &amp; Viral Claims
+          Text &amp; Viral Claims
         </a>
         <a href="{{ url_for('quiz', category='image') }}" class="btn btn-sm {% if current_category == 'image' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius:20px; font-size:12px; padding:4px 14px;">
-          🖼️ Image &amp; DeepFake Cues
+          Image &amp; DeepFake Cues
         </a>
         <a href="{{ url_for('quiz', category='mismatch') }}" class="btn btn-sm {% if current_category == 'mismatch' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius:20px; font-size:12px; padding:4px 14px;">
-          🔄 Context Mismatch (Recycled)
+          Context Mismatch (Recycled)
         </a>
       </div>
       <div style="font-size: 12.5px; color: var(--text-muted);">
@@ -232,11 +232,11 @@
               </td>
               <td style="font-size: 12.5px; color: var(--text-muted);">
                 {% if rec.percentage >= 80 %}
-                  🌟 Expert Spotter
+                  Expert Spotter
                 {% elif rec.percentage >= 60 %}
-                  👍 Competent Analyst
+                  Competent Analyst
                 {% else %}
-                  💡 Practice Recommended
+                  Practice Recommended
                 {% endif %}
               </td>
             </tr>
@@ -370,8 +370,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Show Verdict Banner
     verdictBanner.className = isCorrect ? 'alert alert-success' : 'alert alert-danger';
     verdictText.textContent = isCorrect 
-      ? `🎉 Correct! This post is indeed ${q.correct_answer.toUpperCase()}.`
-      : `❌ Incorrect! This post is actually ${q.correct_answer.toUpperCase()}.`;
+      ? `Correct: This post is indeed ${q.correct_answer.toUpperCase()}.`
+      : `Incorrect: This post is actually ${q.correct_answer.toUpperCase()}.`;
 
     // Explanation
     explanationText.textContent = q.explanation;
@@ -393,11 +393,11 @@ document.addEventListener('DOMContentLoaded', () => {
     finalPercentDisplay.textContent = `(${pct}%)`;
 
     if (pct >= 85) {
-      finalFeedbackMessage.textContent = '🏆 Outstanding! You have expert-level media literacy and forensic detection intuition.';
+      finalFeedbackMessage.textContent = 'Outstanding! You have expert-level media literacy and forensic detection intuition.';
     } else if (pct >= 60) {
-      finalFeedbackMessage.textContent = '👍 Good job! You spotted most deception markers. Keep checking sources before forwarding.';
+      finalFeedbackMessage.textContent = 'Good job! You spotted most deception markers. Keep checking sources before forwarding.';
     } else {
-      finalFeedbackMessage.textContent = '💡 Room for improvement. Explore our Help Hub to learn more about recycled images and viral hoaxes.';
+      finalFeedbackMessage.textContent = 'Room for improvement. Explore our Help Hub to learn more about recycled images and viral hoaxes.';
     }
 
     // Save result to backend database

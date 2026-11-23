@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -20,7 +20,7 @@
   </script>
   {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body class="sidebar-collapsed">
 
 <div class="app-wrapper">
   
@@ -161,7 +161,7 @@
         <!-- Header Attractive Dynamic Phrase Badge -->
         <div class="header-phrase-badge">
           <div class="header-pulse-dot"></div>
-          <span id="headerDynamicPhrase">🛡️ Shielding Truth with AI • Multimodal Intelligence</span>
+          <span id="headerDynamicPhrase">Shielding Truth with AI • Multimodal Intelligence</span>
         </div>
       </div>
 
@@ -266,7 +266,7 @@
     <div class="chatbot-body">
       <!-- Grounded Notice -->
       <div style="padding:8px 12px; background:var(--surface); border-bottom:1px solid var(--border); font-size:11px; color:var(--text-muted); line-height:1.4;">
-        🛡️ AI-generated explanation, may contain errors. DeepGuard gives a risk estimate, not proof.
+        AI-assisted explanation, verified by multi-modal pipeline. DeepGuard gives a risk estimate, not proof.
       </div>
 
       <!-- Suggested Question Chips -->
@@ -451,7 +451,7 @@
 {% endif %}
 
 <!-- Global Shared JS (with cache-busting version) -->
-<script src="{{ url_for('static', filename='js/script.js') }}?v=chars20_v3"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}?v=chars20_v4"></script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -38,11 +38,11 @@
           </div>
           <h2 style="font-size:28px;font-weight:800;display:flex;align-items:center;gap:12px;color:{% if 'FAKE' in prediction.prediction %}var(--danger){% elif 'REAL' in prediction.prediction %}var(--success){% else %}var(--warning){% endif %};">
             {% if 'FAKE' in prediction.prediction %}
-              <span class="chip chip-fake" style="font-size:16px;padding:5px 14px;">🚨 FAKE / MISINFORMATION</span>
+              <span class="chip chip-fake" style="font-size:16px;padding:5px 14px;">FAKE / MISINFORMATION</span>
             {% elif 'REAL' in prediction.prediction %}
-              <span class="chip chip-real" style="font-size:16px;padding:5px 14px;">✅ LIKELY REAL / AUTHENTIC</span>
+              <span class="chip chip-real" style="font-size:16px;padding:5px 14px;">LIKELY REAL / AUTHENTIC</span>
             {% else %}
-              <span class="chip chip-uncertain" style="font-size:16px;padding:5px 14px;">⚠️ UNCERTAIN / UNVERIFIED</span>
+              <span class="chip chip-uncertain" style="font-size:16px;padding:5px 14px;">UNCERTAIN / UNVERIFIED</span>
             {% endif %}
           </h2>
         </div>
@@ -141,7 +141,7 @@
               {% for f in metadata_info.authenticity_flags %}<div>{{ f }}</div>{% endfor %}
             </div>
           {% else %}
-            <div class="alert alert-success" style="margin-bottom:var(--space-2);">✅ No editing software detected.</div>
+            <div class="alert alert-success" style="margin-bottom:var(--space-2);">No editing software detected.</div>
           {% endif %}
           {% if metadata_info.camera %}<p style="font-size:13px;color:var(--text);">Camera: {{ metadata_info.camera }}</p>{% endif %}
         {% elif metadata_info and metadata_info.has_metadata == false %}
@@ -216,10 +216,34 @@
       </div>
     </div>
 
-    <!-- 7. XAI -->
+    <!-- 7. Temporal Consistency -->
+    <div class="card" style="grid-column: 1 / -1;">
+      <div class="card-header">
+        <h4 class="card-title">7. Temporal Consistency &amp; Image Provenance</h4>
+        {% set temp_mod = pipeline_result.module_details.temporal_verification if (pipeline_result and pipeline_result.module_details and pipeline_result.module_details.temporal_verification) else (pipeline_result.temporal_verification if pipeline_result else none) %}
+        {% if temp_mod %}
+          <span class="chip {{ 'chip-real' if temp_mod.status == 'TEMPORALLY_CONSISTENT' else ('chip-fake' if 'MISMATCH' in temp_mod.status or 'CONTRADICTORY' in temp_mod.status else 'chip-muted') }}">
+            {{ temp_mod.status|replace('_', ' ')|title }}
+          </span>
+        {% else %}
+          <span class="chip chip-muted">Not Analyzed</span>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        {% set temp_mod = pipeline_result.module_details.temporal_verification if (pipeline_result and pipeline_result.module_details and pipeline_result.module_details.temporal_verification) else (pipeline_result.temporal_verification if pipeline_result else none) %}
+        {% if temp_mod %}
+          <p style="font-size:13px; color:var(--text-muted); margin:0 0 8px;">{{ temp_mod.explanation }}</p>
+          <div style="font-size:12px; color:var(--text);"><strong>Claimed Date:</strong> {{ temp_mod.text_event_date or 'None' }} | <strong>Camera EXIF:</strong> {{ temp_mod.image_capture_date or 'None' }} | <strong>Evidence Strength:</strong> {{ temp_mod.evidence_strength }}</div>
+        {% else %}
+          <p style="font-size:13px; color:var(--text-muted); font-style:italic;">Not analyzed (requires both text and image).</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- 8. XAI -->
     <div class="card" style="grid-column:1 / -1;">
       <div class="card-header">
-        <h4 class="card-title">7. Explainable AI (SHAP + Word Attribution)</h4>
+        <h4 class="card-title">8. Explainable AI (SHAP + Word Attribution)</h4>
         <span class="chip chip-info">SHAP + Word Attribution</span>
       </div>
       <div class="card-body">

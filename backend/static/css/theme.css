@@ -376,11 +376,17 @@ a:hover {
 /* Desktop Sidebar Collapsed & Hover Slide-out */
 @media (min-width: 993px) {
   body.sidebar-collapsed .sidebar {
-    width: var(--sidebar-collapsed-width);
+    width: var(--sidebar-collapsed-width, 68px) !important;
+    min-width: 0 !important;
+    max-width: var(--sidebar-collapsed-width, 68px);
+    transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
   }
 
   body.sidebar-collapsed .main-container {
-    margin-left: var(--sidebar-collapsed-width);
+    margin-left: var(--sidebar-collapsed-width, 68px) !important;
+    width: calc(100% - var(--sidebar-collapsed-width, 68px)) !important;
+    max-width: calc(100vw - var(--sidebar-collapsed-width, 68px)) !important;
+    transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   /* Hide labels when sidebar is collapsed */
@@ -393,6 +399,7 @@ a:hover {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+    transition: opacity 0.15s ease, visibility 0.15s ease;
   }
 
   body.sidebar-collapsed .sidebar .logout-btn-sidebar {
@@ -400,17 +407,24 @@ a:hover {
     justify-content: center;
   }
 
-  /* SLIDE OUT ON HOVER & PUSH MAIN CONTENT SYNCHRONOUSLY (NO OVERLAP) */
-  body.sidebar-collapsed .sidebar:hover {
-    width: var(--sidebar-width);
-    box-shadow: 10px 0 35px rgba(0, 0, 0, 0.7), 0 0 1px rgba(34, 211, 238, 0.4);
+  /* SLIDE OUT ON HOVER AS OVERLAY (NO PAGE SHIFT / JITTER) */
+  body.sidebar-collapsed .sidebar:hover,
+  body.sidebar-collapsed.sidebar-hovered .sidebar {
+    width: var(--sidebar-width, 260px) !important;
+    min-width: var(--sidebar-width, 260px) !important;
+    max-width: var(--sidebar-width, 260px) !important;
+    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.22);
     border-right-color: var(--primary);
+    z-index: 95;
   }
 
-  /* Slide main content to the right when sidebar expands on hover */
-  body.sidebar-collapsed .sidebar:hover ~ .main-container,
+  body.sidebar-collapsed:has(.sidebar:hover) .main-container,
+  body.sidebar-collapsed .sidebar:hover + .main-container,
   body.sidebar-collapsed.sidebar-hovered .main-container {
-    margin-left: var(--sidebar-width);
+    margin-left: var(--sidebar-width, 260px) !important;
+    width: calc(100% - var(--sidebar-width, 260px)) !important;
+    max-width: calc(100vw - var(--sidebar-width, 260px)) !important;
+    transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   body.sidebar-collapsed .sidebar:hover .sidebar-brand-text,
@@ -418,13 +432,20 @@ a:hover {
   body.sidebar-collapsed .sidebar:hover .nav-link span,
   body.sidebar-collapsed .sidebar:hover .fyp-sidebar-block,
   body.sidebar-collapsed .sidebar:hover .user-meta,
-  body.sidebar-collapsed .sidebar:hover .logout-btn-sidebar span {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
+  body.sidebar-collapsed .sidebar:hover .logout-btn-sidebar span,
+  body.sidebar-collapsed.sidebar-hovered .sidebar .sidebar-brand-text,
+  body.sidebar-collapsed.sidebar-hovered .sidebar .sidebar-pin-btn,
+  body.sidebar-collapsed.sidebar-hovered .sidebar .nav-link span,
+  body.sidebar-collapsed.sidebar-hovered .sidebar .fyp-sidebar-block,
+  body.sidebar-collapsed.sidebar-hovered .sidebar .user-meta,
+  body.sidebar-collapsed.sidebar-hovered .sidebar .logout-btn-sidebar span {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
   }
 
-  body.sidebar-collapsed .sidebar:hover .logout-btn-sidebar {
+  body.sidebar-collapsed .sidebar:hover .logout-btn-sidebar,
+  body.sidebar-collapsed.sidebar-hovered .sidebar .logout-btn-sidebar {
     padding: 6px 12px;
     justify-content: center;
   }

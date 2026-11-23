@@ -12,19 +12,19 @@
       <div style="flex: 1; min-width: 300px;">
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
           <h2 style="font-size:22px; font-weight:800; color:var(--text); margin:0;" id="dashboardGreeting">
-            Welcome back, {{ session.get('user_name', 'Analyst') }} 👋
+            Welcome back, {{ session.get('user_name', 'Analyst') }}
           </h2>
           <span class="chip chip-info" style="font-size:11px; font-weight:700;">Active Shield</span>
         </div>
         
         <!-- Interactive Truth-Shield Phrase Box -->
         <div style="margin-top: 8px; display: flex; align-items: center; gap: 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; max-width: 820px;">
-          <div style="font-size: 18px; line-height: 1;" id="phraseEmoji">🛡️</div>
+          <div style="font-size: 14px; font-weight:700; color:var(--primary);" id="phraseEmoji">ADVICE</div>
           <div style="flex: 1; font-size: 13.5px; color: var(--text); line-height: 1.45; font-weight: 500;" id="dashboardInteractivePhrase">
             <em>"Before you forward, pause for 10 seconds: Disinformation is engineered to provoke panic, anger, and urgency."</em>
           </div>
           <button type="button" class="btn btn-secondary btn-sm" id="shufflePhraseBtn" title="Get another truth tip" style="font-size: 11px; padding: 4px 10px; border-radius: 14px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
-            <span>Shuffle 🎲</span>
+            <span>Shuffle Tip</span>
           </button>
         </div>
       </div>
@@ -177,18 +177,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (hr >= 12 && hr < 17) timeGreeting = 'Good afternoon';
     else if (hr >= 17) timeGreeting = 'Good evening';
     const userName = "{{ session.get('user_name', 'Analyst') }}";
-    greetingEl.innerHTML = `${timeGreeting}, ${userName} 👋`;
+    greetingEl.innerHTML = `${timeGreeting}, ${userName}`;
   }
 
   // Interactive rotating phrases
   const phrases = [
-    { emoji: '🛡️', text: '"Before you forward, pause for 10 seconds: Disinformation is engineered to provoke panic, anger, and urgency."' },
-    { emoji: '🔍', text: '"78% of viral fake media is not an AI deepfake — it is real footage recycled from unrelated past events."' },
-    { emoji: '⚡', text: '"A sensational claim with no authoritative source is merely a rumor designed for viral propagation."' },
-    { emoji: '🎯', text: '"Disinformation relies on confirmation bias. Always ask: Who benefits if I react emotionally and share this?"' },
-    { emoji: '🧠', text: '"Cross-Modal Check: Does this photo genuinely portray what the headline states, or does the context contradict it?"' },
-    { emoji: '🔬', text: '"DeepGuard runs 7 independent neural pipelines simultaneously to calibrate authenticity probability."' },
-    { emoji: '💡', text: '"Check the domain: Fake news portals often use deceptive typosquatting like .co.co or .news-today.net."' }
+    { emoji: 'TIP', text: '"Before you forward, pause for 10 seconds: Disinformation is engineered to provoke panic, anger, and urgency."' },
+    { emoji: 'ANALYSIS', text: '"78% of viral fake media is not an AI deepfake — it is real footage recycled from unrelated past events."' },
+    { emoji: 'VERIFY', text: '"A sensational claim with no authoritative source is merely a rumor designed for viral propagation."' },
+    { emoji: 'CONTEXT', text: '"Disinformation relies on confirmation bias. Always ask: Who benefits if I react emotionally and share this?"' },
+    { emoji: 'CROSS-MODAL', text: '"Cross-Modal Check: Does this photo genuinely portray what the headline states, or does the context contradict it?"' },
+    { emoji: 'FUSION', text: '"DeepGuard runs 7 independent neural pipelines simultaneously to calibrate authenticity probability."' },
+    { emoji: 'SOURCE', text: '"Check the domain: Fake news portals often use deceptive typosquatting like .co.co or .news-today.net."' }
   ];
 
   let currentIdx = 0;

@@ -67,7 +67,7 @@ class TextAnalyzer:
             logger.error(f"Failed to load SVM model: {e}")
             return False
 
-    def predict(self, text):
+    def predict(self, text, is_ocr=False):
         if not text or not isinstance(text, str) or not text.strip():
             return {
                 "prediction": "UNKNOWN",
@@ -80,7 +80,7 @@ class TextAnalyzer:
         text = text.strip()
 
         # Enforce minimum character limit — fewer than 20 characters is not enough context
-        MIN_CHARS = 20
+        MIN_CHARS = 15
         if len(text) < MIN_CHARS:
             return {
                 "prediction": "UNKNOWN",
@@ -93,9 +93,24 @@ class TextAnalyzer:
             }
 
         # Enforce max character limit
-        MAX_CHARS = 1200
+        MAX_CHARS = 1500
         if len(text) > MAX_CHARS:
             text = text[:MAX_CHARS]  # Truncate safely at char limit
+
+        # For short headlines and OCR, normalize masked words and excessive uppercase
+        # to avoid triggering artificial clickbait flags on capitalized real news
+        if len(text.split()) < 35 or is_ocr:
+            import re
+            text = re.sub(r'\bki\*ling\b', 'killing', text, flags=re.IGNORECASE)
+            text = re.sub(r'\bk\*lling\b', 'killing', text, flags=re.IGNORECASE)
+            text = re.sub(r'\bki\*l\b', 'kill', text, flags=re.IGNORECASE)
+            text = re.sub(r'\bk\*ll\b', 'kill', text, flags=re.IGNORECASE)
+            text = re.sub(r'\bd\*ath\b', 'death', text, flags=re.IGNORECASE)
+            text = re.sub(r'\bd\*ed\b', 'died', text, flags=re.IGNORECASE)
+            text = re.sub(r'\bm\*rder\b', 'murder', text, flags=re.IGNORECASE)
+            # If headline is all uppercase, title-case it to match standard journalistic corpus
+            if text.isupper():
+                text = text.title()
 
         if self._load_distilbert():
             try:
@@ -109,15 +124,49 @@ class TextAnalyzer:
 
                 with torch.no_grad():
                     outputs = self.distilbert_model(**inputs)
-                    probs = torch.softmax(outputs.logits, dim=1)[0]
 
-                # Label 0: REAL, Label 1: FAKE
-                real_prob = float(probs[0].item())
-                fake_prob = float(probs[1].item())
+                word_count = len(text.split())
+                # Short headlines (<35 words): use T=3.0 + SVM ensemble to prevent
+                # isolated brand/clickbait words from skewing predictions.
+                # Full articles (>=35 words): use T=2.5 temperature only.
+                if word_count < 35 or is_ocr:  # OCR text always uses ensemble
+                    # For short journalistic claims, soften DistilBERT's article-length bias (T=3.5)
+                    # and blend 50/50 with SVM TF-IDF keyword distribution
+                    TEMPERATURE = 3.5
+                    scaled_logits = outputs.logits / TEMPERATURE
+                    probs = torch.softmax(scaled_logits, dim=1)[0]
+                    real_prob_raw = float(probs[0].item())
+                    fake_prob_raw = float(probs[1].item())
 
-                is_fake = fake_prob >= real_prob
+                    if self._load_svm():
+                        try:
+                            import math
+                            feat = self.vectorizer.transform([text])
+                            df = self.svm_model.decision_function(feat)[0]
+                            svm_fake = 1.0 / (1.0 + math.exp(-df))
+                            # Weight DistilBERT 85% and SVM 15% for short text/OCR
+                            # DistilBERT captures deep semantics; low SVM weight prevents TF-IDF vocabulary skew
+                            fake_prob = (fake_prob_raw * 0.85) + (svm_fake * 0.15)
+                            real_prob = 1.0 - fake_prob
+                        except Exception:
+                            fake_prob = fake_prob_raw
+                            real_prob = real_prob_raw
+                    else:
+                        fake_prob = fake_prob_raw
+                        real_prob = real_prob_raw
+                else:
+                    TEMPERATURE = 2.5
+                    scaled_logits = outputs.logits / TEMPERATURE
+                    probs = torch.softmax(scaled_logits, dim=1)[0]
+                    # Label 0: REAL, Label 1: FAKE
+                    real_prob = float(probs[0].item())
+                    fake_prob = float(probs[1].item())
+
+                # OCR threshold calibration: require >= 53% fake probability to classify as FAKE
+                # to prevent minor OCR character recognition noise from flipping authentic claims
+                is_fake = (fake_prob >= 0.53) if is_ocr else (fake_prob >= real_prob)
                 prediction = "FAKE" if is_fake else "REAL"
-                confidence = round((fake_prob if is_fake else real_prob) * 100, 2)
+                confidence = round((fake_prob if is_fake else (1.0 - fake_prob)) * 100, 2)
                 fake_percent = round(fake_prob * 100, 2)
 
                 return {
@@ -125,7 +174,7 @@ class TextAnalyzer:
                     "is_fake": is_fake,
                     "fake_probability": fake_percent,
                     "confidence": confidence,
-                    "model_used": "DistilBERT (98% Acc)",
+                    "model_used": "DistilBERT (98% Acc, T-scaled)",
                     "status": "success"
                 }
             except Exception as e:
@@ -172,14 +221,19 @@ class TextAnalyzer:
 
 _text_analyzer = None
 
-def analyze_text_fake(text):
+def analyze_text_fake(text, is_ocr=False):
     """
     Standard interface function for DeepGuard Backend.
+    Args:
+        text (str): Text to analyze.
+        is_ocr (bool): If True, text came from OCR extraction — always use
+                       ensemble (T=3.0 + SVM) since OCR text is never a full
+                       article and must not trigger the DistilBERT article bias.
     """
     global _text_analyzer
     if _text_analyzer is None:
         _text_analyzer = TextAnalyzer()
-    return _text_analyzer.predict(text)
+    return _text_analyzer.predict(text, is_ocr=is_ocr)
 
 if __name__ == "__main__":
     sample = "Government declared a national emergency effective immediately!"

@@ -11,7 +11,7 @@
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--space-3);">
       <div>
         <h2 style="font-size:20px; font-weight:800; margin:0 0 4px; color:var(--text); display:flex; align-items:center; gap:8px;">
-          <span>👥 Registered Users</span>
+          <span>Registered Users</span>
           <span class="chip chip-info" style="font-size:11px;">{{ users_data|length }} Accounts</span>
         </h2>
         <div style="font-size:13px; color:var(--text-muted);">Inspect all user accounts, roles, registration dates, and activity counts across DeepGuard.</div>
@@ -57,9 +57,9 @@
               <td style="color:var(--text-muted); font-size:13px;">{{ item.user.email }}</td>
               <td>
                 {% if item.user.role == 'admin' %}
-                  <span class="chip chip-danger" style="font-weight:700; font-size:11px;">🛡️ Admin</span>
+                  <span class="chip chip-danger" style="font-weight:700; font-size:11px;">Admin</span>
                 {% else %}
-                  <span class="chip chip-info" style="font-weight:600; font-size:11px;">👤 User</span>
+                  <span class="chip chip-info" style="font-weight:600; font-size:11px;">Standard User</span>
                 {% endif %}
               </td>
               <td style="font-size:12px; text-transform:capitalize; color:var(--text-muted);">
@@ -84,7 +84,7 @@
                       </button>
                     {% else %}
                       <button type="submit" class="btn btn-primary btn-sm" style="font-size:11px; padding:3px 10px;" title="Promote to Administrator">
-                        Promote to Admin 🛡️
+                        Promote to Admin
                       </button>
                     {% endif %}
                   </form>

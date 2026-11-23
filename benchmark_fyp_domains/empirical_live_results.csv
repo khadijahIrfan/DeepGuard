@@ -1,0 +1,101 @@
+Sample_ID,Scenario_ID,Scenario_Name,Domain,Ground_Truth_Is_Fake,Predicted_Is_Fake,Predicted_Verdict,Confidence,Text_Score,Image_Score,Mismatch_Score,Is_Correct,Latency_ms,Status
+1,1,Scenario 1: Real Image + Real Text (Semantically Matching),Health & Medical,False,True,FAKE,70.0,7.67,89.19,41.77,False,44705.5,SUCCESS
+2,1,Scenario 1: Real Image + Real Text (Semantically Matching),Health & Medical,False,False,REAL,91.15,10.37,1.19,18.21,True,1035.5,SUCCESS
+3,1,Scenario 1: Real Image + Real Text (Semantically Matching),Health & Medical,False,False,REAL,91.39,0.14,1.19,29.64,True,900.2,SUCCESS
+4,1,Scenario 1: Real Image + Real Text (Semantically Matching),Health & Medical,False,False,REAL,74.19,47.76,5.96,29.63,True,1339.1,SUCCESS
+5,1,Scenario 1: Real Image + Real Text (Semantically Matching),Health & Medical,False,False,REAL,75.69,11.09,32.86,41.34,True,618.6,SUCCESS
+6,1,Scenario 1: Real Image + Real Text (Semantically Matching),Sports,False,True,FAKE,58.0,2.02,8.36,67.89,False,498.1,SUCCESS
+7,1,Scenario 1: Real Image + Real Text (Semantically Matching),Sports,False,True,FAKE,58.0,1.85,90.8,67.56,False,743.2,SUCCESS
+8,1,Scenario 1: Real Image + Real Text (Semantically Matching),Sports,False,False,REAL,72.95,7.1,68.43,20.43,True,519.7,SUCCESS
+9,1,Scenario 1: Real Image + Real Text (Semantically Matching),Sports,False,False,REAL,88.43,2.2,4.09,34.94,True,478.9,SUCCESS
+10,1,Scenario 1: Real Image + Real Text (Semantically Matching),Sports,False,False,REAL,73.5,5.46,57.45,31.39,True,636.9,SUCCESS
+11,1,Scenario 1: Real Image + Real Text (Semantically Matching),Politics & News,False,True,FAKE,58.0,1.67,13.29,60.29,False,567.4,SUCCESS
+12,1,Scenario 1: Real Image + Real Text (Semantically Matching),Politics & News,False,False,REAL,79.75,6.89,29.57,35.07,True,612.6,SUCCESS
+13,1,Scenario 1: Real Image + Real Text (Semantically Matching),Politics & News,False,False,REAL,79.82,14.05,13.29,42.5,True,515.9,SUCCESS
+14,1,Scenario 1: Real Image + Real Text (Semantically Matching),Politics & News,False,False,REAL,67.56,7.43,63.34,44.53,True,556.7,SUCCESS
+15,1,Scenario 1: Real Image + Real Text (Semantically Matching),Politics & News,False,True,FAKE,58.0,9.04,81.66,50.76,False,600.2,SUCCESS
+16,1,Scenario 1: Real Image + Real Text (Semantically Matching),Science & Tech,False,True,FAKE,58.0,2.61,99.71,56.67,False,733.6,SUCCESS
+17,1,Scenario 1: Real Image + Real Text (Semantically Matching),Science & Tech,False,False,REAL,76.29,18.85,30.29,32.46,True,773.0,SUCCESS
+18,1,Scenario 1: Real Image + Real Text (Semantically Matching),Science & Tech,False,True,FAKE,70.0,10.55,98.04,26.99,False,788.5,SUCCESS
+19,1,Scenario 1: Real Image + Real Text (Semantically Matching),Science & Tech,False,False,REAL,72.61,47.12,4.59,37.46,True,771.7,SUCCESS
+20,1,Scenario 1: Real Image + Real Text (Semantically Matching),Science & Tech,False,True,FAKE,70.0,13.39,99.48,17.38,False,865.1,SUCCESS
+21,1,Scenario 1: Real Image + Real Text (Semantically Matching),Environment & News,False,False,REAL,86.59,0.6,4.5,43.06,True,801.3,SUCCESS
+22,1,Scenario 1: Real Image + Real Text (Semantically Matching),Environment & News,False,True,FAKE,58.0,20.12,99.63,52.74,False,968.2,SUCCESS
+23,1,Scenario 1: Real Image + Real Text (Semantically Matching),Environment & News,False,True,FAKE,70.0,15.89,85.7,27.95,False,755.3,SUCCESS
+24,1,Scenario 1: Real Image + Real Text (Semantically Matching),Environment & News,False,True,FAKE,70.0,63.29,98.58,33.35,False,666.1,SUCCESS
+25,1,Scenario 1: Real Image + Real Text (Semantically Matching),Environment & News,False,True,FAKE,70.0,1.73,100.0,35.89,False,688.6,SUCCESS
+26,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Health & Medical,True,True,FAKE,72.0,99.15,1.81,51.88,True,656.9,SUCCESS
+27,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Health & Medical,True,True,FAKE,72.0,98.28,71.77,26.94,True,666.8,SUCCESS
+28,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Health & Medical,True,True,FAKE,72.0,99.41,0.64,41.26,True,646.0,SUCCESS
+29,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Health & Medical,True,True,FAKE,72.0,98.35,10.54,50.1,True,636.6,SUCCESS
+30,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Health & Medical,True,True,FAKE,72.0,97.95,16.27,51.96,True,764.0,SUCCESS
+31,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Health & Medical,True,True,FAKE,72.0,85.57,31.43,56.74,True,816.5,SUCCESS
+32,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Health & Medical,True,True,FAKE,78.98,99.09,97.1,68.33,True,1518.5,SUCCESS
+33,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Sports,True,True,FAKE,72.0,95.65,6.62,27.01,True,753.9,SUCCESS
+34,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Sports,True,True,FAKE,72.0,84.39,98.61,42.57,True,612.1,SUCCESS
+35,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Sports,True,True,FAKE,72.0,92.28,0.9,42.5,True,722.3,SUCCESS
+36,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Sports,True,True,FAKE,72.0,97.48,99.68,15.09,True,898.6,SUCCESS
+37,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Sports,True,True,FAKE,72.0,81.13,86.77,55.68,True,896.3,SUCCESS
+38,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Sports,True,True,FAKE,58.0,77.73,21.38,51.3,True,696.9,SUCCESS
+39,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Politics & News,True,True,FAKE,72.0,80.67,0.04,50.81,True,738.0,SUCCESS
+40,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Politics & News,True,True,FAKE,72.61,89.95,99.71,53.75,True,743.0,SUCCESS
+41,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Politics & News,True,True,FAKE,72.0,88.4,98.21,33.42,True,833.0,SUCCESS
+42,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Politics & News,True,True,FAKE,72.0,97.52,100.0,21.42,True,1077.3,SUCCESS
+43,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Politics & News,True,True,FAKE,72.0,96.12,13.29,58.85,True,893.2,SUCCESS
+44,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Politics & News,True,True,FAKE,72.0,86.01,99.91,42.11,True,644.1,SUCCESS
+45,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Science & Tech,True,True,FAKE,72.0,96.33,44.74,35.59,True,829.2,SUCCESS
+46,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Science & Tech,True,True,FAKE,72.0,96.04,2.4,54.7,True,802.8,SUCCESS
+47,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Science & Tech,True,True,FAKE,72.0,96.43,96.94,29.41,True,773.3,SUCCESS
+48,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Science & Tech,True,True,FAKE,72.0,99.02,99.53,29.27,True,938.7,SUCCESS
+49,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Science & Tech,True,True,FAKE,72.0,98.12,14.27,28.71,True,683.4,SUCCESS
+50,2,Scenario 2: Real Image + Fake Text (Fabricated / Deceptive Claim),Science & Tech,True,True,FAKE,72.0,98.04,18.04,55.29,True,1212.0,SUCCESS
+51,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Synthetic Portraits,True,True,FAKE,64.58,60.75,100.0,59.6,True,1255.0,SUCCESS
+52,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Synthetic Portraits,True,True,FAKE,72.0,85.1,66.56,67.12,True,491.8,SUCCESS
+53,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Synthetic Portraits,True,True,FAKE,58.0,28.65,99.54,61.78,True,632.3,SUCCESS
+54,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Synthetic Portraits,True,True,FAKE,72.16,88.34,95.12,58.66,True,724.2,SUCCESS
+55,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Synthetic Portraits,True,True,FAKE,72.94,88.92,99.99,55.9,True,621.7,SUCCESS
+56,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Health & Medical,True,True,FAKE,59.27,50.84,100.0,52.38,True,617.6,SUCCESS
+57,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Health & Medical,True,True,FAKE,72.0,96.87,0.26,63.15,True,617.3,SUCCESS
+58,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Health & Medical,True,True,FAKE,73.13,94.62,98.04,51.68,True,655.5,SUCCESS
+59,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Health & Medical,True,True,FAKE,72.0,94.36,8.0,41.87,True,859.4,SUCCESS
+60,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Health & Medical,True,True,FAKE,72.0,91.92,1.55,52.07,True,602.1,SUCCESS
+61,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Sports,True,True,FAKE,72.0,80.96,0.8,52.35,True,664.2,SUCCESS
+62,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Sports,True,True,FAKE,72.0,96.05,86.77,50.66,True,684.2,SUCCESS
+63,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Sports,True,True,FAKE,72.0,87.66,86.44,61.15,True,1223.0,SUCCESS
+64,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Sports,True,True,FAKE,72.0,81.5,93.86,61.61,True,613.8,SUCCESS
+65,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Sports,True,True,FAKE,72.0,81.48,88.83,58.07,True,614.0,SUCCESS
+66,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Viral & Sensation,True,True,FAKE,72.0,98.48,0.22,17.92,True,875.2,SUCCESS
+67,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Viral & Sensation,True,False,REAL,80.11,59.28,0.47,0.0,False,910.5,SUCCESS
+68,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Synthetic Tech,True,True,FAKE,63.55,64.64,99.71,51.52,True,2051.7,SUCCESS
+69,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Synthetic Tech,True,False,REAL,63.61,42.89,50.99,28.54,False,855.0,SUCCESS
+70,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Synthetic Tech,True,True,FAKE,58.0,74.55,3.18,60.63,True,879.5,SUCCESS
+71,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Synthetic Nature,True,True,FAKE,72.0,90.13,0.22,67.19,True,901.3,SUCCESS
+72,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Synthetic Nature,True,True,FAKE,71.01,63.96,100.0,78.9,True,782.8,SUCCESS
+73,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Synthetic Urban,True,True,FAKE,74.88,80.74,99.79,72.89,True,1009.2,SUCCESS
+74,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Synthetic Transport,True,True,FAKE,77.87,95.54,99.99,65.68,True,1125.1,SUCCESS
+75,3,Scenario 3: Fake (AI-Generated / Synthetic) Image + Text,Synthetic Portraits,True,True,FAKE,72.0,85.94,0.5,61.67,True,1061.4,SUCCESS
+76,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Health (Img) vs Sports (Txt),True,True,FAKE,58.0,2.3,28.89,65.74,True,1477.3,SUCCESS
+77,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Sports (Img) vs Health (Txt),True,True,FAKE,58.0,5.33,68.39,62.58,True,1085.5,SUCCESS
+78,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Nature (Img) vs Finance (Txt),True,True,FAKE,58.0,44.45,0.73,60.86,True,898.6,SUCCESS
+79,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Tech (Img) vs Agriculture (Txt),True,True,FAKE,58.0,11.95,30.29,59.71,True,1031.6,SUCCESS
+80,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Aviation (Img) vs Flora (Txt),True,True,FAKE,65.42,63.09,100.0,59.79,True,841.6,SUCCESS
+81,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Sports (Img) vs Health (Txt),True,True,FAKE,58.0,24.6,57.45,61.36,True,1188.1,SUCCESS
+82,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Health (Img) vs Sports (Txt),True,True,FAKE,58.0,6.85,82.7,63.2,True,1114.0,SUCCESS
+83,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Wildlife (Img) vs Governance (Txt),True,True,FAKE,58.0,31.12,99.63,70.35,True,1017.2,SUCCESS
+84,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Appliances (Img) vs Sports (Txt),True,True,FAKE,58.0,5.64,96.94,75.25,True,871.4,SUCCESS
+85,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Maritime (Img) vs Health (Txt),True,True,FAKE,58.0,4.34,0.32,62.99,True,899.8,SUCCESS
+86,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Agriculture (Img) vs Motorsport (Txt),True,True,FAKE,58.0,9.67,98.58,69.43,True,1127.2,SUCCESS
+87,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Sports (Img) vs Health (Txt),True,True,FAKE,58.0,6.4,99.97,55.57,True,1035.9,SUCCESS
+88,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Health (Img) vs Sports (Txt),True,True,FAKE,58.0,10.27,71.77,55.75,True,865.7,SUCCESS
+89,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Energy (Img) vs Health (Txt),True,True,FAKE,58.0,10.63,99.48,60.46,True,928.2,SUCCESS
+90,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Politics (Img) vs Space (Txt),True,True,FAKE,58.0,11.94,81.66,62.52,True,949.3,SUCCESS
+91,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Sports (Img) vs Energy (Txt),True,True,FAKE,58.0,60.06,4.09,62.32,True,1348.0,SUCCESS
+92,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Health (Img) vs Transport (Txt),True,True,FAKE,58.0,57.79,32.86,74.98,True,767.2,SUCCESS
+93,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Desert (Img) vs Sports (Txt),True,True,FAKE,58.0,5.03,2.4,65.46,True,1025.4,SUCCESS
+94,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Tech (Img) vs Wildlife (Txt),True,True,FAKE,63.52,45.81,99.91,73.78,True,1079.6,SUCCESS
+95,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Weather (Img) vs Finance (Txt),True,False,REAL,80.59,17.55,4.5,44.3,False,803.1,SUCCESS
+96,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Sports (Img) vs Health (Txt),True,True,FAKE,58.0,3.82,99.46,67.85,True,925.9,SUCCESS
+97,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Energy (Img) vs Sports (Txt),True,True,FAKE,58.0,0.57,98.98,62.63,True,1015.5,SUCCESS
+98,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Food (Img) vs Military (Txt),True,True,FAKE,58.0,12.92,31.43,62.2,True,1644.2,SUCCESS
+99,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Sports (Img) vs Health (Txt),True,True,FAKE,59.39,76.27,68.43,53.85,True,734.6,SUCCESS
+100,4,Scenario 4: Real Image + Real Text (Context Mismatch / Out-of-Context),Sports (Img) vs Environment (Txt),True,True,FAKE,58.0,24.63,21.38,58.32,True,868.2,SUCCESS

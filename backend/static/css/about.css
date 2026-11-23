@@ -9,7 +9,6 @@
 :root {
     /* About page uses default header height */
     --header-height: 80px;
-}
     --bg: #162338;
     --bg-dark: #111d31;
     --sidebar: #132238;

@@ -34,6 +34,10 @@ for path in [BACKEND_DIR, ROOT_DIR]:
     if path not in sys.path:
         sys.path.insert(0, path)
 
+import werkzeug
+if not hasattr(werkzeug, "__version__"):
+    werkzeug.__version__ = "3.0.0"
+
 # ── Stub out heavy ML imports before importing app ───────────────
 import unittest.mock as mock
 
@@ -93,17 +97,21 @@ class DeepGuardTestBase(unittest.TestCase):
 
     def setUp(self):
         app.config["TESTING"] = True
-        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
         app.config["WTF_CSRF_ENABLED"] = False
         app.config["SERVER_NAME"] = None
         self.client = app.test_client()
         self.app_ctx = app.app_context()
         self.app_ctx.push()
         db.create_all()
+        # Clean data rows between test cases without destroying database schema
+        db.session.rollback()
+        for tbl in reversed(db.metadata.sorted_tables):
+            db.session.execute(tbl.delete())
+        db.session.commit()
 
     def tearDown(self):
+        db.session.rollback()
         db.session.remove()
-        db.drop_all()
         self.app_ctx.pop()
 
     # ── Helpers ──────────────────────────────────────────────────

@@ -54,23 +54,22 @@ def extract_important_metadata(image_path):
         return {"has_metadata": False, "status": "File not found"}
 
     try:
-        image = Image.open(image_path)
+        with Image.open(image_path) as image:
+            raw_exif = None
+            # Primary: _getexif() — returns full tag dict
+            try:
+                raw_exif = image._getexif()
+            except AttributeError:
+                pass
+
+            # Fallback: getexif() (Pillow 6+) for non-JPEG formats
+            if not raw_exif:
+                try:
+                    raw_exif = dict(image.getexif())
+                except Exception:
+                    pass
     except Exception as e:
         return {"has_metadata": False, "status": f"Could not open image: {str(e)}"}
-
-    raw_exif = None
-    # Primary: _getexif() — returns full tag dict
-    try:
-        raw_exif = image._getexif()
-    except AttributeError:
-        pass
-
-    # Fallback: getexif() (Pillow 6+) for non-JPEG formats
-    if not raw_exif:
-        try:
-            raw_exif = dict(image.getexif())
-        except Exception:
-            pass
 
     if not raw_exif:
         return {

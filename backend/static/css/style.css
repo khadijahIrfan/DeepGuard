@@ -1,4 +1,4 @@
-
+﻿
 /* ================================================================
    DEEPGUARD
    Global Design System
@@ -130,7 +130,7 @@ textarea {
 
     width: 265px;
 
-    min-width: 265px;
+    min-width: 0;
 
     height: 100vh;
 

@@ -11,7 +11,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 MODEL_NAME = "openai/clip-vit-base-patch32"
-THRESHOLD = 0.23
+THRESHOLD = 0.15
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 _clip_model = None
@@ -48,11 +48,14 @@ def clip_similarity(image_path, text):
         with Image.open(image_path) as opened_img:
             image = opened_img.convert("RGB")
 
+        # CLIP ViT-B/32 supports max 77 tokens - truncate long OCR text to avoid tensor size mismatch
         inputs = processor(
             text=[text],
             images=image,
             return_tensors="pt",
-            padding=True
+            padding=True,
+            truncation=True,
+            max_length=77
         )
 
         inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
@@ -95,15 +98,16 @@ def detect_context_mismatch(image_path, text):
 
     # Normalize similarity into a dynamic 0-100 mismatch score:
     # CLIP cosine similarity typically spans 0.05 to 0.35 for image-caption pairs.
-    # If similarity < THRESHOLD (0.23), content is contextually contradictory.
+    # Open-domain news headlines and photos typically have similarity around 0.14 - 0.25.
+    # If similarity < THRESHOLD (0.15), content is contextually contradictory.
     if similarity < THRESHOLD:
         # Cross-modal contradiction: maps [THRESHOLD down to 0.0] -> [50.0 up to 100.0]
         mismatch_percent = round(min(100.0, 50.0 + ((THRESHOLD - max(0.0, similarity)) / THRESHOLD) * 50.0), 2)
         is_mismatch = True
         explanation = f"Cross-modal contradiction detected! Text and image content have low semantic alignment (similarity: {round(similarity, 3)})."
     else:
-        # Contextually aligned: maps [THRESHOLD up to 0.35] -> [50.0 down to 0.0]
-        norm_align = min(1.0, (similarity - THRESHOLD) / 0.12)
+        # Contextually aligned: maps [THRESHOLD up to 0.30] -> [50.0 down to 0.0]
+        norm_align = min(1.0, max(0.0, (similarity - THRESHOLD) / 0.15))
         mismatch_percent = round(max(0.0, (1.0 - norm_align) * 45.0), 2)
         is_mismatch = False
         explanation = f"Image and text appear contextually aligned (similarity: {round(similarity, 3)})."

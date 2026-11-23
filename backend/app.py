@@ -62,6 +62,12 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=24)  # 24-hour sessio
 
 db.init_app(app)
 
+@app.errorhandler(500)
+def internal_server_error(e):
+    if request.is_json or request.path.startswith("/predict") or request.path.startswith("/api/"):
+        return jsonify({"error": f"Internal server error: {str(e)}"}), 500
+    return render_template("error.html", error=e), 500
+
 @app.errorhandler(413)
 def request_entity_too_large(error):
     if request.is_json or request.path.startswith("/predict") or request.path.startswith("/api/"):
@@ -70,7 +76,10 @@ def request_entity_too_large(error):
     return redirect(request.url), 413
 
 with app.app_context():
-    db.create_all()
+    try:
+        db.create_all()
+    except Exception as e:
+        print(f"[DeepGuard DB Warning] db.create_all() encountered: {e}")
 
 @app.before_request
 def load_logged_in_user():
@@ -78,7 +87,16 @@ def load_logged_in_user():
     if user_id is None:
         g.current_user = None
     else:
-        g.current_user = User.query.get(user_id)
+        try:
+            g.current_user = User.query.get(user_id)
+        except Exception:
+            db.session.rollback()
+            g.current_user = None
+            session.pop("user_id", None)
+            session.pop("role", None)
+            session.pop("user_name", None)
+            session.pop("user_email", None)
+
         if g.current_user:
             # Keep session role and name synchronized with database state
             db_role = getattr(g.current_user, "role", "user") or "user"
@@ -109,15 +127,15 @@ analyzer = SentimentIntensityAnalyzer()
 
 def analyze_sentiment(text):
     if not text or not text.strip():
-        return "Neutral 😐"
+        return "Neutral"
     scores = analyzer.polarity_scores(text)
     compound = scores["compound"]
     if compound >= 0.05:
-        return "Positive 😊"
+        return "Positive"
     elif compound <= -0.05:
-        return "Negative 😠"
+        return "Negative"
     else:
-        return "Neutral 😐"
+        return "Neutral"
 
 # =====================================
 # Helper: Notification Creator
@@ -249,6 +267,8 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if "user_id" not in session:
+            if request.is_json or request.path.startswith("/api/") or request.path == "/predict":
+                return jsonify({"error": "Session expired or authentication required. Please log in again.", "redirect": url_for("login")}), 401
             return redirect(url_for("login"))
         return f(*args, **kwargs)
     return decorated_function
@@ -887,6 +907,52 @@ def analyze():
     return render_template("analyze.html")
 
 
+
+@app.route("/api/ocr/extract", methods=["POST"])
+@login_required
+def ocr_extract_api():
+    if "image" not in request.files:
+        return jsonify({"error": "No image file provided."}), 400
+    file = request.files["image"]
+    if not file or file.filename == "":
+        return jsonify({"error": "No image selected."}), 400
+    upload_folder = os.path.join(app.root_path, "temp_uploads")
+    os.makedirs(upload_folder, exist_ok=True)
+    ext = os.path.splitext(secure_filename(file.filename))[1]
+    temp_filename = f"ocr_{uuid.uuid4()}{ext}"
+    temp_path = os.path.join(upload_folder, temp_filename)
+    file.save(temp_path)
+    try:
+        from modules.ocr_extractor import extract_grounded_text
+        ocr_res = extract_grounded_text(temp_path)
+        return jsonify(ocr_res)
+    except Exception as e:
+        return jsonify({"error": str(e), "has_grounded_text": False}), 500
+    finally:
+        if os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)
+            except Exception:
+                pass
+
+
+def sanitize_for_json(obj):
+    """Recursively converts NumPy/PyTorch types to native Python types for clean json.dumps."""
+    import numpy as np
+    if isinstance(obj, dict):
+        return {k: sanitize_for_json(v) for k, v in obj.items()}
+    elif isinstance(obj, (list, tuple)):
+        return [sanitize_for_json(v) for v in obj]
+    elif isinstance(obj, (np.integer,)):
+        return int(obj)
+    elif isinstance(obj, (np.floating,)):
+        return float(obj)
+    elif isinstance(obj, (np.bool_,)):
+        return bool(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    return obj
+
 @app.route("/predict", methods=["POST"])
 @login_required
 def predict():
@@ -895,12 +961,15 @@ def predict():
 
     text = ""
     temp_image_path = None
+    is_grounded = False
 
     if request.is_json:
         data = request.get_json(silent=True) or {}
         text = data.get("text", "").strip()
+        is_grounded = bool(data.get("is_grounded", False))
     else:
         text = request.form.get("text", "").strip()
+        is_grounded = request.form.get("is_grounded") in ["true", "True", "1", "yes"]
         if "image" in request.files:
             file = request.files["image"]
             if file and file.filename != "":
@@ -925,10 +994,10 @@ def predict():
     if not text and not temp_image_path:
         return jsonify({"error": "Please provide text content, an image, or both for analysis."}), 400
 
-    # Validate text length limits (server-side safety net)
-    MIN_CHARS = 20
-    MAX_CHARS = 1200
-    if text:
+    # Validate text length limits when text is provided directly without an image
+    MIN_CHARS = 15
+    MAX_CHARS = 1500
+    if text and not temp_image_path:
         if len(text) > MAX_CHARS:
             return jsonify({"error": f"Text exceeds the maximum limit of {MAX_CHARS} characters. Please shorten your input."}), 400
         if len(text) < MIN_CHARS:
@@ -957,7 +1026,9 @@ def predict():
             metadata = {}
 
     # 2. Run Unified Multi-Modal AI Pipeline
-    pipeline_res = run_deepguard_analysis(text=text, image_path=temp_image_path, user_id=user_id)
+    pipeline_res = run_deepguard_analysis(text=text, image_path=temp_image_path, is_grounded=is_grounded, user_id=user_id)
+    if pipeline_res.get("analyzed_text") and not text:
+        text = pipeline_res["analyzed_text"]
     if pipeline_res.get("status") != "success":
         create_notification(user_id, "Analysis Failed", "DeepGuard encountered an error while processing your request.", "danger")
         return jsonify({"error": pipeline_res.get("error", "Analysis pipeline execution failed.")}), 500
@@ -977,16 +1048,24 @@ def predict():
     important_words = get_important_words(text, top_k=5) if text else []
     viral_patterns = analyze_viral_patterns(text) if text else {"viral_score": 0, "patterns_detected": []}
 
-    input_type = "Multimodal" if (text and temp_image_path) else ("Image" if temp_image_path else "Text")
+    if pipeline_res.get("is_grounded_text"):
+        input_type = "Grounded Infographic"
+    elif text and temp_image_path:
+        input_type = "Multimodal"
+    elif temp_image_path:
+        input_type = "Image"
+    else:
+        input_type = "Text"
 
-    # Pack comprehensive XAI summary JSON
-    xai_data = json.dumps({
+    # Pack comprehensive XAI summary JSON (safely serialized against numpy int/float)
+    xai_payload = sanitize_for_json({
         "important_words": important_words,
         "human_explanation": human_explanation,
         "pipeline": pipeline_res,
         "metadata": metadata,
         "viral_patterns": viral_patterns
     })
+    xai_data = json.dumps(xai_payload)
 
     # Save Prediction to Database
     new_prediction = Prediction(
@@ -1019,6 +1098,7 @@ def predict():
     return jsonify({
         "status": "success",
         "prediction_id": new_prediction.id,
+        "redirect": f"/report/{new_prediction.id}?new=1",
         "prediction": verdict_str,
         "verdict": pipeline_res["verdict"],
         "confidence": round(confidence, 2)

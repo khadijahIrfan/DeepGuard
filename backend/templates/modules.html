@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
 {% block title %}AI Modules Architecture — DeepGuard{% endblock %}
 {% block page_title %}AI Modules & System Architecture{% endblock %}
@@ -10,7 +10,7 @@
   <div class="page-hero-banner" style="margin-bottom:var(--space-4); padding: var(--space-4) var(--space-5);">
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--space-3);">
       <div>
-        <h2 style="font-size:20px; font-weight:800; margin:0 0 4px; color:var(--text);">🧠 AI Modules &amp; System Architecture</h2>
+        <h2 style="font-size:20px; font-weight:800; margin:0 0 4px; color:var(--text);">AI Modules &amp; System Architecture</h2>
         <div style="font-size:13px; color:var(--text-muted);">7-module neural pipeline — how DeepGuard detects misinformation end-to-end.</div>
       </div>
       <span class="chip chip-info">v2.0 Architecture</span>
@@ -19,7 +19,7 @@
 
   <div class="card" style="margin-bottom: var(--space-4);">
     <div class="card-header">
-      <h3 class="card-title">DeepGuard Multi-Modal Architecture (7 AI Engine Modules)</h3>
+      <h3 class="card-title">DeepGuard Multi-Modal Architecture (8 AI Engine Modules)</h3>
     </div>
     <div class="card-body">
       <p style="color:var(--text-muted); font-size:14px; margin-bottom:var(--space-4);">
@@ -28,13 +28,13 @@
 
       <div class="grid-7-modules">
         <div class="card">
-          <div class="card-header"><h4 class="card-title">1. Text Analysis (DistilBERT)</h4></div>
-          <div class="card-body"><p style="font-size:13px; color:var(--text-muted);">Fine-tuned DistilBERT Sequence Classifier trained on benchmark misinformation datasets.</p></div>
+          <div class="card-header"><h4 class="card-title">1. Linguistic Claim Analysis</h4></div>
+          <div class="card-body"><p style="font-size:13px; color:var(--text-muted);">Deep contextual language transformer trained on verified journalism and misinformation benchmarks.</p></div>
         </div>
 
         <div class="card">
-          <div class="card-header"><h4 class="card-title">2. Image Detection (EfficientNetV2-S)</h4></div>
-          <div class="card-body"><p style="font-size:13px; color:var(--text-muted);">Fine-tuned EfficientNetV2-S Deep Neural Network with dual-engine ONNX runtime for detecting synthetic and edited news images.</p></div>
+          <div class="card-header"><h4 class="card-title">2. Photographic &amp; Visual Media Detection</h4></div>
+          <div class="card-body"><p style="font-size:13px; color:var(--text-muted);">High-resolution neural forensic vision engine for detecting synthetic generative media and manipulated news imagery.</p></div>
         </div>
 
         <div class="card">
@@ -58,7 +58,12 @@
         </div>
 
         <div class="card">
-          <div class="card-header"><h4 class="card-title">7. Explainable AI (SHAP)</h4></div>
+          <div class="card-header"><h4 class="card-title">7. Temporal Consistency &amp; Provenance</h4></div>
+          <div class="card-body"><p style="font-size:13px; color:var(--text-muted);">Chronological event parser &amp; EXIF/web provenance engine detecting recycled out-of-context imagery.</p></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h4 class="card-title">8. Explainable AI (SHAP)</h4></div>
           <div class="card-body"><p style="font-size:13px; color:var(--text-muted);">SHAP feature attribution generator providing word importance and plain-language explanations.</p></div>
         </div>
       </div>

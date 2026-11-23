@@ -18,12 +18,12 @@
         <div style="font-size:13.5px; color:var(--text-muted);">{{ user.email }}</div>
         <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
           {% if user.is_admin %}
-            <span class="chip chip-warning">🛡️ Admin</span>
+            <span class="chip chip-warning">Administrator</span>
           {% else %}
-            <span class="chip chip-info">👤 Member</span>
+            <span class="chip chip-info">Analyst Member</span>
           {% endif %}
           <span class="chip" style="background:rgba(34,211,238,0.1); color:var(--primary);">
-            📅 Joined {{ user.created_at.strftime('%B %Y') if user.created_at else 'N/A' }}
+            Joined {{ user.created_at.strftime('%B %Y') if user.created_at else 'N/A' }}
           </span>
         </div>
       </div>
@@ -99,7 +99,7 @@
       </div>
       <div class="card-body">
         <div style="background:rgba(34,211,238,0.06); border:1px solid rgba(34,211,238,0.15); border-radius:10px; padding:12px 14px; font-size:12.5px; color:var(--text-muted); margin-bottom:var(--space-4); line-height:1.5;">
-          🔒 Choose a strong password with at least 8 characters mixing letters, numbers, and symbols.
+          Choose a strong password with at least 8 characters mixing letters, numbers, and symbols.
         </div>
         <form action="{{ url_for('change_password') }}" method="POST">
           <div class="form-group">
@@ -134,10 +134,10 @@
     </div>
     <div class="card-body" style="display:flex; gap:var(--space-3); flex-wrap:wrap; align-items:center;">
       <a href="{{ url_for('history') }}" class="btn btn-secondary">
-        📋 View Full History
+        View Full History
       </a>
       <a href="{{ url_for('logout') }}" class="btn" style="background:rgba(239,68,68,0.12); color:var(--danger); border:1px solid rgba(239,68,68,0.3);">
-        🚪 Sign Out
+        Sign Out
       </a>
     </div>
   </div>

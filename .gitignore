@@ -14,6 +14,7 @@ __pycache__/
 # Temporary Uploads & Staging
 backend/temp_uploads/*
 !backend/temp_uploads/.gitkeep
+*.log
 
 # Local Database Files
 backend/instance/*.db

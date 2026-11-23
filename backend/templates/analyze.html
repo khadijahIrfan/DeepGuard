@@ -6,61 +6,83 @@
 {% block content %}
 <div class="analyze-workbench-container" style="max-width: 1400px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: var(--space-4);">
 
-  <!-- Workbench Header Ribbon (Modern styling, no strip border) -->
-  <div class="card page-hero-banner">
-    <div class="card-body" style="padding: var(--space-4) var(--space-5); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+  <!-- Clean Professional Header -->
+  <div class="card" style="border: 1px solid var(--border); background: var(--surface); padding: 18px 24px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
       <div>
-        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--primary); margin-bottom: 2px;">
-          Multi-Modal Verification Studio
-        </div>
-        <h2 style="font-size: 20px; font-weight: 800; color: var(--text); margin: 0;">
-          Context-Aware Claim &amp; Media Analysis
+        <h2 style="font-size: 22px; font-weight: 800; color: var(--text); margin: 0; letter-spacing: -0.3px;">
+          Claim &amp; Media Verification Studio
         </h2>
+        <div style="font-size: 13.5px; color: var(--text-muted); margin-top: 4px;">
+          Multi-modal forensic analysis for news claims, digital imagery, and grounded social media content
+        </div>
       </div>
       <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <span class="chip chip-info" style="font-size: 11.5px; font-weight: 600;">DistilBERT</span>
-        <span class="chip chip-info" style="font-size: 11.5px; font-weight: 600;">EfficientNetV2-S</span>
-        <span class="chip chip-info" style="font-size: 11.5px; font-weight: 600;">CLIP Cross-Modal</span>
-        <span class="chip chip-success" style="font-size: 11.5px; font-weight: 600;">Decision Fusion</span>
+        <span class="chip chip-info" style="font-size: 12px; font-weight: 600;">Text Veracity</span>
+        <span class="chip chip-info" style="font-size: 12px; font-weight: 600;">Image Forensics</span>
+        <span class="chip chip-info" style="font-size: 12px; font-weight: 600;">Cross-Modal Grounding</span>
+        <span class="chip chip-info" style="font-size: 12px; font-weight: 600;">Temporal History</span>
       </div>
     </div>
   </div>
 
   <!-- Main 2-Column Responsive Interface Layout -->
-  <div style="display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(320px, 1fr); gap: var(--space-4); align-items: start;">
+  <div style="display: block; width: 100%;">
     
     <!-- LEFT COLUMN: Main Verification Input Interface -->
     <div class="card" style="border: 1px solid var(--border);">
-      <div class="card-header" style="display: flex; align-items: center; justify-content: space-between; padding: var(--space-4) var(--space-5);">
+      <div class="card-header" style="display: flex; align-items: center; justify-content: space-between; padding: var(--space-4) var(--space-5); flex-wrap: wrap; gap: 10px;">
         <h3 class="card-title" style="font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin: 0;">
           <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--primary);fill:none;stroke-width:2.2;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
           Claim &amp; Image Verification Workspace
         </h3>
-        <span style="font-size: 12px; color: var(--text-muted);">Text + Image Supported</span>
+        <span style="font-size: 12px; color: var(--text-muted);">4 Analysis Modes Supported</span>
       </div>
 
       <div class="card-body" style="padding: var(--space-5);">
+        <!-- Mode Switcher Navigation Pills -->
+        <div style="display: flex; gap: 6px; margin-bottom: var(--space-4); flex-wrap: wrap; background: var(--surface-2); padding: 5px; border-radius: 10px;">
+          <button type="button" class="btn btn-sm mode-pill active" id="modeMultimodal" onclick="switchAnalysisMode('multimodal')" style="border-radius: 8px; font-size: 12px; font-weight: 700;">
+            Multimodal (Text + Image)
+          </button>
+          <button type="button" class="btn btn-sm mode-pill" id="modeGrounded" onclick="switchAnalysisMode('grounded')" style="border-radius: 8px; font-size: 12px; font-weight: 700;">
+            Grounded Text / Infographics
+          </button>
+          <button type="button" class="btn btn-sm mode-pill" id="modeText" onclick="switchAnalysisMode('text')" style="border-radius: 8px; font-size: 12px; font-weight: 700;">
+            Text Only
+          </button>
+          <button type="button" class="btn btn-sm mode-pill" id="modeImage" onclick="switchAnalysisMode('image')" style="border-radius: 8px; font-size: 12px; font-weight: 700;">
+            Image Only
+          </button>
+        </div>
+
+        <!-- Mode Guidance Banner -->
+        <div id="modeGuidance" style="font-size: 12.5px; color: var(--text-muted); margin-bottom: var(--space-4); padding: 8px 12px; background: rgba(0, 229, 255, 0.05); border-left: 3px solid var(--primary); border-radius: 4px;">
+          <strong>Multimodal Mode:</strong> Evaluates headline claim veracity, photographic authenticity, and checks cross-modal context consistency.
+        </div>
+
         <!-- Inline Error Message -->
         <div class="alert alert-danger" id="inlineError" style="display:none; margin-bottom: var(--space-4);"></div>
 
-        <form id="analyzeForm" enctype="multipart/form-data">
+        <form id="analyzeForm" enctype="multipart/form-data" onsubmit="submitAnalyzeForm(event)">
+          <input type="hidden" id="isGroundedInput" name="is_grounded" value="false">
           
-          <!-- Text Analysis Input -->
-          <div class="form-group" style="margin-bottom: var(--space-4);">
+          <!-- Text Analysis Input Group -->
+          <div class="form-group" id="textGroup" style="margin-bottom: var(--space-4);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-2);">
               <label class="form-label" for="newsText" style="margin-bottom:0; font-weight: 700; font-size: 14px;">Text Content / Claim</label>
-              <span class="input-hint" id="charCounter" style="font-weight: 600;">0 / 1200 characters</span>
+              <span class="input-hint" id="charCounter" style="font-weight: 600;">0 / 1500 characters</span>
             </div>
-            <textarea class="input-control" id="newsText" placeholder="Paste news article headline, claim, viral social media post, or WhatsApp message to verify..." rows="5" maxlength="1200" style="padding: 14px; font-size: 14px; line-height: 1.6; border-radius: var(--radius-btn);"></textarea>
+            <textarea class="input-control" id="newsText" placeholder="Paste news article headline, claim, viral social media post, or extracted caption..." rows="5" maxlength="1500" style="padding: 14px; font-size: 14px; line-height: 1.6; border-radius: var(--radius-btn);"></textarea>
             
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; flex-wrap: wrap; gap: 6px;">
               <div class="input-hint" style="margin: 0;">
-                <span style="color:var(--warning, #f59e0b); font-weight:600;">Minimum 20 characters required.</span> Maximum 1200 characters &bull; Analyzed via DistilBERT &amp; viral heuristics.
+                <span style="color:var(--warning, #f59e0b); font-weight:600;">Minimum 15 characters required.</span> Maximum 1500 characters &bull; Analyzed via deep linguistic &amp; viral heuristics.
               </div>
             </div>
 
             <!-- Quick Load Sample Claims Pills -->
-            <div style="display: flex; align-items: center; gap: 6px; margin-top: 10px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 6px; margin-top: 10px; flex-wrap: wrap;" id="samplePillsContainer">
               <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Samples:</span>
               <button type="button" class="btn btn-secondary btn-sm" style="font-size: 11px; padding: 3px 8px;" onclick="loadSampleText('Emergency alert: Severe cyclonic storm heading to Karachi coast! Evacuate coastal areas immediately, share before WhatsApp blocks this!')">Viral Alarm</button>
               <button type="button" class="btn btn-secondary btn-sm" style="font-size: 11px; padding: 3px 8px;" onclick="loadSampleText('State Bank of Pakistan announces official monetary policy rate unchanged at 17.5% following quarterly review meeting.')">Official SBP Statement</button>
@@ -69,42 +91,60 @@
           </div>
 
           <!-- Image Upload Drag and Drop Zone -->
-          <div class="form-group" style="margin-bottom: var(--space-4);">
+          <div class="form-group" id="imageGroup" style="margin-bottom: var(--space-4);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <label class="form-label" style="font-weight: 700; font-size: 14px; margin: 0;">Visual Media Upload (Optional for Cross-Modal Verification)</label>
+              <label class="form-label" style="font-weight: 700; font-size: 14px; margin: 0;">Visual Media Upload (Photographs, News Cards, Infographics)</label>
               <span style="font-size: 11.5px; color: var(--text-muted);">JPEG, PNG, WEBP (Max 10MB)</span>
             </div>
             
-            <div class="dropzone" id="dropzone" style="padding: 28px 20px; border-radius: var(--radius-card); transition: all 0.2s ease;">
-              <svg viewBox="0 0 24 24" style="width:42px;height:42px;stroke:var(--primary);fill:none;stroke-width:2;margin-bottom:8px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-              <div style="font-weight:700; font-size:15px; margin-bottom:4px; color: var(--text);">Drag &amp; Drop image here or click to browse</div>
-              <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">Inspects tampering, generative artifacts &amp; semantic alignment with claim</div>
+            <!-- Hidden native file input outside dropzone to eliminate bubbling recursion -->
+            <input type="file" id="imageInput" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none;" onchange="handleFileChange(event)">
+
+            <div class="dropzone" id="dropzone" onclick="triggerImageUpload(event)" role="button" tabindex="0" style="padding: 24px 20px; border-radius: var(--radius-card); transition: all 0.2s ease; cursor: pointer;">
+              <svg viewBox="0 0 24 24" style="width:40px;height:40px;stroke:var(--primary);fill:none;stroke-width:2;margin-bottom:8px;pointer-events:none;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              <div style="font-weight:700; font-size:15px; margin-bottom:4px; color: var(--text); pointer-events:none;">Drag &amp; Drop image here or click to browse</div>
+              <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px; pointer-events:none;">Inspects tampering, generative artifacts, grounded text &amp; semantic alignment</div>
 
               <!-- Format + Size badges -->
-              <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:4px;">
+              <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:4px; pointer-events:none;">
                 <span style="font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; background:rgba(34,211,238,0.1); color:var(--primary); border:1px solid rgba(34,211,238,0.25);">JPG</span>
                 <span style="font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; background:rgba(34,211,238,0.1); color:var(--primary); border:1px solid rgba(34,211,238,0.25);">PNG</span>
                 <span style="font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; background:rgba(34,211,238,0.1); color:var(--primary); border:1px solid rgba(34,211,238,0.25);">WEBP</span>
                 <span style="font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; background:rgba(245,158,11,0.12); color:var(--warning); border:1px solid rgba(245,158,11,0.25);">Max 10 MB</span>
               </div>
-              
-              <input type="file" id="imageInput" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none;">
-              
+
+              <!-- Dedicated Browse File Button -->
+              <div style="margin-top: 14px;">
+                <button type="button" class="btn btn-secondary btn-sm" id="btnBrowseImage" onclick="triggerImageUpload(event)" style="font-size: 12.5px; padding: 7px 16px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                  <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                  <span>Browse / Choose Image File</span>
+                </button>
+              </div>
+
               <!-- File Preview Box -->
               <div class="preview-box" id="previewBox" style="display:none; margin-top: 14px;">
                 <img id="previewImg" src="" alt="Selected image preview" class="preview-img" style="max-height: 220px; border-radius: 8px; width:100%; object-fit:cover;">
-                <button type="button" class="remove-img-btn" id="removeImgBtn" title="Remove image">✕</button>
+                <button type="button" class="remove-img-btn" id="removeImgBtn" title="Remove image" onclick="removeSelectedImage(event)">✕</button>
                 <div style="font-size:12px; color:var(--primary); font-weight:600; margin-top:8px;" id="fileNameDisplay"></div>
+              </div>
+
+              <!-- Grounded Text Auto-Extract OCR Button -->
+              <div id="ocrTriggerSection" style="display:none; margin-top: 12px;">
+                <button type="button" class="btn btn-secondary btn-sm" id="btnExtractOcr" onclick="triggerOcrExtraction()" style="font-size: 12px; padding: 6px 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                  <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+                  <span id="ocrBtnText">Auto-Extract Grounded Claim</span>
+                </button>
+                <div id="ocrStatusMsg" style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;"></div>
               </div>
 
               <!-- Image Selected Feedback Banner -->
               <div id="imgReadyBanner" style="display:none; margin-top:12px; padding:10px 14px; background:rgba(34,211,238,0.08); border:1px solid rgba(34,211,238,0.3); border-radius:10px; align-items:center; gap:10px;">
-                <span style="font-size:18px;">🖼️</span>
+                <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--primary);fill:none;stroke-width:2;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                 <div style="flex:1; min-width:0;">
                   <div style="font-size:12.5px; font-weight:700; color:var(--primary);" id="imgReadyTitle">Image ready for analysis</div>
                   <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;" id="imgReadyDetail">Cross-modal verification will be activated</div>
                 </div>
-                <span style="font-size:18px; color:var(--success);">✅</span>
+                <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--success);fill:none;stroke-width:2.5;"><polyline points="20 6 9 17 4 12"></polyline></svg>
               </div>
             </div>
           </div>
@@ -113,7 +153,7 @@
           <div style="margin-top:var(--space-4);">
             <button type="submit" class="btn btn-primary btn-lg" id="analyzeBtn" style="width:100%; padding: 14px; font-size: 15px; font-weight: 800; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 16px rgba(0, 229, 255, 0.25);">
               <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.2;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <span>Run DeepGuard Multi-Modal Verification</span>
+              <span id="analyzeBtnLabel">Run DeepGuard Multi-Modal Verification</span>
             </button>
           </div>
 
@@ -128,113 +168,30 @@
 
           <div class="progress-step-item" id="step1">
             <div class="step-icon-spin"></div>
-            <div style="flex:1;">1. Text Analysis (DistilBERT &amp; Viral Heuristics)</div>
+            <div style="flex:1;">1. Claim Text &amp; Visual Media Extraction</div>
             <span class="step-status">Waiting</span>
           </div>
 
           <div class="progress-step-item" id="step2">
             <div class="step-icon-spin"></div>
-            <div style="flex:1;">2. Image DeepFake Detection &amp; EXIF Metadata</div>
+            <div style="flex:1;">2. Image DeepFake Detection (Neural Forensic Vision Engine)</div>
             <span class="step-status">Waiting</span>
           </div>
 
           <div class="progress-step-item" id="step3">
             <div class="step-icon-spin"></div>
-            <div style="flex:1;">3. CLIP Cross-Modal Context Mismatch Check</div>
+            <div style="flex:1;">3. Cross-Modal Visual-Context Consistency</div>
             <span class="step-status">Waiting</span>
           </div>
 
           <div class="progress-step-item" id="step4">
             <div class="step-icon-spin"></div>
-            <div style="flex:1;">4. Fusion Engine Score Weighting &amp; XAI Report</div>
+            <div style="flex:1;">4. Fusion Engine Dynamic Score Weighting &amp; Report</div>
             <span class="step-status">Waiting</span>
           </div>
         </div>
 
       </div>
-    </div>
-
-    <!-- RIGHT COLUMN: Verification Intelligence Deck & Active Architecture -->
-    <div style="display: flex; flex-direction: column; gap: var(--space-4);">
-      
-      <!-- Card: 7-Module Neural Engine -->
-      <div class="card" style="border: 1px solid var(--border);">
-        <div class="card-header" style="padding: var(--space-4);">
-          <h4 style="font-size: 15px; font-weight: 700; color: var(--text); margin: 0; display: flex; align-items: center; gap: 8px;">
-            <svg viewBox="0 0 24 24" style="width: 17px; height: 17px; stroke: var(--primary); fill: none; stroke-width: 2.2;"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-            Neural Verification Pipeline
-          </h4>
-        </div>
-        <div class="card-body" style="padding: var(--space-4); display: flex; flex-direction: column; gap: 10px;">
-          
-          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; padding: 8px 10px; background: var(--surface-2); border-radius: var(--radius-btn);">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--primary);"></span>
-              <strong style="color: var(--text);">Linguistic Transformer</strong>
-            </div>
-            <span style="color: var(--text-muted); font-size: 11px;">DistilBERT</span>
-          </div>
-
-          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; padding: 8px 10px; background: var(--surface-2); border-radius: var(--radius-btn);">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--info);"></span>
-              <strong style="color: var(--text);">Visual Tampering</strong>
-            </div>
-            <span style="color: var(--text-muted); font-size: 11px;">EfficientNetV2-S</span>
-          </div>
-
-          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; padding: 8px 10px; background: var(--surface-2); border-radius: var(--radius-btn);">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--warning);"></span>
-              <strong style="color: var(--text);">Cross-Modal Alignment</strong>
-            </div>
-            <span style="color: var(--text-muted); font-size: 11px;">CLIP ViT-B/32</span>
-          </div>
-
-          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; padding: 8px 10px; background: var(--surface-2); border-radius: var(--radius-btn);">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="width: 8px; height: 8px; border-radius: 50%; background: #8B5CF6;"></span>
-              <strong style="color: var(--text);">Emotional &amp; Viral Hooks</strong>
-            </div>
-            <span style="color: var(--text-muted); font-size: 11px;">VADER + Heuristics</span>
-          </div>
-
-          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; padding: 8px 10px; background: var(--surface-2); border-radius: var(--radius-btn);">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="width: 8px; height: 8px; border-radius: 50%; background: #14B8A6;"></span>
-              <strong style="color: var(--text);">EXIF Forensics</strong>
-            </div>
-            <span style="color: var(--text-muted); font-size: 11px;">Metadata Integrity</span>
-          </div>
-
-          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; padding: 8px 10px; background: var(--surface-2); border-radius: var(--radius-btn);">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--success);"></span>
-              <strong style="color: var(--text);">Adaptive Decision Fusion</strong>
-            </div>
-            <span style="color: var(--text-muted); font-size: 11px;">Calibrated Verdict</span>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Card: Best Verification Practices -->
-      <div class="card" style="border: 1px solid var(--border);">
-        <div class="card-header" style="padding: var(--space-4);">
-          <h4 style="font-size: 15px; font-weight: 700; color: var(--text); margin: 0; display: flex; align-items: center; gap: 8px;">
-            <svg viewBox="0 0 24 24" style="width: 17px; height: 17px; stroke: var(--primary); fill: none; stroke-width: 2.2;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-            Verification Tips
-          </h4>
-        </div>
-        <div class="card-body" style="padding: var(--space-4); font-size: 13px; color: var(--text-muted); line-height: 1.6;">
-          <ul style="padding-left: 18px; margin: 0; display: flex; flex-direction: column; gap: 8px;">
-            <li><strong>Provide context:</strong> Include full headlines or paragraphs for higher text model accuracy.</li>
-            <li><strong>Original photos:</strong> When checking images, prefer high-resolution original files rather than re-compressed screenshots.</li>
-            <li><strong>Cross-modal power:</strong> Pairing the text claim with its associated photo activates CLIP semantic alignment to detect recycled imagery.</li>
-          </ul>
-        </div>
-      </div>
-
     </div>
 
   </div>
@@ -242,6 +199,64 @@
 </div>
 
 <script>
+let currentMode = 'multimodal';
+
+function switchAnalysisMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-pill').forEach(btn => {
+    btn.classList.remove('active');
+    btn.style.background = 'transparent';
+    btn.style.color = 'var(--text-muted)';
+  });
+
+  const activeBtn = document.getElementById(
+    mode === 'multimodal' ? 'modeMultimodal' :
+    mode === 'grounded' ? 'modeGrounded' :
+    mode === 'text' ? 'modeText' : 'modeImage'
+  );
+  if (activeBtn) {
+    activeBtn.classList.add('active');
+    activeBtn.style.background = 'var(--primary)';
+    activeBtn.style.color = '#000';
+  }
+
+  const textGroup = document.getElementById('textGroup');
+  const imageGroup = document.getElementById('imageGroup');
+  const guidance = document.getElementById('modeGuidance');
+  const isGroundedInput = document.getElementById('isGroundedInput');
+  const analyzeBtnLabel = document.getElementById('analyzeBtnLabel');
+
+  if (mode === 'multimodal') {
+    textGroup.style.display = 'block';
+    imageGroup.style.display = 'block';
+    isGroundedInput.value = 'false';
+    guidance.innerHTML = '<strong>Multimodal Verification:</strong> Evaluates headline claim veracity, photographic authenticity, and checks cross-modal context consistency.';
+    analyzeBtnLabel.textContent = 'Run Multi-Modal Verification';
+  } else if (mode === 'grounded') {
+    textGroup.style.display = 'none';
+    imageGroup.style.display = 'block';
+    isGroundedInput.value = 'true';
+    const ocrSection = document.getElementById('ocrTriggerSection');
+    if (ocrSection) ocrSection.style.display = 'none';
+    guidance.innerHTML = '<strong>Grounded Claim / Infographic Mode:</strong> Upload a news card, banner, or screenshot with overlaid text. DeepGuard automatically extracts the claim, verifies photographic authenticity, and tests semantic alignment.';
+    analyzeBtnLabel.textContent = 'Verify News Card / Grounded Media';
+  } else if (mode === 'text') {
+    textGroup.style.display = 'block';
+    imageGroup.style.display = 'none';
+    isGroundedInput.value = 'false';
+    guidance.innerHTML = '<strong>Text Verification Mode:</strong> Analyzes linguistic veracity, deception markers, and sensational viral patterns.';
+    analyzeBtnLabel.textContent = 'Verify Text Claim';
+  } else if (mode === 'image') {
+    textGroup.style.display = 'none';
+    imageGroup.style.display = 'block';
+    isGroundedInput.value = 'false';
+    const ocrSection = document.getElementById('ocrTriggerSection');
+    if (ocrSection) ocrSection.style.display = 'none';
+    guidance.innerHTML = '<strong>Visual Authenticity Mode:</strong> Scans visual media for generative synthetic manipulation, splicing artifacts, and EXIF metadata integrity.';
+    analyzeBtnLabel.textContent = 'Verify Image Authenticity';
+  }
+}
+
 function loadSampleText(sample) {
   const txtArea = document.getElementById('newsText');
   if (txtArea) {
@@ -251,7 +266,282 @@ function loadSampleText(sample) {
   }
 }
 
+function triggerImageUpload(e) {
+  if (e) {
+    if (e.target && (e.target.id === 'removeImgBtn' || e.target.closest('#removeImgBtn') || e.target.closest('#ocrTriggerSection'))) {
+      return;
+    }
+    e.stopPropagation();
+  }
+  const input = document.getElementById('imageInput');
+  if (input) {
+    input.click();
+  }
+}
+
+function handleFileChange(e) {
+  const input = e && e.target ? e.target : document.getElementById('imageInput');
+  const file = input && input.files ? input.files[0] : null;
+  if (!file) return;
+
+  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+  if (!validTypes.includes(file.type)) {
+    alert('Invalid file format. Please upload JPG, PNG, or WEBP images.');
+    input.value = '';
+    return;
+  }
+
+  const MAX_SIZE_MB = 10;
+  if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+    alert('File size exceeds the maximum limit of 10 MB.');
+    input.value = '';
+    return;
+  }
+
+  const previewBox = document.getElementById('previewBox');
+  const previewImg = document.getElementById('previewImg');
+  const fileNameDisplay = document.getElementById('fileNameDisplay');
+  const banner = document.getElementById('imgReadyBanner');
+  const bannerTitle = document.getElementById('imgReadyTitle');
+  const bannerDetail = document.getElementById('imgReadyDetail');
+
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    if (previewImg) previewImg.src = evt.target.result;
+    if (previewBox) previewBox.style.display = 'block';
+    if (fileNameDisplay) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      fileNameDisplay.textContent = `${file.name} (${sizeMB} MB)`;
+    }
+    if (banner) {
+      banner.style.display = 'flex';
+      if (bannerTitle) bannerTitle.textContent = `"${file.name}" ready for verification`;
+      if (bannerDetail) bannerDetail.textContent = 'Photographic integrity & cross-modal verification activated';
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeSelectedImage(e) {
+  if (e) e.stopPropagation();
+  const input = document.getElementById('imageInput');
+  const previewBox = document.getElementById('previewBox');
+  const previewImg = document.getElementById('previewImg');
+  const fileNameDisplay = document.getElementById('fileNameDisplay');
+  const banner = document.getElementById('imgReadyBanner');
+  const ocrSection = document.getElementById('ocrTriggerSection');
+
+  if (input) input.value = '';
+  if (previewBox) previewBox.style.display = 'none';
+  if (previewImg) previewImg.src = '';
+  if (fileNameDisplay) fileNameDisplay.textContent = '';
+  if (banner) banner.style.display = 'none';
+  if (ocrSection) ocrSection.style.display = 'none';
+}
+
+async function submitAnalyzeForm(e) {
+  e.preventDefault();
+  const inlineError = document.getElementById('inlineError');
+  if (inlineError) inlineError.style.display = 'none';
+
+  const isGroundedInput = document.getElementById('isGroundedInput');
+  const isGroundedMode = isGroundedInput && isGroundedInput.value === 'true';
+
+  const newsText = document.getElementById('newsText');
+  const imageInput = document.getElementById('imageInput');
+  const analyzeBtn = document.getElementById('analyzeBtn');
+  const progressBox = document.getElementById('progressBox');
+
+  const text = (!isGroundedMode && newsText) ? newsText.value.trim() : '';
+  const file = (imageInput && imageInput.files) ? imageInput.files[0] : null;
+
+  if (isGroundedMode && !file) {
+    if (inlineError) {
+      inlineError.textContent = 'Please select or upload a news card / infographic image for analysis.';
+      inlineError.style.display = 'block';
+    }
+    return;
+  }
+
+  if (!text && !file) {
+    if (inlineError) {
+      inlineError.textContent = 'Please provide a text claim, an image, or both for analysis.';
+      inlineError.style.display = 'block';
+    }
+    return;
+  }
+
+  if (text && text.length < 15) {
+    if (inlineError) {
+      inlineError.textContent = `Text is too short (${text.length} characters). Minimum 15 characters required.`;
+      inlineError.style.display = 'block';
+    }
+    return;
+  }
+
+  if (analyzeBtn) analyzeBtn.disabled = true;
+  if (progressBox) progressBox.style.display = 'block';
+
+  // Step indicator animation
+  const steps = [
+    document.getElementById('step1'),
+    document.getElementById('step2'),
+    document.getElementById('step3'),
+    document.getElementById('step4')
+  ];
+  function setStep(idx) {
+    steps.forEach((st, i) => {
+      if (!st) return;
+      if (i < idx) {
+        st.className = 'progress-step-item done';
+        const s = st.querySelector('.step-status'); if (s) s.textContent = '✓ Done';
+      } else if (i === idx) {
+        st.className = 'progress-step-item active';
+        const s = st.querySelector('.step-status'); if (s) s.textContent = 'In progress...';
+      } else {
+        st.className = 'progress-step-item';
+        const s = st.querySelector('.step-status'); if (s) s.textContent = 'Waiting';
+      }
+    });
+  }
+  setStep(0);
+  setTimeout(() => setStep(1), 600);
+  setTimeout(() => setStep(2), 1400);
+
+  const formData = new FormData();
+  if (text) formData.append('text', text);
+  if (file) formData.append('image', file);
+  if (isGroundedMode) formData.append('is_grounded', 'true');
+
+  try {
+    const res = await fetch('/predict', {
+      method: 'POST',
+      body: formData
+    });
+
+    let data;
+    const contentType = res.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      data = await res.json();
+    } else {
+      const rawText = await res.text();
+      // Only treat strictly as session expiry if the status is actually 401 Unauthorized
+      if (res.status === 401) {
+        alert('Your session has expired. Please log in again.');
+        window.location.href = '/login?next=/analyze';
+        return;
+      }
+      // Otherwise, it was an unhandled server error or unexpected response
+      throw new Error(`Server error (${res.status}). Please try again or check the server console.`);
+    }
+
+    if (res.status === 401 && data.redirect) {
+      alert(data.error || 'Your session has expired. Please log in again.');
+      window.location.href = data.redirect;
+      return;
+    }
+
+    if (data.prediction_id || data.redirect) {
+      setStep(3);
+      if (steps[3]) {
+        steps[3].className = 'progress-step-item done';
+        const s = steps[3].querySelector('.step-status');
+        if (s) s.textContent = '✓ Done';
+      }
+      const targetUrl = data.redirect || `/report/${data.prediction_id}?new=1`;
+      setTimeout(() => {
+        window.location.href = targetUrl;
+      }, 350);
+    } else if (data.error) {
+      if (inlineError) {
+        inlineError.textContent = data.error;
+        inlineError.style.display = 'block';
+      }
+      if (analyzeBtn) analyzeBtn.disabled = false;
+      if (progressBox) progressBox.style.display = 'none';
+    }
+  } catch (err) {
+    if (inlineError) {
+      inlineError.textContent = 'Analysis request failed: ' + err.message;
+      inlineError.style.display = 'block';
+    }
+    if (analyzeBtn) analyzeBtn.disabled = false;
+    if (progressBox) progressBox.style.display = 'none';
+  }
+}
+
+async function triggerOcrExtraction() {
+  const imageInput = document.getElementById('imageInput');
+  const file = imageInput && imageInput.files ? imageInput.files[0] : null;
+  if (!file) {
+    alert('Please select or drop an image first.');
+    return;
+  }
+
+  const ocrBtn = document.getElementById('btnExtractOcr');
+  const ocrBtnText = document.getElementById('ocrBtnText');
+  const ocrStatus = document.getElementById('ocrStatusMsg');
+
+  ocrBtn.disabled = true;
+  ocrBtnText.textContent = 'Extracting Grounded Claim...';
+  ocrStatus.textContent = 'Analyzing image banners and headline text...';
+
+  const formData = new FormData();
+  formData.append('image', file);
+
+  try {
+    const resp = await fetch('/api/ocr/extract', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await resp.json();
+
+    if (data.has_grounded_text && data.cleaned_text) {
+      const txtArea = document.getElementById('newsText');
+      txtArea.value = data.cleaned_text;
+      txtArea.dispatchEvent(new Event('input', { bubbles: true }));
+      ocrStatus.textContent = `Extracted ${data.lines.length} lines of claim text with ${Math.round((data.confidence_avg || 0.85) * 100)}% confidence.`;
+      ocrStatus.style.color = 'var(--success)';
+      document.getElementById('isGroundedInput').value = 'true';
+    } else {
+      ocrStatus.textContent = data.error || 'No prominent grounded text banner detected in this image.';
+      ocrStatus.style.color = 'var(--warning)';
+    }
+  } catch (err) {
+    ocrStatus.textContent = 'Claim extraction failed: ' + err.message;
+    ocrStatus.style.color = 'var(--danger)';
+  } finally {
+    ocrBtn.disabled = false;
+    ocrBtnText.textContent = 'Auto-Extract Grounded Claim';
+  }
+}
+
+function updateCharCounter() {
+  const newsText = document.getElementById('newsText');
+  const charCounter = document.getElementById('charCounter');
+  if (!newsText || !charCounter) return;
+  const len = newsText.value.length;
+  const MAX_CHARS = 1500;
+  const MIN_CHARS = 15;
+  charCounter.textContent = `${len} / ${MAX_CHARS} characters`;
+  if (len >= MAX_CHARS) {
+    charCounter.style.color = 'var(--danger, #ef4444)';
+  } else if (len > 0 && len < MIN_CHARS) {
+    charCounter.style.color = 'var(--warning, #f59e0b)';
+  } else {
+    charCounter.style.color = '';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  switchAnalysisMode('multimodal');
+  const newsText = document.getElementById('newsText');
+  if (newsText) {
+    newsText.addEventListener('input', updateCharCounter);
+    newsText.addEventListener('keyup', updateCharCounter);
+    newsText.addEventListener('change', updateCharCounter);
+    updateCharCounter();
+  }
   const params = new URLSearchParams(window.location.search);
   const claimParam = params.get('claim');
   if (claimParam) {

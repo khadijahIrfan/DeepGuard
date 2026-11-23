@@ -6,7 +6,6 @@
 :root {
     /* Modules page specific overrides */
     --header-height: 94px;
-}
     --bg: #162338;
     --bg-dark: #111d31;
     --sidebar: #132238;
